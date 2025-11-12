@@ -1,5 +1,6 @@
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Evaluations from '@pages/Evaluations';
 import Login from '@pages/Login';
 import Home from '@pages/Home';
 import Users from '@pages/Users';
@@ -16,27 +17,35 @@ const router = createBrowserRouter([
     errorElement: <Error404/>,
     children: [
       {
-        path: '/home',
+        path: 'home',
         element: <Home/>
       },
       {
-        path: '/users',
+        path: 'auth',
+        element: <Login/>
+      },
+      {
+        path: 'register',
+        element: <Register/>
+      },
+      {
+        path: 'evaluations',
+        element: (
+        <ProtectedRoute allowedRoles={['profesor']}>
+          <Evaluations />
+        </ProtectedRoute>
+        )
+      },
+      {
+        path: 'users',
         element: (
         <ProtectedRoute allowedRoles={['administrador']}>
           <Users />
         </ProtectedRoute>
-        ),
+        )
     }
     ]
   },
-  {
-    path: '/auth',
-    element: <Login/>
-  },
-  {
-    path: '/register',
-    element: <Register/>
-  }
 ])
 
 ReactDOM.createRoot(document.getElementById('root')).render(
