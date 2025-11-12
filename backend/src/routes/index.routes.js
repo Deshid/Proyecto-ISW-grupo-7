@@ -10,7 +10,7 @@ const router = Router();
 router
     .use("/auth", authRoutes)
     .use("/user", userRoutes)
-    .use("/evaluation", evaluationRoutes);
+    .use("/evaluation", evaluationRoutes)
     .use("/", comisionRoutes);
 
 export default router;
