@@ -2,14 +2,11 @@
 import { Router } from "express";
 import userRoutes from "./user.routes.js";
 import authRoutes from "./auth.routes.js";
-import solicitudRoutes from "./solicitud.routes.js";
 
 const router = Router();
 
 router
     .use("/auth", authRoutes)
     .use("/user", userRoutes);
-    
-router.use("/solicitud", solicitudRoutes);
 
 export default router;

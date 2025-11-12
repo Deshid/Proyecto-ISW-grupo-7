@@ -23,15 +23,16 @@ export async function loginService(user) {
       return [null, createErrorMessage("email", "El correo electrónico es incorrecto")];
     }
 
-  const isMatch = await comparePassword(password, userFound.password_hash);
+    const isMatch = await comparePassword(password, userFound.password);
 
     if (!isMatch) {
       return [null, createErrorMessage("password", "La contraseña es incorrecta")];
     }
 
     const payload = {
-      nombre: userFound.nombre,
+      nombreCompleto: userFound.nombreCompleto,
       email: userFound.email,
+      rut: userFound.rut,
       rol: userFound.rol,
     };
 
@@ -51,7 +52,7 @@ export async function registerService(user) {
   try {
     const userRepository = AppDataSource.getRepository(User);
 
-  const { nombre, nombreCompleto, email } = user;
+    const { nombreCompleto, rut, email } = user;
 
     const createErrorMessage = (dataInfo, message) => ({
       dataInfo,
@@ -66,18 +67,25 @@ export async function registerService(user) {
     
     if (existingEmailUser) return [null, createErrorMessage("email", "Correo electrónico en uso")];
 
-    // Note: rut no longer used in the new user schema
+    const existingRutUser = await userRepository.findOne({
+      where: {
+        rut,
+      },
+    });
+
+    if (existingRutUser) return [null, createErrorMessage("rut", "Rut ya asociado a una cuenta")];
 
     const newUser = userRepository.create({
-      nombre: nombreCompleto || nombre,
+      nombreCompleto,
       email,
-      password_hash: await encryptPassword(user.password),
+      rut,
+      password: await encryptPassword(user.password),
       rol: "usuario",
     });
 
     await userRepository.save(newUser);
 
-  const { password_hash, ...dataUser } = newUser;
+    const { password, ...dataUser } = newUser;
 
     return [dataUser, null];
   } catch (error) {
