@@ -22,7 +22,6 @@ export default function EditEvaluationForm({ evaluation, onSave, onCancel }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         
-        // Validaciones
         if (!nombrePauta.trim()) {
             alert("El nombre de la pauta es requerido");
             return;
