@@ -3,6 +3,7 @@ import { logout } from '@services/auth.service.js';
 import '@styles/navbar.css';
 import { useState } from "react";
 
+
 const Navbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -69,6 +70,20 @@ const Navbar = () => {
                             activeClassName="active"
                         >
                             Usuarios
+                        </NavLink>
+                    </li>
+                    )}
+                    {userRole === 'profesor' && (
+                    <li>
+                        <NavLink 
+                            to="/evaluations" 
+                            onClick={() => { 
+                                setMenuOpen(false); 
+                                addActiveClass();
+                            }} 
+                            activeClassName="active"
+                        >
+                            Evaluaciones
                         </NavLink>
                     </li>
                     )}

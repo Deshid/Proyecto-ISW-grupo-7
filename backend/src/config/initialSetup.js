@@ -75,6 +75,24 @@ async function createUsers() {
           rol: "estudiante",
         }),
       ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Leonar Andrés Vera Muñoz",
+          rut: "21.308.769-5",
+          email: "profesor1.2024@gmail.cl",
+          password: await encryptPassword("profesor1234"),
+          rol: "profesor",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Carlos Alberto Gómez Silva",
+          rut: "20.123.456-7",
+          email: "profesor2.2024@gmail.cl",
+          password: await encryptPassword("profesor1234"),
+          rol: "profesor",
+        }),
+      ),
     ]);
     console.log("* => Usuarios creados exitosamente");
   } catch (error) {
