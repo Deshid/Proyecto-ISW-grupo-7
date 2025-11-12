@@ -10,16 +10,10 @@ const UserSchema = new EntitySchema({
       primary: true,
       generated: true,
     },
-    nombreCompleto: {
+    nombre: {
       type: "varchar",
       length: 255,
-      nullable: false,
-    },
-    rut: {
-      type: "varchar",
-      length: 12,
-      nullable: false,
-      unique: true,
+      nullable: true,
     },
     email: {
       type: "varchar",
@@ -32,9 +26,9 @@ const UserSchema = new EntitySchema({
       length: 50,
       nullable: false,
     },
-    password: {
+    password_hash: {
       type: "varchar",
-      nullable: false,
+      nullable: true,
     },
     createdAt: {
       type: "timestamp with time zone",
@@ -52,11 +46,6 @@ const UserSchema = new EntitySchema({
     {
       name: "IDX_USER",
       columns: ["id"],
-      unique: true,
-    },
-    {
-      name: "IDX_USER_RUT",
-      columns: ["rut"],
       unique: true,
     },
     {

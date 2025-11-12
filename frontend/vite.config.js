@@ -8,7 +8,11 @@ const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   plugins: [react()],
-  preview: {port:443, host:true},
+  preview: { port: 443, host: true },
+  server: {
+    // importante para que al recargar /solicitud no devuelva 404
+    historyApiFallback: true,
+  },
   resolve: {
     alias: {
       '@components': path.resolve(__dirname, './src/components'),
