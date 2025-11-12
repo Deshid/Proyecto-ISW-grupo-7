@@ -20,16 +20,29 @@ const SolicitudesProfesor = () => {
   };
 
   const decide = async (id, decision) => {
-    try {
-      const justificacion = prompt("Opcional: ingrese una justificación para el alumno (dejar vacío si no aplica)");
-      await updateSolicitudEstado(id, { estado: decision, justificacionProfesor: justificacion });
-      showSuccessAlert('Hecho', 'Se actualizó el estado de la solicitud');
-      fetchSolicitudes();
-    } catch (error) {
-      console.error(error);
-      showErrorAlert('Error', error?.response?.data?.message || 'Error al actualizar la solicitud');
+  try {
+    const justificacion = prompt("Opcional: ingrese una justificación para el alumno (dejar vacío si no aplica)");
+
+    // Si el usuario presiona "Cancelar", no hacemos nada
+    if (justificacion === null) {
+      return;
     }
-  };
+
+    // Construimos el payload solo con los campos necesarios
+    const payload = { estado: decision };
+    if (justificacion.trim() !== '') {
+      payload.justificacionProfesor = justificacion.trim();
+    }
+
+    await updateSolicitudEstado(id, payload);
+    showSuccessAlert('Hecho', 'Se actualizó el estado de la solicitud');
+    fetchSolicitudes();
+  } catch (error) {
+    console.error(error);
+    showErrorAlert('Error', error?.response?.data?.message || 'Error al actualizar la solicitud');
+  }
+};
+
 
   return (
     <div className="table-container">
