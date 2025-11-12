@@ -65,7 +65,7 @@ const SolicitudesProfesor = () => {
             {solicitudes.map(s => (
               <tr key={s.id}>
                 <td>{s.id}</td>
-                <td>{s.alumno?.nombre || s.alumno?.email}</td>
+                <td>{s.alumno?.nombreCompleto || s.alumno?.email}</td>
                 <td>{s.tipo}</td>
                 <td>{s.notas ? s.notas.join(', ') : '-'}</td>
                 <td>{s.descripcion || '-'}</td>
