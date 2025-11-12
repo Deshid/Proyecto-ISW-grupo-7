@@ -54,7 +54,7 @@ const Comisiones = () => {
               {
                 name: 'fecha',
                 label: 'Fecha',
-                placeholder: 'YYYY-MM-DD',
+                placeholder: 'DD-MM-YYYY',
                 required: true,
                 type: 'date',
                 fieldType: 'input',

@@ -9,9 +9,25 @@ export async function createHorarioService(id_lugar, fecha, horaInicio, horaFin)
         const lugarRepository = AppDataSource.getRepository(Lugar);
         const lugar = await lugarRepository.findOneBy({ id_lugar: id_lugar });
         if (!lugar) {
-            throw new Error("Lugar no encontrado");
+            return [null, "Lugar no encontrado"];
         }
+        
         const horarioRepository = AppDataSource.getRepository("Horario");
+        
+        // Validar que no exista horario duplicado
+        const horarioDuplicado = await horarioRepository.findOne({
+            where: {
+                lugar: { id_lugar: id_lugar },
+                fecha: fecha,
+                horaInicio: horaInicio,
+                horaFin: horaFin,
+            },
+        });
+        
+        if (horarioDuplicado) {
+            return [null, "Ya existe un horario con el mismo lugar, fecha y horas"];
+        }
+        
         const nuevoHorario = horarioRepository.create({
             lugar: lugar,
             fecha: fecha,
@@ -19,10 +35,10 @@ export async function createHorarioService(id_lugar, fecha, horaInicio, horaFin)
             horaFin: horaFin,
         });
         await horarioRepository.save(nuevoHorario);
-        return nuevoHorario;
+        return [nuevoHorario, null];
     } catch (error) {
         console.error("Error al crear horario:", error);
-        return [null, "Error interno del servidor"];
+        return [null, error.message || "Error interno del servidor"];
     }
 }
 /* Obtener horarios por lugar */

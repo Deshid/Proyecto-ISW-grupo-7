@@ -8,10 +8,14 @@ eliminarHorarioService,
 getHorariosPorLugarService, 
 getHorariosPorProfesorService,
 } from "../services/comision.service.js";
-/* import {
-  userBodyValidation,
-  userQueryValidation,
-} from "../validations/comision.validation.js"; */
+import {
+  actualizarHorarioValidation,
+  asignarProfesorValidation,
+  createHorarioValidation,
+  idHorarioParamValidation,
+  idLugarParamValidation,
+  idProfesorParamValidation,
+} from "../validations/comision.validation.js";
 import {
   handleErrorClient,
   handleErrorServer,
@@ -40,15 +44,26 @@ export async function getLugares(req, res) {
 /* Crear horario */
 export async function createHorario(req, res) {
   try {
-    const { id_lugar, fecha, horaInicio, horaFin } = req.body;
-    const nuevoHorario = await createHorarioService(
+    // Validar body
+    const { error, value } = createHorarioValidation.validate(req.body, {
+      abortEarly: false,
+    });
+    if (error) {
+      const messages = error.details.map((e) => e.message).join(", ");
+      return handleErrorClient(res, 400, messages);
+    }
+
+    const { id_lugar, fecha, horaInicio, horaFin } = value;
+    const [nuevoHorario, serviceError] = await createHorarioService(
       id_lugar,
       fecha,
       horaInicio,
       horaFin
     );
-    if (!nuevoHorario)
-      return handleErrorClient(res, 400, "No se pudo crear el horario");
+    
+    if (serviceError) {
+      return handleErrorClient(res, 400, serviceError);
+    }
 
     return handleSuccess(res, 201, "Horario creado exitosamente", nuevoHorario);
   } catch (error) {
@@ -59,7 +74,16 @@ export async function createHorario(req, res) {
 /* Obtener horarios por lugar */
 export async function getHorariosPorLugar(req, res) {
   try {
-    const { id_lugar } = req.params;
+    // Validar parámetro
+    const { error, value } = idLugarParamValidation.validate(req.params, {
+      abortEarly: false,
+    });
+    if (error) {
+      const messages = error.details.map((e) => e.message).join(", ");
+      return handleErrorClient(res, 400, messages);
+    }
+
+    const { id_lugar } = value;
     const horarios = await getHorariosPorLugarService(id_lugar);
     if (!horarios) return handleErrorClient(res, 404, "No se encontraron horarios");
 
@@ -74,8 +98,26 @@ export async function getHorariosPorLugar(req, res) {
 /* Actualizar horario */
 export async function actualizarHorario(req, res) {
   try {
-    const { id_horario } = req.params;
-    const { fecha, horaInicio, horaFin } = req.body;
+    // Validar parámetro
+    const { error: paramError, value: paramValue } = idHorarioParamValidation.validate(req.params, {
+      abortEarly: false,
+    });
+    if (paramError) {
+      const messages = paramError.details.map((e) => e.message).join(", ");
+      return handleErrorClient(res, 400, messages);
+    }
+
+    // Validar body
+    const { error: bodyError, value: bodyValue } = actualizarHorarioValidation.validate(req.body, {
+      abortEarly: false,
+    });
+    if (bodyError) {
+      const messages = bodyError.details.map((e) => e.message).join(", ");
+      return handleErrorClient(res, 400, messages);
+    }
+
+    const { id_horario } = paramValue;
+    const { fecha, horaInicio, horaFin } = bodyValue;
     const [horarioActualizado, error] = await actualizarHorarioService(
       id_horario,
       fecha,
@@ -93,9 +135,18 @@ export async function actualizarHorario(req, res) {
 /* Eliminar horario */
 export async function eliminarHorario(req, res) {
   try {
-    const { id_horario } = req.params;
-    const [exito, error] = await eliminarHorarioService(id_horario);
-    if (error) return handleErrorClient(res, 400, error);
+    // Validar parámetro
+    const { error: paramError, value } = idHorarioParamValidation.validate(req.params, {
+      abortEarly: false,
+    });
+    if (paramError) {
+      const messages = paramError.details.map((e) => e.message).join(", ");
+      return handleErrorClient(res, 400, messages);
+    }
+
+    const { id_horario } = value;
+    const [exito, serviceError] = await eliminarHorarioService(id_horario);
+    if (serviceError) return handleErrorClient(res, 400, serviceError);
     return handleSuccess(res, 200, "Horario eliminado correctamente", exito);
   } catch (error) {
     return handleErrorServer(res, 500, error.message);
@@ -105,7 +156,16 @@ export async function eliminarHorario(req, res) {
 /* Obtener horarios por profesor */
 export async function getHorariosPorProfesor(req, res) {
   try {
-    const { id_profesor } = req.params;
+    // Validar parámetro
+    const { error, value } = idProfesorParamValidation.validate(req.params, {
+      abortEarly: false,
+    });
+    if (error) {
+      const messages = error.details.map((e) => e.message).join(", ");
+      return handleErrorClient(res, 400, messages);
+    }
+
+    const { id_profesor } = value;
     const horarios = await getHorariosPorProfesorService(id_profesor);
     if (!horarios) return handleErrorClient(res, 404, "No se encontraron horarios");
 
@@ -120,12 +180,21 @@ export async function getHorariosPorProfesor(req, res) {
 /* Asignar profesor a un horario */
 export async function asignarProfesorAHorario(req, res) {
   try {
-    const { id_horario, id_profesor } = req.body;
-    const [horarioAsignado, error] = await asignarProfesorAHorarioService(
+    // Validar body
+    const { error, value } = asignarProfesorValidation.validate(req.body, {
+      abortEarly: false,
+    });
+    if (error) {
+      const messages = error.details.map((e) => e.message).join(", ");
+      return handleErrorClient(res, 400, messages);
+    }
+
+    const { id_horario, id_profesor } = value;
+    const [horarioAsignado, serviceError] = await asignarProfesorAHorarioService(
       id_horario,
       id_profesor
     );
-    if (error) return handleErrorClient(res, 400, error);
+    if (serviceError) return handleErrorClient(res, 400, serviceError);
     return handleSuccess(res, 200, "Profesor asignado al horario", horarioAsignado);
   } catch (error) {
     return handleErrorServer(res, 500, error.message);
