@@ -1,12 +1,6 @@
 "use strict";
 import { DataSource } from "typeorm";
 import { DATABASE, DB_USERNAME, HOST, PASSWORD } from "./configEnv.js";
-// Explicit entity imports: limit TypeORM to only the entities needed for the Solicitudes feature
-import User from "../entity/user.entity.js";
-import Solicitud from "../entity/solicitud.entity.js";
-import SolicitudRecuperacion from "../entity/solicitud_recuperacion.entity.js";
-import SolicitudRevision from "../entity/solicitud_revision.entity.js";
-import SolicitudRevisionDetalle from "../entity/solicitud_revision_detalle.entity.js";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -15,13 +9,7 @@ export const AppDataSource = new DataSource({
   username: `${DB_USERNAME}`,
   password: `${PASSWORD}`,
   database: `${DATABASE}`,
-  entities: [
-    User,
-    Solicitud,
-    SolicitudRecuperacion,
-    SolicitudRevision,
-    SolicitudRevisionDetalle,
-  ],
+  entities: ["src/entity/**/*.js"],
   synchronize: true,
   logging: false,
 });

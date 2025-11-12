@@ -43,18 +43,30 @@ export const authValidation = Joi.object({
 });
 
 export const registerValidation = Joi.object({
-  nombre: Joi.string()
-    .min(5)
+  nombreCompleto: Joi.string()
+    .min(15)
     .max(50)
     .pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
     .required()
     .messages({
-      "string.empty": "El nombre no puede estar vacío.",
-      "any.required": "El nombre es obligatorio.",
-      "string.base": "El nombre debe ser de tipo texto.",
-      "string.min": "El nombre debe tener al menos 5 caracteres.",
-      "string.max": "El nombre debe tener como máximo 50 caracteres.",
-      "string.pattern.base": "El nombre solo puede contener letras y espacios.",
+      "string.empty": "El nombre completo no puede estar vacío.",
+      "any.required": "El nombre completo es obligatorio.",
+      "string.base": "El nombre completo debe ser de tipo texto.",
+      "string.min": "El nombre completo debe tener al menos 15 caracteres.",
+      "string.max": "El nombre completo debe tener como máximo 50 caracteres.",
+      "string.pattern.base": "El nombre completo solo puede contener letras y espacios.",
+    }),
+    rut: Joi.string()
+    .min(9)
+    .max(12)
+    .required()
+    .pattern(/^(?:(?:[1-9]\d{0}|[1-2]\d{1})(\.\d{3}){2}|[1-9]\d{6}|[1-2]\d{7}|29\.999\.999|29999999)-[\dkK]$/)
+    .messages({
+      "string.empty": "El rut no puede estar vacío.",
+      "string.base": "El rut debe ser de tipo string.",
+      "string.min": "El rut debe tener como mínimo 9 caracteres.",
+      "string.max": "El rut debe tener como máximo 12 caracteres.",
+      "string.pattern.base": "Formato rut inválido, debe ser xx.xxx.xxx-x o xxxxxxxx-x.",
     }),
   email: Joi.string()
     .min(15)
