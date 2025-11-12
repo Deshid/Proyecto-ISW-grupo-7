@@ -35,6 +35,12 @@ const SolicitudRevisionSchema = new EntitySchema({
       nullable: false,
     },
   },
+  evaluacion: {
+  type: "varchar",
+  length: 200,
+  nullable: true,
+},
+
 });
 
 export default SolicitudRevisionSchema;

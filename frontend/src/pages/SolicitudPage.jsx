@@ -5,7 +5,7 @@ import '@styles/form.css';
 
 const SolicitudPage = () => {
   const [tipo, setTipo] = useState('revision');
-  const [notasText, setNotasText] = useState('');
+  const [evaluacion, setEvaluacion] = useState(''); // reemplaza notasText
   const [modalidad, setModalidad] = useState('presencial');
   const [descripcion, setDescripcion] = useState('');
   const [evidencia, setEvidencia] = useState(null);
@@ -25,32 +25,34 @@ const SolicitudPage = () => {
   };
 
   const onSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const formData = new FormData();
-      formData.append('tipo', tipo);
-      if (tipo === 'revision') {
-        // notasText expected as comma-separated ids
-        const notas = notasText.split(',').map(n => n.trim()).filter(Boolean);
-        formData.append('notas', JSON.stringify(notas));
-        formData.append('modalidad', modalidad);
-      } else {
-        formData.append('descripcion', descripcion);
-        if (evidencia) formData.append('evidencia', evidencia);
-      }
+  e.preventDefault();
+  try {
+    const formData = new FormData();
+    formData.append('tipo', tipo);
 
-      await createSolicitud(formData);
-      showSuccessAlert('Solicitud enviada', 'Su solicitud fue enviada correctamente');
-      // reset
-      setNotasText('');
-      setDescripcion('');
-      setEvidencia(null);
-      fetchMisSolicitudes();
-    } catch (error) {
-      console.error(error);
-      showErrorAlert('Error', error?.response?.data?.message || 'Error al enviar la solicitud');
+    if (tipo === 'revision') {
+      // 👇 Añadimos "notas" para que el backend no falle
+      formData.append('notas', JSON.stringify([{ id: 0 }])); 
+      formData.append('descripcion', evaluacion);
+      formData.append('modalidad', modalidad);
+    } else {
+      formData.append('descripcion', descripcion);
+      if (evidencia) formData.append('evidencia', evidencia);
     }
-  };
+
+    await createSolicitud(formData);
+    showSuccessAlert('Solicitud enviada', 'Su solicitud fue enviada correctamente');
+
+    // reset
+    setEvaluacion('');
+    setDescripcion('');
+    setEvidencia(null);
+    fetchMisSolicitudes();
+  } catch (error) {
+    console.error(error);
+    showErrorAlert('Error', error?.response?.data?.message || 'Error al enviar la solicitud');
+  }
+};
 
   return (
     <div className="form-container">
@@ -67,8 +69,14 @@ const SolicitudPage = () => {
         {tipo === 'revision' && (
           <>
             <label>
-              Notas (ingrese identificadores separados por coma):
-              <input type="text" value={notasText} onChange={(e) => setNotasText(e.target.value)} />
+              Evaluación a revisar (Ej: Evaluación 1, Examen Final, etc.):
+              <input
+                type="text"
+                value={evaluacion}
+                onChange={(e) => setEvaluacion(e.target.value)}
+                placeholder="Ej: Evaluación 1"
+                required
+              />
             </label>
             <label>
               Modalidad:
@@ -84,11 +92,19 @@ const SolicitudPage = () => {
           <>
             <label>
               Descripción del caso:
-              <textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+              <textarea
+                value={descripcion}
+                onChange={(e) => setDescripcion(e.target.value)}
+                placeholder="Explique brevemente el motivo de la recuperación"
+              />
             </label>
             <label>
               Evidencia (imagen):
-              <input type="file" accept="image/*" onChange={(e) => setEvidencia(e.target.files[0])} />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setEvidencia(e.target.files[0])}
+              />
             </label>
           </>
         )}
@@ -100,11 +116,20 @@ const SolicitudPage = () => {
         <h3>Mis solicitudes</h3>
         {misSolicitudes && misSolicitudes.length > 0 ? (
           <ul>
-            {misSolicitudes.map(s => (
+            {misSolicitudes.map((s) => (
               <li key={s.id}>
                 <strong>{s.tipo}</strong> - Estado: {s.estado}
-                {s.justificacionProfesor && (<div>Justificación: {s.justificacionProfesor}</div>)}
-                {s.evidenciaPath && (<div><a href={s.evidenciaPath} target="_blank" rel="noreferrer">Ver evidencia</a></div>)}
+                {s.evaluacion && <div>Evaluación: {s.evaluacion}</div>}
+                {s.justificacionProfesor && (
+                  <div>Justificación: {s.justificacionProfesor}</div>
+                )}
+                {s.evidenciaPath && (
+                  <div>
+                    <a href={s.evidenciaPath} target="_blank" rel="noreferrer">
+                      Ver evidencia
+                    </a>
+                  </div>
+                )}
               </li>
             ))}
           </ul>

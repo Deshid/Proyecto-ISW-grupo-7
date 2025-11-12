@@ -12,6 +12,10 @@ export async function createSolicitud(req, res) {
   try {
     const body = req.body || {};
 
+    if (typeof body.notas === 'string') {
+      try { body.notas = JSON.parse(body.notas); } catch { body.notas = []; }
+    }
+
     const { error } = createSolicitudValidation.validate(body);
     if (error) return handleErrorClient(res, 400, error.message);
 
