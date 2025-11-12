@@ -49,9 +49,10 @@
 		margin: 0;
 		margin-bottom: 4vh;
 	}
-	div {
+	.container_inputs {
 		width: 100%;
 		display: flex;
+		flex-direction: column;
 	}
 	label {
 		color: #003366; /*Color label de inputs del formulario*/
@@ -157,11 +158,6 @@
 		color: #003366;
 		transition: .3s ease-out;
 	}
-	div {
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-	}
 	.footerContent {
 		display: flex;
 		align-items: center;
@@ -206,7 +202,7 @@ input[name='rol'] {
 
 .container_inputs {
     position: relative;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
 }
 
 input {

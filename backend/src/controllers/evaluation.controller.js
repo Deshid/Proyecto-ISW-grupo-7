@@ -32,4 +32,31 @@ const listEvaluations = async (req, res) => {
     }
 };
 
-export default { createEvaluation, listEvaluations };
+const updateEvaluation = async (req, res) => {
+    try {
+        const profesorId = req.user.id;
+        const { id } = req.params;
+        const { nombre_pauta, items } = req.body;
+
+    if (!nombre_pauta || !items || !Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({ error: "nombre_pauta e items (array no vacío) son requeridos" });
+    }
+
+    const result = await evaluationService.updateEvaluation({
+        profesorId,
+        pautaId: id,
+        nombre_pauta,
+        items,
+    });
+
+    res.status(200).json(result);
+    } catch (err) {
+    res.status(err.status || 400).json({ error: err.message });
+    }
+};
+
+export default {
+    createEvaluation,
+    listEvaluations,
+    updateEvaluation,
+};

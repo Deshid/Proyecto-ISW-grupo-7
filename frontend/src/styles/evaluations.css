@@ -1,0 +1,464 @@
+.evaluations-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.evaluations-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.evaluations-header h2 {
+    margin: 0;
+    color: #333;
+    font-size: 2rem;
+}
+
+.evaluations-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.evaluation-card {
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.evaluation-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.evaluation-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.evaluation-title {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin: 0;
+    font-weight: 600;
+}
+
+.btn-edit {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.btn-edit:hover {
+    background: #2980b9;
+}
+
+.items-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.item-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    background: white;
+    border-left: 3px solid #3498db;
+    border-radius: 4px;
+}
+
+.item-description {
+    color: #555;
+    flex: 1;
+}
+
+.item-score {
+    color: #3498db;
+    font-weight: 600;
+    min-width: 80px;
+    text-align: right;
+}
+
+.loading-message,
+.evaluation-error-message,
+.empty-message {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.evaluation-error-message {
+    color: #e74c3c;
+}
+
+/* Estilos para el formulario de edición */
+.evaluation-form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.evaluation-form-container {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.evaluation-form-container h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.evaluation-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.evaluation-form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.evaluation-form-group input[type="text"],
+.evaluation-form-group input[type="number"] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.evaluation-form-group input:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.items-editor {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 1rem;
+  background: #f9f9f9;
+}
+
+.item-editor-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.item-editor-row input[type="text"] {
+  flex: 2;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.item-editor-row input[type="number"] {
+  flex: 0 0 100px;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.btn-remove {
+  flex: 0 0 40px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background 0.2s;
+}
+
+.btn-remove:hover {
+  background: #c0392b;
+}
+
+.btn-add-item {
+  width: 100%;
+  padding: 0.75rem;
+  background: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.btn-add-item:hover {
+  background: #229954;
+}
+
+.evaluation-form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn-primary,
+.btn-secondary {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary {
+  background: #3498db;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2980b9;
+}
+
+.btn-secondary {
+  background: #95a5a6;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #7f8c8d;
+}
+
+@media (max-width: 768px) {
+  .evaluations-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  .evaluation-title {
+    font-size: 1.2rem;
+  }
+
+  .item-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .item-score {
+    text-align: left;
+  }
+
+  .evaluation-form-container {
+    padding: 1rem;
+  }
+
+  .item-editor-row {
+    flex-direction: column;
+  }
+
+  .item-editor-row input[type="number"] {
+    flex: 1;
+  }
+
+  .evaluation-form-actions {
+    flex-direction: column;
+  }
+}
+
+/* Estilos para el botón de crear evaluación */
+.btn-create-evaluation {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn-create-evaluation:hover {
+  background: #229954;
+}
+
+/* Estilos para el formulario de creación */
+.create-evaluation-form {
+  background: #f0f8ff;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.create-form-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #3498db;
+}
+
+.create-form-header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+}
+
+.create-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.create-form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.create-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.create-input:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.create-items-section {
+  margin-bottom: 1.5rem;
+}
+
+.create-items-section h4 {
+  margin: 0 0 1rem 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+.create-item-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+.create-item-input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.create-item-input:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.create-score-input {
+  width: 120px;
+  padding: 0.75rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.create-score-input:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.btn-remove-item {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-remove-item:hover {
+  background: #c0392b;
+}
+
+.btn-add-item {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.2s;
+  margin-top: 0.5rem;
+}
+
+.btn-add-item:hover {
+  background: #2980b9;
+}
+
+.create-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.btn-submit-evaluation {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn-submit-evaluation:hover {
+  background: #229954;
+}
