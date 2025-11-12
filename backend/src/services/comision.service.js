@@ -75,3 +75,61 @@ export async function eliminarHorarioService(id_horario) {
         return [null, "Error interno del servidor"];
     }
 }
+
+/* Asignar profesor a un horario */
+export async function asignarProfesorAHorarioService(id_horario, id_profesor) {
+    try {
+        const horarioRepository = AppDataSource.getRepository("Horario");
+        const userRepository = AppDataSource.getRepository(User);
+        const horario = await horarioRepository.findOneBy({ id_horario: id_horario });
+        if (!horario) {
+            return [null, "Horario no encontrado"];
+        }
+        const profesor = await userRepository.findOneBy({ id: id_profesor, rol: "profesor" });
+        if (!profesor) {
+            return [null, "Profesor no encontrado"];
+        }
+        horario.profesor = profesor;
+        await horarioRepository.save(horario);
+        return [horario, null];
+    } catch (error) {
+        console.error("Error al asignar profesor al horario:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+/* Obtener horarios por profesor */
+export async function getHorariosPorProfesorService(id_profesor) {
+    try {
+        const horarioRepository = AppDataSource.getRepository("Horario");
+        const horarios = await horarioRepository.find({
+            where: { profesor: { id: id_profesor } },
+            relations: ["lugar", "profesor"],
+        });
+        return horarios;
+    } catch (error) {
+        console.error("Error al obtener horarios por profesor:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+/* Asignar estudiantes a profesor */
+export async function asignarEstudiantesAProfesorService(id_profesor, listaEstudiantes) {
+    try {
+        const userRepository = AppDataSource.getRepository(User);
+        const profesor = await userRepository.findOneBy({ id: id_profesor, rol: "profesor" });
+        if (!profesor) {
+            return [null, "Profesor no encontrado"];
+        }
+        const estudiantes = await userRepository.findByIds(listaEstudiantes, { where: { rol: "estudiante" } });
+        if (estudiantes.length !== listaEstudiantes.length) {
+            return [null, "Uno o más estudiantes no encontrados"];
+        }
+        profesor.estudiantes = estudiantes;
+        await userRepository.save(profesor);
+        return [profesor, null];
+    } catch (error) {
+        console.error("Error al asignar estudiantes al profesor:", error);
+        return [null, "Error interno del servidor"];
+    }
+}

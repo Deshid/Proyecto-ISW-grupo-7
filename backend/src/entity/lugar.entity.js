@@ -66,3 +66,5 @@ export const HorarioSchema = new EntitySchema({
         },
     },
 });
+
+export default LugarSchema;
