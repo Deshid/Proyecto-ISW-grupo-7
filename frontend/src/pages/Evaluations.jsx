@@ -84,7 +84,6 @@ export default function Evaluations() {
     };
 
     const handleSubmitNewEvaluation = async () => {
-        // Validación
         if (!newEvaluation.nombre_pauta.trim()) {
             alert("El nombre de la pauta es requerido");
             return;
@@ -99,7 +98,6 @@ export default function Evaluations() {
             return;
         }
 
-        // Convertir puntajes a número
         const itemsToSend = validItems.map(item => ({
             descripcion: item.descripcion.trim(),
             puntaje_maximo: parseInt(item.puntaje_maximo, 10)
