@@ -19,7 +19,28 @@ const Navbar = () => {
         }
     };
 
-    const toggleMenu = () => setMenuOpen(!menuOpen);
+    const toggleMenu = () => {
+        if (!menuOpen) {
+            removeActiveClass();
+        } else {
+            addActiveClass();
+        }
+        setMenuOpen(!menuOpen);
+    };
+
+    const removeActiveClass = () => {
+        const activeLinks = document.querySelectorAll('.nav-menu ul li a.active');
+        activeLinks.forEach(link => link.classList.remove('active'));
+    };
+
+    const addActiveClass = () => {
+        const links = document.querySelectorAll('.nav-menu ul li a');
+        links.forEach(link => {
+            if (link.getAttribute('href') === location.pathname) {
+                link.classList.add('active');
+            }
+        });
+    };
 
     return (
         <nav className="navbar">
@@ -28,23 +49,28 @@ const Navbar = () => {
                     <li>
                         <NavLink 
                             to="/home" 
-                            onClick={() => setMenuOpen(false)} 
-                            className={({ isActive }) => isActive ? 'active' : ''}
+                            onClick={() => { 
+                                setMenuOpen(false); 
+                                addActiveClass();
+                            }} 
+                            activeClassName="active"
                         >
                             Inicio
                         </NavLink>
                     </li>
-
                     {userRole === 'administrador' && (
-                        <li>
-                            <NavLink 
-                                to="/users" 
-                                onClick={() => setMenuOpen(false)} 
-                                className={({ isActive }) => isActive ? 'active' : ''}
-                            >
-                                Usuarios
-                            </NavLink>
-                        </li>
+                    <li>
+                        <NavLink 
+                            to="/users" 
+                            onClick={() => { 
+                                setMenuOpen(false); 
+                                addActiveClass();
+                            }} 
+                            activeClassName="active"
+                        >
+                            Usuarios
+                        </NavLink>
+                    </li>
                     )}
                     {(userRole === 'administrador' || userRole === 'profesor') && (
                     <li>
@@ -60,31 +86,6 @@ const Navbar = () => {
                         </NavLink>
                     </li>
                     )}
-
-                    {(userRole === 'usuario' || userRole === 'estudiante') && (
-                        <li>
-                            <NavLink 
-                                to="/solicitud" 
-                                onClick={() => setMenuOpen(false)} 
-                                className={({ isActive }) => isActive ? 'active' : ''}
-                            >
-                                Solicitar Revisión/Recuperación
-                            </NavLink>
-                        </li>
-                    )}
-
-                    {userRole === 'profesor' && (
-                        <li>
-                            <NavLink 
-                                to="/solicitudes" 
-                                onClick={() => setMenuOpen(false)} 
-                                className={({ isActive }) => isActive ? 'active' : ''}
-                            >
-                                Ver Solicitudes Revisión/Recuperación
-                            </NavLink>
-                        </li>
-                    )}
-
                     <li>
                         <NavLink 
                             to="/auth" 
@@ -92,14 +93,13 @@ const Navbar = () => {
                                 logoutSubmit(); 
                                 setMenuOpen(false); 
                             }} 
-                            className={({ isActive }) => isActive ? 'active' : ''}
+                            activeClassName="active"
                         >
                             Cerrar sesión
                         </NavLink>
                     </li>
                 </ul>
             </div>
-
             <div className="hamburger" onClick={toggleMenu}>
                 <span className="bar"></span>
                 <span className="bar"></span>
