@@ -5,17 +5,17 @@ import { comparePassword, encryptPassword } from "../helpers/bcrypt.helper.js";
 
 export async function getUserService(query) {
   try {
-  const { id, email } = query;
+    const { rut, id, email } = query;
 
     const userRepository = AppDataSource.getRepository(User);
 
     const userFound = await userRepository.findOne({
-      where: [{ id: id }, { email: email }],
+      where: [{ id: id }, { rut: rut }, { email: email }],
     });
 
     if (!userFound) return [null, "Usuario no encontrado"];
 
-  const { password_hash, ...userData } = userFound;
+    const { password, ...userData } = userFound;
 
     return [userData, null];
   } catch (error) {
@@ -28,11 +28,11 @@ export async function getUsersService() {
   try {
     const userRepository = AppDataSource.getRepository(User);
 
-  const users = await userRepository.find();
+    const users = await userRepository.find();
 
     if (!users || users.length === 0) return [null, "No hay usuarios"];
 
-  const usersData = users.map(({ password_hash, ...user }) => user);
+    const usersData = users.map(({ password, ...user }) => user);
 
     return [usersData, null];
   } catch (error) {
@@ -43,42 +43,43 @@ export async function getUsersService() {
 
 export async function updateUserService(query, body) {
   try {
-  const { id, email } = query;
+    const { id, rut, email } = query;
 
     const userRepository = AppDataSource.getRepository(User);
 
     const userFound = await userRepository.findOne({
-      where: [{ id: id }, { email: email }],
+      where: [{ id: id }, { rut: rut }, { email: email }],
     });
 
     if (!userFound) return [null, "Usuario no encontrado"];
 
     const existingUser = await userRepository.findOne({
-      where: [{ email: body.email }],
+      where: [{ rut: body.rut }, { email: body.email }],
     });
 
     if (existingUser && existingUser.id !== userFound.id) {
-      return [null, "Ya existe un usuario con el mismo email"];
+      return [null, "Ya existe un usuario con el mismo rut o email"];
     }
 
     if (body.password) {
       const matchPassword = await comparePassword(
         body.password,
-        userFound.password_hash,
+        userFound.password,
       );
 
       if (!matchPassword) return [null, "La contraseña no coincide"];
     }
 
     const dataUserUpdate = {
-      nombre: body.nombre || userFound.nombre,
-      email: body.email || userFound.email,
-      rol: body.rol || userFound.rol,
+      nombreCompleto: body.nombreCompleto,
+      rut: body.rut,
+      email: body.email,
+      rol: body.rol,
       updatedAt: new Date(),
     };
 
     if (body.newPassword && body.newPassword.trim() !== "") {
-      dataUserUpdate.password_hash = await encryptPassword(body.newPassword);
+      dataUserUpdate.password = await encryptPassword(body.newPassword);
     }
 
     await userRepository.update({ id: userFound.id }, dataUserUpdate);
@@ -91,7 +92,7 @@ export async function updateUserService(query, body) {
       return [null, "Usuario no encontrado después de actualizar"];
     }
 
-    const { password_hash, ...userUpdated } = userData;
+    const { password, ...userUpdated } = userData;
 
     return [userUpdated, null];
   } catch (error) {
@@ -102,12 +103,12 @@ export async function updateUserService(query, body) {
 
 export async function deleteUserService(query) {
   try {
-  const { id, email } = query;
+    const { id, rut, email } = query;
 
     const userRepository = AppDataSource.getRepository(User);
 
     const userFound = await userRepository.findOne({
-      where: [{ id: id }, { email: email }],
+      where: [{ id: id }, { rut: rut }, { email: email }],
     });
 
     if (!userFound) return [null, "Usuario no encontrado"];
