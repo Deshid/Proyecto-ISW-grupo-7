@@ -14,16 +14,18 @@ async function createUsers() {
       userRepository.save(
         userRepository.create({
           nombre: "Diego Alexis Salazar Jara",
+          nombreCompleto: "Diego Alexis Salazar Jara",
           email: "administrador2024@gmail.cl",
-          password_hash: await encryptPassword("admin1234"),
+          password: await encryptPassword("admin1234"),
           rol: "administrador",
         }),
       ),
       userRepository.save(
         userRepository.create({
           nombre: "Diego Sebastián Ampuero Belmar",
+          nombreCompleto: "Diego Sebastián Ampuero Belmar",
           email: "usuario1.2024@gmail.cl",
-          password_hash: await encryptPassword("user1234"),
+          password: await encryptPassword("user1234"),
           rol: "profesor",
         })
       ),
@@ -31,48 +33,54 @@ async function createUsers() {
       userRepository.save(
         userRepository.create({
           nombre: "Pedro Luis Hernandez Belmar",
+          nombreCompleto: "Pedro Luis Hernandez Belmar",
           email: "profesor1.2024@gmail.cl",
-          password_hash: await encryptPassword("profesor1234"),
+          password: await encryptPassword("profesor1234"),
           rol: "profesor",
         })
       ),
         userRepository.save(
           userRepository.create({
-            nombre: "Alexander Benjamín Marcelo Carrasco Fuentes",
-            email: "usuario2.2024@gmail.cl",
-            password_hash: await encryptPassword("user1234"),
-            rol: "estudiante",
-          }),
+              nombre: "Alexander Benjamín Marcelo Carrasco Fuentes",
+              nombreCompleto: "Alexander Benjamín Marcelo Carrasco Fuentes",
+              email: "usuario2.2024@gmail.cl",
+              password: await encryptPassword("user1234"),
+              rol: "estudiante",
+            }),
       ),
       userRepository.save(
         userRepository.create({
           nombre: "Pablo Andrés Castillo Fernández",
+          nombreCompleto: "Pablo Andrés Castillo Fernández",
           email: "usuario3.2024@gmail.cl",
-          password_hash: await encryptPassword("user1234"),
+          password: await encryptPassword("user1234"),
           rol: "estudiante",
         }),
       ),
       userRepository.save(
         userRepository.create({
           nombre: "Felipe Andrés Henríquez Zapata",
+          nombreCompleto: "Felipe Andrés Henríquez Zapata",
           email: "usuario4.2024@gmail.cl",
-          password_hash: await encryptPassword("user1234"),
+          password: await encryptPassword("user1234"),
           rol: "estudiante",
         }),
       ),
       userRepository.save(
         userRepository.create({
           nombre: "Diego Alexis Meza Ortega",
+          nombreCompleto: "Diego Alexis Meza Ortega",
           email: "usuario5.2024@gmail.cl",
-          password_hash: await encryptPassword("user1234"),
+          password: await encryptPassword("user1234"),
           rol: "estudiante",
         }),
       ),
       userRepository.save(
         userRepository.create({
           nombre: "Juan Pablo Rosas Martin",
+          nombreCompleto: "Juan Pablo Rosas Martin",
           email: "usuario6.2024@gmail.cl",
-          password_hash: await encryptPassword("user1234"),
+          password: await encryptPassword("user1234"),
           rol: "estudiante",
         }),
       ),

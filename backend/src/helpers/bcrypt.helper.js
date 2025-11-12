@@ -13,7 +13,8 @@ export async function comparePassword(password, receivedPassword) {
     let hash = receivedPassword;
     if (typeof receivedPassword === "object") {
       // try common fallbacks when an object is passed accidentally
-      if (receivedPassword.password_hash) hash = receivedPassword.password_hash;
+      if (receivedPassword.password) hash = receivedPassword.password;
+      else if (receivedPassword.password_hash) hash = receivedPassword.password_hash;
       else if (typeof receivedPassword.toString === "function") hash = receivedPassword.toString();
       else hash = String(receivedPassword);
     }

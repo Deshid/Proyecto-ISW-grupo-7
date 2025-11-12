@@ -15,7 +15,7 @@ export async function getUserService(query) {
 
     if (!userFound) return [null, "Usuario no encontrado"];
 
-  const { password_hash, ...userData } = userFound;
+  const { password, ...userData } = userFound;
 
     return [userData, null];
   } catch (error) {
@@ -32,7 +32,7 @@ export async function getUsersService() {
 
     if (!users || users.length === 0) return [null, "No hay usuarios"];
 
-  const usersData = users.map(({ password_hash, ...user }) => user);
+  const usersData = users.map(({ password, ...user }) => user);
 
     return [usersData, null];
   } catch (error) {
@@ -64,21 +64,22 @@ export async function updateUserService(query, body) {
     if (body.password) {
       const matchPassword = await comparePassword(
         body.password,
-        userFound.password_hash,
+        userFound.password,
       );
 
       if (!matchPassword) return [null, "La contraseña no coincide"];
     }
 
     const dataUserUpdate = {
-      nombre: body.nombre || userFound.nombre,
+      nombreCompleto: body.nombreCompleto || body.nombre || userFound.nombreCompleto,
       email: body.email || userFound.email,
       rol: body.rol || userFound.rol,
       updatedAt: new Date(),
     };
 
     if (body.newPassword && body.newPassword.trim() !== "") {
-      dataUserUpdate.password_hash = await encryptPassword(body.newPassword);
+      const newHash = await encryptPassword(body.newPassword);
+      dataUserUpdate.password = newHash;
     }
 
     await userRepository.update({ id: userFound.id }, dataUserUpdate);
@@ -91,7 +92,7 @@ export async function updateUserService(query, body) {
       return [null, "Usuario no encontrado después de actualizar"];
     }
 
-    const { password_hash, ...userUpdated } = userData;
+  const { password, ...userUpdated } = userData;
 
     return [userUpdated, null];
   } catch (error) {

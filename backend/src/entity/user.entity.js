@@ -10,7 +10,7 @@ const UserSchema = new EntitySchema({
       primary: true,
       generated: true,
     },
-    nombre: {
+    nombreCompleto: {
       type: "varchar",
       length: 255,
       nullable: true,
@@ -26,7 +26,7 @@ const UserSchema = new EntitySchema({
       length: 50,
       nullable: false,
     },
-    password_hash: {
+    password: {
       type: "varchar",
       nullable: true,
     },

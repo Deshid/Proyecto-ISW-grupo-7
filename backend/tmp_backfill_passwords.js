@@ -20,13 +20,13 @@ async function backfill(){
     for(const [email, pwd] of Object.entries(seedPasswords)){
       const u = await repo.findOne({ where: { email } });
       if(u){
-        if(!u.password_hash){
+        if(!u.password){
           const hash = await encryptPassword(pwd);
-          u.password_hash = hash;
+          u.password = hash;
           await repo.save(u);
           console.log('Backfilled', email);
         } else {
-          console.log('Already has hash', email);
+          console.log('Already has password', email);
         }
       } else {
         console.log('User not found', email);

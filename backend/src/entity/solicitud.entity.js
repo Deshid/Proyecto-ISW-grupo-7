@@ -32,6 +32,10 @@ const SolicitudSchema = new EntitySchema({
       type: "varchar",
       nullable: true,
     },
+    alumnoId: {
+      type: "int",
+      nullable: true,
+    },
     estado: {
       type: "varchar",
       length: 30,
@@ -54,14 +58,7 @@ const SolicitudSchema = new EntitySchema({
       nullable: false,
     },
   },
-  relations: {
-    alumno: {
-      target: "User",
-      type: "many-to-one",
-      joinColumn: true,
-      nullable: false,
-    },
-  },
+ 
 });
 
 export default SolicitudSchema;

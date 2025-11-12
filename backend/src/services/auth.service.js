@@ -23,14 +23,15 @@ export async function loginService(user) {
       return [null, createErrorMessage("email", "El correo electrónico es incorrecto")];
     }
 
-  const isMatch = await comparePassword(password, userFound.password_hash);
+  const isMatch = await comparePassword(password, userFound.password);
 
     if (!isMatch) {
       return [null, createErrorMessage("password", "La contraseña es incorrecta")];
     }
 
     const payload = {
-      nombre: userFound.nombre,
+      // canonical field for user's full name
+      nombreCompleto: userFound.nombreCompleto,
       email: userFound.email,
       rol: userFound.rol,
     };
@@ -68,16 +69,17 @@ export async function registerService(user) {
 
     // Note: rut no longer used in the new user schema
 
+    const encrypted = await encryptPassword(user.password);
     const newUser = userRepository.create({
-      nombre: nombreCompleto || nombre,
+      nombreCompleto: nombreCompleto || nombre,
       email,
-      password_hash: await encryptPassword(user.password),
+      password: encrypted,
       rol: "usuario",
     });
 
     await userRepository.save(newUser);
 
-  const { password_hash, ...dataUser } = newUser;
+  const { password, ...dataUser } = newUser;
 
     return [dataUser, null];
   } catch (error) {
