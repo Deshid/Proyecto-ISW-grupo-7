@@ -10,8 +10,6 @@ import { cookieKey, HOST, PORT } from "./config/configEnv.js";
 import { connectDB } from "./config/configDb.js";
 import { createLugares, createUsers } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
-import path from "path";
-import { fileURLToPath } from "url";
 
 async function setupServer() {
   try {
@@ -61,12 +59,7 @@ async function setupServer() {
 
     passportJwtSetup();
 
-  // Exponer carpeta uploads para evidencias
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-  app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
-
-  app.use("/api", indexRoutes);
+    app.use("/api", indexRoutes);
 
     app.listen(PORT, () => {
       console.log(`=> Servidor corriendo en ${HOST}:${PORT}/api`);

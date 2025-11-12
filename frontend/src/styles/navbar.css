@@ -5,7 +5,7 @@
 	left: 0;
 	display: block;
 	background-color: #003366; /*Color de la navbar*/
-	height: 7vh;
+	height: 9vh;
 	z-index: 1000;
 	ul {
 		display: flex;
@@ -54,7 +54,7 @@
 				padding-bottom: 0;
 				border: 0;
 				height: 100%;
-				line-height: 7.1vh;
+				line-height: 9.1vh;
 			}
 		}
 	}
