@@ -4,6 +4,7 @@ import Evaluations from '@pages/Evaluations';
 import Login from '@pages/Login';
 import Home from '@pages/Home';
 import Users from '@pages/Users';
+import Comisiones from '@pages/Comisiones';
 import Register from '@pages/Register';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
@@ -43,6 +44,15 @@ const router = createBrowserRouter([
           <Users />
         </ProtectedRoute>
         )
+    }
+    ,
+    {
+      path: '/comisiones',
+      element: (
+        <ProtectedRoute allowedRoles={['administrador','profesor']}>
+          <Comisiones />
+        </ProtectedRoute>
+      ),
     }
     ]
   },

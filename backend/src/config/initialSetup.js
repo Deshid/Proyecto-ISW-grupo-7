@@ -2,6 +2,7 @@
 import User from "../entity/user.entity.js";
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
+import { LugarSchema } from "../entity/lugar.entity.js";
 
 async function createUsers() {
   try {
@@ -98,6 +99,42 @@ async function createUsers() {
     console.error("Error al crear usuarios:", error);
   }
 }
+async function createLugares() {
+  try {
+    const lugarRepository = AppDataSource.getRepository(LugarSchema);
+    const count = await lugarRepository.count();
+    if (count > 0) return;
 
+    await Promise.all([
+      lugarRepository.save(
+        lugarRepository.create({
+          id_lugar: 1,
+          nombre: "Sala de Reuniones A",
+          descripcion: "Sala equipada con proyector y pizarra blanca.",
+          ubicacion: "Piso 2, Edificio Central",
+        })
+      ),
+      lugarRepository.save(
+        lugarRepository.create({
+          id_lugar: 2,
+          nombre: "Auditorio Principal",
+          descripcion: "Auditorio con capacidad para 200 personas.",
+          ubicacion: "Piso 1, Edificio de Conferencias",
+        })
+      ),
+      lugarRepository.save(
+        lugarRepository.create({
+          id_lugar: 3,
+          nombre: "Sala B",
+          descripcion: "Espacio para reuniones pequeñas.",
+          ubicacion: "Piso 3, Edificio Central",
+        })
+      ),
+    ]);
+    console.log("* => Lugares creados exitosamente");
+  } catch (error) {
+    console.error("Error al crear lugares:", error);
+  }
+}
 
-export { createUsers };
+export { createUsers, createLugares };
