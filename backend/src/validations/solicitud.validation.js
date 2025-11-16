@@ -10,10 +10,10 @@ export const createSolicitudValidation = Joi.object({
       "any.required": "El tipo es obligatorio",
     }),
 
-  notas: Joi.array().items(Joi.any()).optional(), // 👈 acepta cualquier estructura o vacío
+  notas: Joi.array().items(Joi.any()).optional(), 
   modalidad: Joi.string().valid("presencial", "online").optional(),
-  descripcion: Joi.string().max(1000).allow('').optional(), // 👈 ahora permitida incluso vacía
-}).unknown(true); // 👈 permite campos adicionales (por ejemplo: evidenciaPath)
+  descripcion: Joi.string().max(1000).allow('').optional(), 
+}).unknown(true); 
 
 export const updateSolicitudValidation = Joi.object({
   estado: Joi.string().valid("pendiente", "aprobada", "rechazada").required(),

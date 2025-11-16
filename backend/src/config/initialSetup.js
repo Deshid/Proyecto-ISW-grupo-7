@@ -2,27 +2,13 @@
 import User from "../entity/user.entity.js";
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
+import { LugarSchema } from "../entity/lugar.entity.js";
 
 async function createUsers() {
   try {
     const userRepository = AppDataSource.getRepository(User);
 
-    // Check whether the underlying table exists before calling count(). If the
-    // table hasn't been created (for example when synchronize/migrations are
-    // disabled or permissions are lacking) a SELECT COUNT will fail with
-    // Postgres code 42P01 (relation does not exist). Detect that and skip
-    // seeding so the app can start; the developer can run migrations later.
-    let count;
-    try {
-      count = await userRepository.count();
-    } catch (err) {
-      // Postgres 'relation does not exist' error code
-      if (err && err.code === "42P01") {
-        console.warn("createUsers: tabla 'users' no existe; saltando seed de usuarios.");
-        return;
-      }
-      throw err;
-    }
+    const count = await userRepository.count();
     if (count > 0) return;
 
     await Promise.all([
@@ -44,17 +30,6 @@ async function createUsers() {
           rol: "estudiante",
         })
       ),
-       userRepository.save(
-        userRepository.create({
-          nombre: "Pedro Luis Hernandez Belmar",
-          rut: "19.876.543-2",
-          nombreCompleto: "Pedro Luis Hernandez Belmar",
-          email: "profesor1.2024@gmail.cl",
-          password: await encryptPassword("profesor1234"),
-          rol: "profesor",
-        })
-      ),
-
         userRepository.save(
           userRepository.create({
             nombreCompleto: "Alexander Benjamín Marcelo Carrasco Fuentes",
@@ -124,4 +99,42 @@ async function createUsers() {
     console.error("Error al crear usuarios:", error);
   }
 }
-export {createUsers};
+async function createLugares() {
+  try {
+    const lugarRepository = AppDataSource.getRepository(LugarSchema);
+    const count = await lugarRepository.count();
+    if (count > 0) return;
+
+    await Promise.all([
+      lugarRepository.save(
+        lugarRepository.create({
+          id_lugar: 1,
+          nombre: "Sala de Reuniones A",
+          descripcion: "Sala equipada con proyector y pizarra blanca.",
+          ubicacion: "Piso 2, Edificio Central",
+        })
+      ),
+      lugarRepository.save(
+        lugarRepository.create({
+          id_lugar: 2,
+          nombre: "Auditorio Principal",
+          descripcion: "Auditorio con capacidad para 200 personas.",
+          ubicacion: "Piso 1, Edificio de Conferencias",
+        })
+      ),
+      lugarRepository.save(
+        lugarRepository.create({
+          id_lugar: 3,
+          nombre: "Sala B",
+          descripcion: "Espacio para reuniones pequeñas.",
+          ubicacion: "Piso 3, Edificio Central",
+        })
+      ),
+    ]);
+    console.log("* => Lugares creados exitosamente");
+  } catch (error) {
+    console.error("Error al crear lugares:", error);
+  }
+}
+
+export { createUsers, createLugares };
