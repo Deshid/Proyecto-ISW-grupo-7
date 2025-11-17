@@ -20,29 +20,16 @@ const SolicitudesProfesor = () => {
   };
 
   const decide = async (id, decision) => {
-  try {
-    const justificacion = prompt("Opcional: ingrese una justificación para el alumno (dejar vacío si no aplica)");
-
-    // Si el usuario presiona "Cancelar", no hacemos nada
-    if (justificacion === null) {
-      return;
+    try {
+      const justificacion = prompt("Opcional: ingrese una justificación para el alumno (dejar vacío si no aplica)");
+      await updateSolicitudEstado(id, { estado: decision, justificacionProfesor: justificacion });
+      showSuccessAlert('Hecho', 'Se actualizó el estado de la solicitud');
+      fetchSolicitudes();
+    } catch (error) {
+      console.error(error);
+      showErrorAlert('Error', error?.response?.data?.message || 'Error al actualizar la solicitud');
     }
-
-    // Construimos el payload solo con los campos necesarios
-    const payload = { estado: decision };
-    if (justificacion.trim() !== '') {
-      payload.justificacionProfesor = justificacion.trim();
-    }
-
-    await updateSolicitudEstado(id, payload);
-    showSuccessAlert('Hecho', 'Se actualizó el estado de la solicitud');
-    fetchSolicitudes();
-  } catch (error) {
-    console.error(error);
-    showErrorAlert('Error', error?.response?.data?.message || 'Error al actualizar la solicitud');
-  }
-};
-
+  };
 
   return (
     <div className="table-container">
@@ -65,11 +52,11 @@ const SolicitudesProfesor = () => {
             {solicitudes.map(s => (
               <tr key={s.id}>
                 <td>{s.id}</td>
-                <td>{s.alumno?.nombreCompleto || s.alumno?.email}</td>
+                <td>{s.alumno?.nombre || s.alumno?.email}</td>
                 <td>{s.tipo}</td>
                 <td>{s.notas ? s.notas.join(', ') : '-'}</td>
                 <td>{s.descripcion || '-'}</td>
-                <td>{s.evidenciaPath ? <a href={s.evidenciaPath} target="_blank" rel="noreferrer">Ver</a> : '-'}</td>
+                <td>{s.evidenciaPath ? <a href={s.evidenciaPath} target="_blank" rel="norefeCompletorrer">Ver</a> : '-'}</td>
                 <td>{s.estado}</td>
                 <td>
                   {s.estado === 'pendiente' && (
