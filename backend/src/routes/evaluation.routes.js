@@ -27,4 +27,11 @@ router.put(
     evaluationController.updateEvaluation
 );
 
+router.get(
+    "/:id",
+    authenticateJwt,
+    authorize(["profesor", "estudiante"]),
+    evaluationController.getEvaluationById
+);
+
 export default router;

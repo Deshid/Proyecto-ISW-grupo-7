@@ -112,8 +112,31 @@ const updateEvaluation = async ({ profesorId, pautaId, nombre_pauta, items }) =>
     }
 };
 
+const getEvaluationById = async (id, userId, userRole) => {
+    const pautaRepo = AppDataSource.getRepository("Pauta");
+    const numericId = Number(id);
+    const pauta = await pautaRepo.findOne({
+        where: { id: numericId },
+        relations: ["creador", "items"],
+    });
+
+    if (!pauta) {
+        const error = new Error("Pauta no encontrada");
+        error.status = 404;
+        throw error;
+    }
+    if (userRole === "profesor" && pauta.creador?.id !== userId) {
+        const error = new Error("No autorizado: no eres el creador de esta pauta");
+        error.status = 403;
+        throw error;
+    }
+
+    return pauta;
+};
+
 export default {
     createEvaluation,
     listEvaluations,
     updateEvaluation,
+    getEvaluationById,
 };
