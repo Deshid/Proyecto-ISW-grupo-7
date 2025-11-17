@@ -1,9 +1,11 @@
 import { Router } from "express";
 import {
 	actualizarHorario,
+	asignarEstudiantesAProfesor,
 	asignarProfesorAHorario,
 	createHorario,
 	eliminarHorario,
+	getEstudiantesPorProfesor,
 	getHorariosPorLugar,
 	getHorariosPorProfesor,
 	getLugares,
@@ -22,7 +24,12 @@ router.delete("/horarios/:id_horario", eliminarHorario);
 
 /* Asignar profesor a horario */
 router.post("/horarios/:id_horario/asignar-profesor", asignarProfesorAHorario);
+/* Asignar estudiantes a profesor */
+router.post("/profesor/:id_profesor/asignar-estudiantes", asignarEstudiantesAProfesor);
 /* Obtener horarios por profesor */
 router.get("/horarios/profesor/:id_profesor", getHorariosPorProfesor);
+/* Obtener estudiantes por profesor */
+router.get("/profesor/:id_profesor/estudiantes", getEstudiantesPorProfesor);
+
 
 export default router;

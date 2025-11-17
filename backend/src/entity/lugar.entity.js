@@ -50,19 +50,29 @@ export const HorarioSchema = new EntitySchema({
         horaFin: {
             type: "time",
         },
+        estado: {
+            type: "varchar",
+            length: 20,
+            default: "activo",
+        },
     },
     relations: {
         lugar: {
             type: "many-to-one",
             target: "Lugar",
-            joinColumn: true,
+            joinColumn: {
+                name: "lugar_id",
+            },
             cascade: true,
         },
-        usuario: {
+        profesor: {
             type: "many-to-one",
             target: "User",
-            joinColumn: true,
+            joinColumn: {
+                name: "profesor_id",
+            },
             cascade: true,
+            nullable: true,
         },
     },
 });

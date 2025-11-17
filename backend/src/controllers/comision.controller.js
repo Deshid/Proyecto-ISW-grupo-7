@@ -1,10 +1,11 @@
 "use strict";
 import {
 actualizarHorarioService,
-//asignarEstudiantesAProfesorService,
+asignarEstudiantesAProfesorService,
 asignarProfesorAHorarioService,
 createHorarioService,
 eliminarHorarioService,
+getEstudiantesPorProfesorService,
 getHorariosPorLugarService, 
 getHorariosPorProfesorService,
 } from "../services/comision.service.js";
@@ -196,6 +197,47 @@ export async function asignarProfesorAHorario(req, res) {
     );
     if (serviceError) return handleErrorClient(res, 400, serviceError);
     return handleSuccess(res, 200, "Profesor asignado al horario", horarioAsignado);
+  } catch (error) {
+    return handleErrorServer(res, 500, error.message);
+  }
+}
+
+/* Asignar estudiantes a un profesor */
+export async function asignarEstudiantesAProfesor(req, res) {
+  try {
+    const { id_profesor, listaEstudiantes } = req.body;
+
+    if (!id_profesor || !Array.isArray(listaEstudiantes)) {
+      return handleErrorClient(res, 400, "Parámetros inválidos");
+    }
+    const [profesorActualizado, serviceError] = await asignarEstudiantesAProfesorService(
+      id_profesor,
+      listaEstudiantes
+    );
+    if (serviceError) return handleErrorClient(res, 400, serviceError);
+    return handleSuccess(res, 200, "Estudiantes asignados al profesor", profesorActualizado);
+  } catch (error) {
+    return handleErrorServer(res, 500, error.message);
+  }
+}
+
+/* Obtener estudiantes por profesor */
+export async function getEstudiantesPorProfesor(req, res) {
+  try {
+    // Validar parámetro
+    const { error, value } = idProfesorParamValidation.validate(req.params, {
+      abortEarly: false,
+    });
+    if (error) {
+      const messages = error.details.map((e) => e.message).join(", ");
+      return handleErrorClient(res, 400, messages);
+    }
+    const { id_profesor } = value;
+    const [estudiantes, serviceError] = await getEstudiantesPorProfesorService(id_profesor);
+    if (serviceError) return handleErrorClient(res, 400, serviceError);
+    return estudiantes.length === 0
+      ? handleSuccess(res, 204)
+      : handleSuccess(res, 200, "Estudiantes encontrados", estudiantes);
   } catch (error) {
     return handleErrorServer(res, 500, error.message);
   }
