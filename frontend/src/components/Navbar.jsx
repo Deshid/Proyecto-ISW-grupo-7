@@ -3,6 +3,7 @@ import { logout } from '@services/auth.service.js';
 import '@styles/navbar.css';
 import { useState } from "react";
 
+
 const Navbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -72,6 +73,59 @@ const Navbar = () => {
                         </NavLink>
                     </li>
                     )}
+                    {userRole === 'profesor' && (
+                    <li>
+                        <NavLink 
+                            to="/evaluations" 
+                            onClick={() => { 
+                                setMenuOpen(false); 
+                                addActiveClass();
+                            }} 
+                            activeClassName="active"
+                        >
+                            Evaluaciones
+                        </NavLink>
+                    </li>
+                    )}
+                    {(userRole === 'administrador' || userRole === 'profesor') && (
+                    <li>
+                        <NavLink 
+                            to="/comisiones" 
+                            onClick={() => { 
+                                setMenuOpen(false); 
+                                addActiveClass();
+                            }} 
+                            activeClassName="active"
+                        >
+                            Comisiones
+                        </NavLink>
+                    </li>
+                    
+                    )}
+                    {(userRole === 'usuario' || userRole === 'estudiante') && (
+                        <li>
+                            <NavLink 
+                                to="/solicitud" 
+                                onClick={() => setMenuOpen(false)} 
+                                className={({ isActive }) => isActive ? 'active' : ''}
+                            >
+                                Solicitar Revisión/Recuperación
+                            </NavLink>
+                        </li>
+                    )}
+
+                    {userRole === 'profesor' && (
+                        <li>
+                            <NavLink 
+                                to="/solicitudes" 
+                                onClick={() => setMenuOpen(false)} 
+                                className={({ isActive }) => isActive ? 'active' : ''}
+                            >
+                                Ver Solicitudes Revisión/Recuperación
+                            </NavLink>
+                        </li>
+                    )}
+
                     <li>
                         <NavLink 
                             to="/auth" 

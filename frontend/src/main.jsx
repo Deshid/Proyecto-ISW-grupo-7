@@ -1,13 +1,17 @@
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Evaluations from '@pages/Evaluations';
 import Login from '@pages/Login';
 import Home from '@pages/Home';
 import Users from '@pages/Users';
+import Comisiones from '@pages/Comisiones';
 import Register from '@pages/Register';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
+import SolicitudPage from "@pages/SolicitudPage";
+import SolicitudesProfesor from '@pages/SolicitudesProfesor';
 
 const router = createBrowserRouter([
   {
@@ -16,27 +20,60 @@ const router = createBrowserRouter([
     errorElement: <Error404/>,
     children: [
       {
-        path: '/home',
+        path: 'home',
         element: <Home/>
       },
       {
-        path: '/users',
+        path: 'auth',
+        element: <Login/>
+      },
+      {
+        path: 'register',
+        element: <Register/>
+      },
+      {
+        path: 'evaluations',
+        element: (
+        <ProtectedRoute allowedRoles={['profesor']}>
+          <Evaluations />
+        </ProtectedRoute>
+        )
+      },
+      {
+        path: 'users',
         element: (
         <ProtectedRoute allowedRoles={['administrador']}>
           <Users />
         </ProtectedRoute>
-        ),
+        )
     }
+    ,
+    {
+      path: '/comisiones',
+      element: (
+        <ProtectedRoute allowedRoles={['administrador','profesor']}>
+          <Comisiones />
+        </ProtectedRoute>
+      ),
+    },
+    {
+        path: '/solicitud',
+        element: (
+          <ProtectedRoute allowedRoles={['usuario', 'estudiante']}>
+            <SolicitudPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/solicitudes',
+        element: (
+          <ProtectedRoute allowedRoles={['profesor']}>
+            <SolicitudesProfesor />
+          </ProtectedRoute>
+        ),
+      },
     ]
   },
-  {
-    path: '/auth',
-    element: <Login/>
-  },
-  {
-    path: '/register',
-    element: <Register/>
-  }
 ])
 
 ReactDOM.createRoot(document.getElementById('root')).render(
