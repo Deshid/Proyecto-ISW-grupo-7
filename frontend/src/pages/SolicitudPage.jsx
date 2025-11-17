@@ -5,7 +5,7 @@ import '@styles/form.css';
 
 const SolicitudPage = () => {
   const [tipo, setTipo] = useState('revision');
-  const [notasText, setNotasText] = useState('');
+  const [evaluacion, setEvaluacion] = useState('');
   const [modalidad, setModalidad] = useState('presencial');
   const [descripcion, setDescripcion] = useState('');
   const [evidencia, setEvidencia] = useState(null);
@@ -27,26 +27,47 @@ const SolicitudPage = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Validar antes de enviar
+      if (tipo === 'revision') {
+        if (!evaluacion || evaluacion.trim().length === 0) {
+          showErrorAlert('Error', 'Debes indicar la evaluación a revisar');
+          return;
+        }
+      } else if (tipo === 'recuperacion') {
+        if (!descripcion || descripcion.trim().length === 0) {
+          showErrorAlert('Error', 'Debes describir el caso de recuperación');
+          return;
+        }
+        if (!evidencia) {
+          showErrorAlert('Error', 'La recuperación requiere una imagen de evidencia');
+          return;
+        }
+      }
+
       const formData = new FormData();
       formData.append('tipo', tipo);
+      
       if (tipo === 'revision') {
-        // nota= notasText.split(',').map(n => n.trim()).filter(Boolean);
-        formData.append('notas', JSON.stringify(notas));
+        formData.append('descripcion', evaluacion);
         formData.append('modalidad', modalidad);
       } else {
         formData.append('descripcion', descripcion);
         if (evidencia) formData.append('evidencia', evidencia);
       }
 
+      console.log('[SolicitudPage] Enviando FormData:', { tipo, descripcion: (tipo === 'revision' ? evaluacion : descripcion).substring(0, 50), tieneEvidencia: !!evidencia });
+      
       await createSolicitud(formData);
       showSuccessAlert('Solicitud enviada', 'Su solicitud fue enviada correctamente');
+      
       // reset
-      setNotasText('');
+      setEvaluacion('');
       setDescripcion('');
       setEvidencia(null);
       fetchMisSolicitudes();
     } catch (error) {
-      console.error(error);
+      console.error('[SolicitudPage] Error al enviar:', error);
+      console.error('[SolicitudPage] Error response:', error?.response);
       showErrorAlert('Error', error?.response?.data?.message || 'Error al enviar la solicitud');
     }
   };
@@ -66,8 +87,14 @@ const SolicitudPage = () => {
         {tipo === 'revision' && (
           <>
             <label>
-              Notas (ingrese identificadores separados por coma):
-              <input type="text" value={notasText} onChange={(e) => setNotasText(e.target.value)} />
+              Evaluación a revisar (Ej: Evaluación 1, Examen Final, etc.):
+              <input
+                type="text"
+                value={evaluacion}
+                onChange={(e) => setEvaluacion(e.target.value)}
+                placeholder="Ej: Evaluación 1"
+                required
+              />
             </label>
             <label>
               Modalidad:
