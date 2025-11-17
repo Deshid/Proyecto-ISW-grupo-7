@@ -100,7 +100,32 @@ const Navbar = () => {
                             Comisiones
                         </NavLink>
                     </li>
+                    
                     )}
+                    {(userRole === 'usuario' || userRole === 'estudiante') && (
+                        <li>
+                            <NavLink 
+                                to="/solicitud" 
+                                onClick={() => setMenuOpen(false)} 
+                                className={({ isActive }) => isActive ? 'active' : ''}
+                            >
+                                Solicitar Revisión/Recuperación
+                            </NavLink>
+                        </li>
+                    )}
+
+                    {userRole === 'profesor' && (
+                        <li>
+                            <NavLink 
+                                to="/solicitudes" 
+                                onClick={() => setMenuOpen(false)} 
+                                className={({ isActive }) => isActive ? 'active' : ''}
+                            >
+                                Ver Solicitudes Revisión/Recuperación
+                            </NavLink>
+                        </li>
+                    )}
+
                     <li>
                         <NavLink 
                             to="/auth" 

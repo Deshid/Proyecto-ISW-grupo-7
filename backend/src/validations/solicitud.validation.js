@@ -10,9 +10,9 @@ export const createSolicitudValidation = Joi.object({
       "any.required": "El tipo es obligatorio",
     }),
 
-  notas: Joi.array().items(Joi.any()).optional(), 
+  notas: Joi.array().items(Joi.any()).optional(),
   modalidad: Joi.string().valid("presencial", "online").optional(),
-  descripcion: Joi.string().max(1000).allow('').optional(), 
+  descripcion: Joi.string().max(1000).allow('').optional(),
 }).unknown(true); 
 
 export const updateSolicitudValidation = Joi.object({
