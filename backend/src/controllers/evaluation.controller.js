@@ -55,8 +55,21 @@ const updateEvaluation = async (req, res) => {
     }
 };
 
+const getEvaluationById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+        const userRole = req.user.rol; // usar 'rol' que viene de la entidad User
+        const evaluation = await evaluationService.getEvaluationById(id, userId, userRole);
+        res.status(200).json(evaluation);
+    } catch (err) {
+        res.status(err.status || 400).json({ error: err.message });
+    }
+};
+
 export default {
     createEvaluation,
     listEvaluations,
     updateEvaluation,
+    getEvaluationById,
 };
