@@ -32,7 +32,7 @@ const SolicitudesProfesor = () => {
   };
 
   return (
-    <div className="table-container">
+   <div className="table-container" style={{ marginTop: '80px' }}>
       <h2>Solicitudes Revisión/Recuperación</h2>
       {solicitudes && solicitudes.length > 0 ? (
         <table>
