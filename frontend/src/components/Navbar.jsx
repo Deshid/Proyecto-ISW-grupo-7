@@ -12,11 +12,13 @@ const Navbar = () => {
         navigate('/auth');
     };
 
-    const menuItems = [
-        { path: '/home', label: '🏠 Inicio', roles: ['administrador', 'profesor', 'estudiante'] },
+     const menuItems = [
+        { path: '/home', label: '🏠 Inicio', roles: ['administrador', 'profesor', 'estudiante', 'usuario'] },
         { path: '/users', label: '👥 Usuarios', roles: ['administrador'] },
         { path: '/evaluations', label: '📝 Evaluaciones', roles: ['profesor'] },
         { path: '/comisiones', label: '📅 Comisiones', roles: ['administrador', 'profesor'] },
+        { path: '/solicitud', label: '📋 Solicitar Revisión/Recuperación', roles: ['usuario', 'estudiante'] },
+        { path: '/solicitudes', label: '📂 Ver Solicitudes', roles: ['profesor'] },
     ];
 
     return (

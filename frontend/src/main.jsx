@@ -10,6 +10,8 @@ import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
+import SolicitudPage from "@pages/SolicitudPage";
+import SolicitudesProfesor from '@pages/SolicitudesProfesor';
 
 const router = createBrowserRouter([
   {
@@ -53,7 +55,23 @@ const router = createBrowserRouter([
           <Comisiones />
         </ProtectedRoute>
       ),
-    }
+    },
+    {
+        path: '/solicitud',
+        element: (
+          <ProtectedRoute allowedRoles={['usuario', 'estudiante']}>
+            <SolicitudPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/solicitudes',
+        element: (
+          <ProtectedRoute allowedRoles={['profesor']}>
+            <SolicitudesProfesor />
+          </ProtectedRoute>
+        ),
+      },
     ]
   },
 ])
