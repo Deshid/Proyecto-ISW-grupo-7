@@ -11,7 +11,8 @@ getHorariosPorProfesorService,
 } from "../services/comision.service.js";
 import {
   actualizarHorarioValidation,
-  asignarProfesorValidation,
+  asignarEstudiantesAProfesorValidation,
+  asignarProfesorBodyValidation,
   createHorarioValidation,
   idHorarioParamValidation,
   idLugarParamValidation,
@@ -181,16 +182,24 @@ export async function getHorariosPorProfesor(req, res) {
 /* Asignar profesor a un horario */
 export async function asignarProfesorAHorario(req, res) {
   try {
-    // Validar body
-    const { error, value } = asignarProfesorValidation.validate(req.body, {
+    // Validar parámetro
+    const { error: paramError } = idHorarioParamValidation.validate({ id_horario: req.params.id_horario });
+    if (paramError) {
+      return handleErrorClient(res, 400, paramError.details[0].message);
+    }
+
+    // Validar body (solo id_profesor)
+    const { error: bodyError, value } = asignarProfesorBodyValidation.validate(req.body, {
       abortEarly: false,
     });
-    if (error) {
-      const messages = error.details.map((e) => e.message).join(", ");
+    if (bodyError) {
+      const messages = bodyError.details.map((e) => e.message).join(", ");
       return handleErrorClient(res, 400, messages);
     }
 
-    const { id_horario, id_profesor } = value;
+    const id_horario = Number(req.params.id_horario);
+    const { id_profesor } = value;
+    
     const [horarioAsignado, serviceError] = await asignarProfesorAHorarioService(
       id_horario,
       id_profesor
@@ -205,11 +214,25 @@ export async function asignarProfesorAHorario(req, res) {
 /* Asignar estudiantes a un profesor */
 export async function asignarEstudiantesAProfesor(req, res) {
   try {
-    const { id_profesor, listaEstudiantes } = req.body;
-
-    if (!id_profesor || !Array.isArray(listaEstudiantes)) {
-      return handleErrorClient(res, 400, "Parámetros inválidos");
+    // Validar parámetro
+    const { error: paramError } = idProfesorParamValidation.validate({ id_profesor: req.params.id_profesor });
+    if (paramError) {
+      return handleErrorClient(res, 400, paramError.details[0].message);
     }
+
+    // Validar listaEstudiantes
+    const { error: bodyError, value } = asignarEstudiantesAProfesorValidation.validate(req.body, {
+      abortEarly: false,
+    });
+    if (bodyError) {
+      const messages = bodyError.details.map((e) => e.message).join(", ");
+      return handleErrorClient(res, 400, messages);
+    }
+
+    const { listaEstudiantes } = value;
+
+    const id_profesor = Number(req.params.id_profesor);
+    
     const [profesorActualizado, serviceError] = await asignarEstudiantesAProfesorService(
       id_profesor,
       listaEstudiantes

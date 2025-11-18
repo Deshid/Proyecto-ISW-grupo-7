@@ -46,7 +46,10 @@ export async function getHorariosPorLugarService(id_lugar) {
     try {
         const horarioRepository = AppDataSource.getRepository("Horario");
         const horarios = await horarioRepository.find({
-            where: { lugar: { id_lugar: id_lugar } },
+            where: { 
+                lugar: { id_lugar: id_lugar },
+                estado: "activo"
+            },
             relations: ["lugar"],
         });
         return horarios;

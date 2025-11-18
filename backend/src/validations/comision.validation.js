@@ -227,6 +227,24 @@ export const idProfesorParamValidation = Joi.object({
     }),
 });
 
+/* Asignar profesor a horario */
+export const asignarProfesorBodyValidation = Joi.object({
+  id_profesor: Joi.number()
+    .integer()
+    .positive()
+    .required()
+    .messages({
+      "number.base": "El id_profesor debe ser un número.",
+      "number.integer": "El id_profesor debe ser un número entero.",
+      "number.positive": "El id_profesor debe ser un número positivo.",
+      "any.required": "El id_profesor es obligatorio.",
+    }),
+})
+  .unknown(false)
+  .messages({
+    "object.unknown": "No se permiten valores adicionales.",
+  });
+
 /* Asignar estudiantes a profesor */
 export const asignarEstudiantesAProfesorValidation = Joi.object({
   listaEstudiantes: Joi.array()
