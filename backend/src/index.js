@@ -10,6 +10,7 @@ import { cookieKey, HOST, PORT } from "./config/configEnv.js";
 import { connectDB } from "./config/configDb.js";
 import { createLugares, createUsers } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
+import { finalizarHorariosVencidos } from "./services/comision.service.js";
 
 async function setupServer() {
   try {
@@ -81,7 +82,14 @@ async function setupAPI() {
 }
 
 setupAPI()
-  .then(() => console.log("=> API Iniciada exitosamente"))
+  .then(() => {
+    console.log("=> API Iniciada exitosamente");
+    finalizarHorariosVencidos();    
+    // Ejecutar cada minuto para verificar y finalizar horarios
+    setInterval(() => {
+      finalizarHorariosVencidos();
+    }, 60000); // 60000 ms = 1 minuto
+  })
   .catch((error) =>
     console.log("Error en index.js -> setupAPI(), el error es: ", error),
   );

@@ -18,7 +18,9 @@ function PageRoot() {
 return (
     <>
         {shouldShowNavbar && <Navbar />}
-        <Outlet />
+        <div style={{ marginLeft: shouldShowNavbar ? '250px' : '0', minHeight: '100vh' }}>
+            <Outlet />
+        </div>
     </>
 );
 }
