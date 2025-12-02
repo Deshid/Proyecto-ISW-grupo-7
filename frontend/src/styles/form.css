@@ -61,7 +61,7 @@
 	}
 	input {
 		display: flex;
-		border: 3px solid #003366; /*Color del borde de inputs del formulario*/
+		border: 2px solid #003366; 
 		border-radius: 12px;
 		padding: 8px 5px;
 		background-repeat: no-repeat;
@@ -85,7 +85,7 @@
 	}
 	select {
 		display: flex;
-		border: 3px solid #003366; /*Color del borde de selects del formulario*/
+		border: 2px solid #003366; 
 		border-radius: 12px;
 		padding: 8px 5px;
 		background-repeat: no-repeat;
@@ -115,7 +115,7 @@
 	}
 	textarea {
 		display: flex;
-		border: 3px solid #003366; /*Color del borde de textareas del formulario*/
+		border: 2px solid #003366; 
 		border-radius: 12px;
 		padding: 8px 5px;
 		background-repeat: no-repeat;

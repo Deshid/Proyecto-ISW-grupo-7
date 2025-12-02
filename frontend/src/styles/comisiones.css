@@ -1,0 +1,109 @@
+:root {
+  /* Paleta base */
+  --amber-50: #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+  --amber-800: #92400e;
+
+  --stone-50: #fafaf9;
+  --stone-100: #f5f5f4;
+  --stone-200: #e7e5e4;
+  --stone-300: #d6d3d1;
+  --stone-600: #57534e;
+  --stone-700: #44403c;
+  --stone-800: #3f3836;
+
+  --emerald-100: #d1fae5;
+  --emerald-300: #a7f3d0;
+  --emerald-800: #065f46;
+
+  --danger-50: #fee2e2;
+  --danger-700: #b91c1c;
+  --danger-900: #7f1d1d;
+
+  --link: #0066cc;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 6px 16px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 24px rgba(0,0,0,0.12);
+}
+
+/* Header de página */
+.page-header {
+  background: linear-gradient(90deg, var(--amber-800), var(--stone-800));
+  color: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 20px 24px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+.page-header .titulo { font-size: 30px; font-weight: 800; margin: 0; }
+.page-header .subtitulo { font-size: 14px; color: var(--amber-100); margin-top: 4px; }
+/* Icono del título */
+.page-header .page-icon { vertical-align: -6px; margin-right: 8px; font-size: 30px; color: var(--amber-100); }
+
+/* Layout */
+.grid { display: grid; gap: 24px; }
+.grid-1-3 { grid-template-columns: 1fr; }
+@media (min-width: 1024px) { .grid-1-3 { grid-template-columns: 1fr 2fr; } }
+
+/* Cards */
+.card { background: #fff; border-radius: var(--radius-md); box-shadow: var(--shadow-md); padding: 20px; }
+.card-amber { border-left: 4px solid var(--amber-600); }
+.card-stone { border-left: 4px solid var(--stone-600); }
+.edit-card { margin-top: 24px; background: #fffbe6; }
+.assign-card { margin-top: 24px; }
+
+.titulo-seccion { margin: 0 0 10px 0; font-size: 18px; color: var(--stone-800); }
+.info-seleccion { margin-bottom: 10px; font-weight: 700; }
+.info-seleccion .lugar { color: var(--link); }
+.formulario-estrecho { max-width: 500px; }
+
+/* Tabla */
+.tabla { width: 100%; border-collapse: collapse; }
+.tabla thead tr { background: var(--stone-50); border-bottom: 2px solid var(--stone-200); }
+.tabla th { text-align: left; padding: 12px 16px; color: var(--stone-700); font-weight: 700; }
+.tabla td { padding: 12px 16px; color: var(--stone-800); }
+.tabla tbody tr { border-bottom: 1px solid var(--stone-200); }
+.tabla tbody tr:hover { background: var(--amber-50); }
+.tabla-comisiones { margin-top: 12px; }
+.celda-acciones .btn { margin-right: 8px; }
+.celda-acciones .btn:last-child { margin-right: 0; }
+
+/* Botones */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer; transition: background .2s ease, color .2s ease; }
+.btn-primary { background: linear-gradient(90deg, var(--amber-700), var(--amber-800)); color: #fff; box-shadow: var(--shadow-sm); }
+.btn-primary:hover { background: linear-gradient(90deg, var(--amber-800), var(--amber-700)); }
+.btn-outline-amber { color: var(--amber-800); background: transparent; border: 2px solid var(--amber-600); }
+.btn-outline-amber:hover { background: var(--amber-50); color: var(--amber-900); border-color: var(--amber-700); }
+.btn-danger-icon { color: var(--danger-700); background: transparent; }
+.btn-danger-icon:hover { background: var(--danger-50); color: var(--danger-900); }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.btn-spacing { margin-top: 10px; }
+
+/* Etiquetas */
+.etiqueta { display: inline-flex; align-items: center; padding: 6px 10px; border-radius: 999px; font-weight: 700; font-size: 0.875rem; border: 1px solid transparent; }
+.etiqueta-esmeralda { background: var(--emerald-100); color: var(--emerald-800); border-color: var(--emerald-300); }
+.etiqueta-piedra { background: var(--stone-100); color: var(--stone-700); border-color: var(--stone-300); }
+
+/* Inputs */
+.ds-input { width: 100%; padding: 8px 10px; border: 2px solid var(--stone-300); border-radius: 8px; background: #fff; color: var(--stone-800); }
+.ds-input:focus { outline: none; border-color: var(--amber-600); box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15); }
+
+/* Contenedor scroll */
+.scroll-box { max-height: 260px; overflow-y: auto; border: 1px solid var(--stone-200); border-radius: 8px; background: #fff; padding: 10px; }
+
+/* Utilidades */
+.mb-20 { margin-bottom: 20px; }
+.mt-24 { margin-top: 24px; }
+

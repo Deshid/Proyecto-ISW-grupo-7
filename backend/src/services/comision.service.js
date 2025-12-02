@@ -12,13 +12,16 @@ export async function createHorarioService(id_lugar, fecha, horaInicio, horaFin)
             return [null, "Lugar no encontrado"];
         }
         
+        // Convertir fecha a string ISO si viene como Date para evitar problemas de zona horaria
+        const fechaStr = fecha instanceof Date ? fecha.toISOString().split("T")[0] : fecha;
+        
         const horarioRepository = AppDataSource.getRepository("Horario");
         
         // Validar que no exista horario duplicado
         const horarioDuplicado = await horarioRepository.findOne({
             where: {
                 lugar: { id_lugar: id_lugar },
-                fecha: fecha,
+                fecha: fechaStr,
                 horaInicio: horaInicio,
                 horaFin: horaFin,
             },
@@ -30,7 +33,7 @@ export async function createHorarioService(id_lugar, fecha, horaInicio, horaFin)
         
         const nuevoHorario = horarioRepository.create({
             lugar: lugar,
-            fecha: fecha,
+            fecha: fechaStr,
             horaInicio: horaInicio,
             horaFin: horaFin,
         });
@@ -71,7 +74,9 @@ export async function actualizarHorarioService(id_horario, fecha, horaInicio, ho
         if (horario.estado === "finalizado") {
             return [null, "No se puede actualizar un horario finalizado"];
         }
-        horario.fecha = fecha;
+        // Arreglo para evitar problemas de zona horaria
+        const fechaStr = fecha instanceof Date ? fecha.toISOString().split("T")[0] : fecha;
+        horario.fecha = fechaStr;
         horario.horaInicio = horaInicio;
         horario.horaFin = horaFin;
         await horarioRepository.save(horario);
