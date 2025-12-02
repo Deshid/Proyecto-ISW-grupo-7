@@ -2,6 +2,7 @@
   /* Paleta base */
   --amber-50: #fffbeb;
   --amber-100: #fef3c7;
+  --amber-200: #f1e7d4;
   --amber-600: #d97706;
   --amber-700: #b45309;
   --amber-800: #92400e;
@@ -18,7 +19,7 @@
   --emerald-300: #a7f3d0;
   --emerald-800: #065f46;
 
-  --danger-50: #fee2e2;
+  --danger-50: #ffe5e5;
   --danger-700: #b91c1c;
   --danger-900: #7f1d1d;
 
@@ -31,6 +32,12 @@
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
   --shadow-md: 0 6px 16px rgba(0,0,0,0.08);
   --shadow-lg: 0 12px 24px rgba(0,0,0,0.12);
+}
+
+/* Contenedor principal de comisiones */
+.comisiones {
+  padding-left: 24px;
+  padding-right: 24px;
 }
 
 /* Header de página */
@@ -64,7 +71,18 @@
 .edit-card { margin-top: 24px; background: #fffbe6; }
 .assign-card { margin-top: 24px; }
 
-.titulo-seccion { margin: 0 0 10px 0; font-size: 18px; color: var(--stone-800); }
+.titulo-seccion { 
+  margin: 0 0 10px 0; 
+  font-size: 18px; 
+  color: var(--stone-800);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.titulo-seccion .material-symbols-outlined {
+  font-size: 20px;
+  color: var(--amber-700);
+}
 .info-seleccion { margin-bottom: 10px; font-weight: 700; }
 .info-seleccion .lugar { color: var(--link); }
 .formulario-estrecho { max-width: 500px; }
@@ -82,10 +100,10 @@
 
 /* Botones */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer; transition: background .2s ease, color .2s ease; }
-.btn-primary { background: linear-gradient(90deg, var(--amber-700), var(--amber-800)); color: #fff; box-shadow: var(--shadow-sm); }
-.btn-primary:hover { background: linear-gradient(90deg, var(--amber-800), var(--amber-700)); }
+.btn-primary { color: var(--amber-800); background: transparent; }
+.btn-primary:hover { background: linear-gradient(90deg, var(--amber-200)); }
 .btn-outline-amber { color: var(--amber-800); background: transparent; border: 2px solid var(--amber-600); }
-.btn-outline-amber:hover { background: var(--amber-50); color: var(--amber-900); border-color: var(--amber-700); }
+.btn-outline-amber:hover { background: var(--amber-200); color: var(--amber-800); border-color: var(--amber-700); }
 .btn-danger-icon { color: var(--danger-700); background: transparent; }
 .btn-danger-icon:hover { background: var(--danger-50); color: var(--danger-900); }
 .btn:disabled { opacity: .55; cursor: not-allowed; }
@@ -106,4 +124,38 @@
 /* Utilidades */
 .mb-20 { margin-bottom: 20px; }
 .mt-24 { margin-top: 24px; }
+
+/* Tabs */
+.tabs-container { background: #fff; border-radius: var(--radius-md); box-shadow: var(--shadow-md); margin-bottom: 24px; border-top: 4px solid var(--amber-600); }
+.tabs-nav { display: flex; border-bottom: 1px solid var(--stone-200); }
+.tab-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 24px; border: none; background: transparent; color: var(--stone-600); font-weight: 600; cursor: pointer; transition: all .2s ease; border-bottom: 2px solid transparent; }
+.tab-btn:hover { color: var(--amber-800); background: var(--stone-50); }
+.tab-btn.activa { color: var(--amber-800); background: var(--amber-50); border-bottom-color: var(--amber-600); }
+.tab-btn .tab-icon { font-size: 20px; }
+
+/* Form en Comisiones */
+.card .form {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+}
+
+.card .form h1 {
+  margin-bottom: 16px;
+}
+
+/* Form en Modales - contenedor de form invisible */
+.modal-form-wrapper .form {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+}
+
+.modal-form-wrapper .form h1 {
+  display: none;
+}
 

@@ -236,25 +236,25 @@ async function createLugares() {
       lugarRepository.save(
         lugarRepository.create({
           id_lugar: 1,
-          nombre: "Sala de Reuniones A",
-          descripcion: "Sala equipada con proyector y pizarra blanca.",
-          ubicacion: "Piso 2, Edificio Central",
+          nombre: "Sala A",
+          descripcion: "Descripción de la Sala A.",
+          ubicacion: "Piso 1",
         })
       ),
       lugarRepository.save(
         lugarRepository.create({
           id_lugar: 2,
-          nombre: "Auditorio Principal",
-          descripcion: "Auditorio con capacidad para 200 personas.",
-          ubicacion: "Piso 1, Edificio de Conferencias",
+          nombre: "Sala B",
+          descripcion: "Descripción de la Sala B.",
+          ubicacion: "Piso 2",
         })
       ),
       lugarRepository.save(
         lugarRepository.create({
           id_lugar: 3,
-          nombre: "Sala B",
-          descripcion: "Espacio para reuniones pequeñas.",
-          ubicacion: "Piso 3, Edificio Central",
+          nombre: "Sala C",
+          descripcion: "Descripción de la Sala C.",
+          ubicacion: "Piso 3",
         })
       ),
     ]);

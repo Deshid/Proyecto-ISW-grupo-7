@@ -1,4 +1,5 @@
 import Form from '@components/Form';
+import Modal from '@components/Modal';
 import '@styles/comisiones.css';
 import { createHorario, getLugares, getHorariosPorLugar, asignarProfesorAHorario, asignarEstudiantesAProfesor, getProfesores, getEstudiantes, actualizarHorario, eliminarHorario } from '@services/comision.service.js';
 import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert.js';
@@ -45,7 +46,7 @@ const Comisiones = () => {
   const lugarActual = lugares.find((l) => l.id_lugar === Number(lugarSeleccionado));
 
   return (
-    <div>
+    <div className="comisiones">
       <div className="page-header">
         <h1 className="titulo"><span className="material-symbols-outlined page-icon">balance</span> Gestión de Comisiones</h1>
         <p className="subtitulo">Administración de horarios, profesores y estudiantes</p>
@@ -57,7 +58,10 @@ const Comisiones = () => {
         {/* Columna Izquierda */}
         <div>
           <section className="card card-amber">
-            <h2 className="titulo-seccion">Crear Horario</h2>
+            <h2 className="titulo-seccion">
+              <span className="material-symbols-outlined page-icon">schedule</span> 
+              Programar evaluación
+            </h2>
             <div>
                 <Form
               title=""
@@ -65,7 +69,7 @@ const Comisiones = () => {
             fields={[
               {
                 name: 'id_lugar',
-                label: 'Lugar',
+                label: 'Lugar de evaluación',
                 fieldType: 'select',
                 required: true,
                 options: lugares.map((lugar) => ({
@@ -123,7 +127,10 @@ const Comisiones = () => {
         {/* Columna Derecha - Ver horarios por lugar */}
         <div>
           <section className="card card-stone">
-        <h2 className="titulo-seccion">Ver horarios por lugar</h2>
+        <h2 className="titulo-seccion">
+          <span className="material-symbols-outlined page-icon">event_available</span>
+          Evaluaciones programadas 
+        </h2>
         <div className="mb-20">
           <label htmlFor="selectLugar">Selecciona un lugar</label>
           <select
@@ -174,7 +181,7 @@ const Comisiones = () => {
                       className="btn btn-primary"
                       onClick={() => setHorarioEditando(horario)}
                     >
-                      Editar
+                      <span className="material-symbols-outlined">edit</span>
                     </button>
                     <button
                       className="btn btn-danger-icon"
@@ -191,7 +198,7 @@ const Comisiones = () => {
                         }
                       }}
                     >
-                      Eliminar
+                      <span className="material-symbols-outlined">delete</span>
                     </button>
                   </td>
                 </tr>
@@ -297,127 +304,56 @@ const Comisiones = () => {
         </div>
       </div>
 
-      {horarioEditando && (
-        <section className="card edit-card">
-          <h2>Editar horario</h2>
-          <p className="mb-20">
-            <strong>Horario actual:</strong> {horarioEditando.fecha} de {horarioEditando.horaInicio} a {horarioEditando.horaFin}
-          </p>
-          <div className="formulario-estrecho">
-            <Form
-              title="Modificar horario"
-              buttonText="Actualizar"
-              fields={[
-                {
-                  name: 'fecha',
-                  label: 'Fecha',
-                  placeholder: 'DD-MM-YYYY',
-                  required: true,
-                  type: 'date',
-                  fieldType: 'input',
-                  defaultValue: horarioEditando.fecha,
-                },
-                {
-                  name: 'horaInicio',
-                  label: 'Hora inicio',
-                  placeholder: 'HH:MM',
-                  required: true,
-                  type: 'time',
-                  fieldType: 'input',
-                  defaultValue: horarioEditando.horaInicio?.substring(0, 5) || horarioEditando.horaInicio,
-                },
-                {
-                  name: 'horaFin',
-                  label: 'Hora fin',
-                  placeholder: 'HH:MM',
-                  required: true,
-                  type: 'time',
-                  fieldType: 'input',
-                  defaultValue: horarioEditando.horaFin?.substring(0, 5) || horarioEditando.horaFin,
-                },
-              ]}
-              onSubmit={async (formData) => {
-                const payload = {
-                  fecha: formData.fecha,
-                  horaInicio: formData.horaInicio,
-                  horaFin: formData.horaFin,
-                };
-                const res = await actualizarHorario(horarioEditando.id_horario, payload);
-                if (res && res.status && res.status.toLowerCase() === 'success') {
-                  showSuccessAlert('Horario actualizado', res.message || 'Actualización exitosa');
-                  setHorarioEditando(null);
-                  if (lugarSeleccionado) {
-                    const data = await getHorariosPorLugar(lugarSeleccionado);
-                    setHorarios(data);
-                  }
-                } else {
-                  showErrorAlert('Error', res.message || 'No se pudo actualizar el horario');
-                }
-              }}
-            />
-            <button 
-              className="btn btn-outline-amber btn-spacing"
-              onClick={() => setHorarioEditando(null)}
-            >
-              Cancelar
-            </button>
-          </div>
-        </section>
-      )}
+      <Modal
+        open={Boolean(horarioEditando)}
+        type="edit"
+        title="Editar horario"
+        horario={horarioEditando}
+        onClose={() => setHorarioEditando(null)}
+        onSubmit={async (formData) => {
+          const payload = {
+            fecha: formData.fecha,
+            horaInicio: formData.horaInicio,
+            horaFin: formData.horaFin,
+          };
+          const res = await actualizarHorario(horarioEditando.id_horario, payload);
+          if (res && res.status && res.status.toLowerCase() === 'success') {
+            showSuccessAlert('Horario actualizado', res.message || 'Actualización exitosa');
+            setHorarioEditando(null);
+            if (lugarSeleccionado) {
+              const data = await getHorariosPorLugar(lugarSeleccionado);
+              setHorarios(data);
+            }
+          } else {
+            showErrorAlert('Error', res.message || 'No se pudo actualizar el horario');
+          }
+        }}
+      />
 
-      {horarioSeleccionado && (
-        <section className="card assign-card">
-          <h2>Asignar profesor a horario</h2>
-          {(() => {
-            const horario = horarios.find(h => h.id_horario === horarioSeleccionado);
-            return horario ? (
-              <p className="mb-20">
-                <strong>Horario seleccionado:</strong> {horario.fecha} de {horario.horaInicio} a {horario.horaFin}
-              </p>
-            ) : null;
-          })()}
-          <div className="formulario-estrecho">
-            <Form
-              title="Seleccionar profesor"
-              buttonText="Asignar"
-              fields={[
-                {
-                  name: 'id_profesor',
-                  label: 'Profesor',
-                  fieldType: 'select',
-                  required: true,
-                  options: profesores.map((prof) => ({
-                    label: prof.nombreCompleto,
-                    value: prof.id,
-                  })),
-                },
-              ]}
-              onSubmit={async (formData) => {
-                const res = await asignarProfesorAHorario(
-                  horarioSeleccionado,
-                  Number(formData.id_profesor)
-                );
-                if (res && res.status && res.status.toLowerCase() === 'success') {
-                  showSuccessAlert('Profesor asignado', res.message || 'Asignación exitosa');
-                  setHorarioSeleccionado('');
-                  if (lugarSeleccionado) {
-                    const data = await getHorariosPorLugar(lugarSeleccionado);
-                    setHorarios(data);
-                  }
-                } else {
-                  showErrorAlert('Error', res.message || 'No se pudo asignar el profesor');
-                }
-              }}
-            />
-            <button 
-              className="btn btn-outline-amber btn-spacing"
-              onClick={() => setHorarioSeleccionado('')}
-            >
-              Cancelar
-            </button>
-          </div>
-        </section>
-      )}
+      <Modal
+        open={Boolean(horarioSeleccionado)}
+        type="assign"
+        title="Asignar profesor a horario"  
+        horario={horarios.find(h => h.id_horario === horarioSeleccionado)}
+        profesores={profesores}
+        onClose={() => setHorarioSeleccionado('')}
+        onSubmit={async (formData) => {
+          const res = await asignarProfesorAHorario(
+            horarioSeleccionado,
+            Number(formData.id_profesor)
+          );
+          if (res && res.status && res.status.toLowerCase() === 'success') {
+            showSuccessAlert('Profesor asignado', res.message || 'Asignación exitosa');
+            setHorarioSeleccionado('');
+            if (lugarSeleccionado) {
+              const data = await getHorariosPorLugar(lugarSeleccionado);
+              setHorarios(data);
+            }
+          } else {
+            showErrorAlert('Error', res.message || 'No se pudo asignar el profesor');
+          }
+        }}
+      />
     </div>
   );
 };
