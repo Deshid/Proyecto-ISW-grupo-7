@@ -11,6 +11,7 @@ import { connectDB } from "./config/configDb.js";
 import { createLugares, createUsers } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
 import { finalizarHorariosVencidos } from "./services/comision.service.js";
+import path from "path";
 
 async function setupServer() {
   try {
@@ -61,6 +62,8 @@ async function setupServer() {
     passportJwtSetup();
 
     app.use("/api", indexRoutes);
+    
+    app.use("/uploads", express.static(path.resolve("uploads")));
 
     app.listen(PORT, () => {
       console.log(`=> Servidor corriendo en ${HOST}:${PORT}/api`);

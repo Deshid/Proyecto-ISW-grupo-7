@@ -17,7 +17,7 @@ export const createSolicitudValidation = Joi.object({
 
 export const updateSolicitudValidation = Joi.object({
   estado: Joi.string().valid("pendiente", "aprobada", "rechazada").required(),
-  justificacionProfesor: Joi.string().max(1000).optional(),
+  justificacionProfesor: Joi.string().max(1000).optional().empty(""),
 }).unknown(false).messages({
   "object.unknown": "No se permiten propiedades adicionales al actualizar",
 });
