@@ -1,0 +1,105 @@
+/* === CONTENEDOR === */
+.solicitudes-profesor {
+  background: #f0f7ff;
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid #c9ddf5;
+  box-shadow: 0 4px 12px rgba(0, 52, 126, 0.15);
+}
+
+/* === TÍTULO === */
+.titulo-profesor {
+  color: #0d2b5b;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 26px;
+}
+
+/* === TABLA === */
+.solicitudes-profesor table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.solicitudes-profesor thead {
+  background: #0d2b5b;       /* azul oscuro */
+  color: white;
+}
+
+.solicitudes-profesor th,
+.solicitudes-profesor td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #d7e5f6;
+  font-size: 15px;
+}
+
+.solicitudes-profesor tbody tr:hover {
+  background-color: #e8f2ff; /* celeste suave */
+  transition: 0.2s;
+}
+
+/* === BOTONES === */
+.btn-azul {
+  background: #1673ff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  margin-right: 8px;
+  font-weight: 600;
+}
+
+.btn-azul:hover {
+  background: #0d5edb;
+}
+
+.btn-rojo {
+  background: #e63946;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-rojo:hover {
+  background: #c72533;
+}
+
+/* === LINKS === */
+.solicitudes-profesor a {
+  color: #0d5edb;
+  font-weight: 600;
+}
+
+.filtros-container {
+  margin-bottom: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.filtros-container button {
+  padding: 8px 14px;
+  border: 1px solid #0d5edb;
+  background: white;
+  color: #0d5edb;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.filtros-container button:hover {
+  background: #e0edff;
+}
+
+.filtro-activo {
+  background: #0d5edb !important;
+  color: white !important;
+}

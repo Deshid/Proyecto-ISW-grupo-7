@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { getSolicitudesProfesor, updateSolicitudEstado } from '@services/solicitud.service.js';
 import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert.js';
-import '@styles/table.css';
+import '@styles/SolicitudesProfesor.css';
 
 const SolicitudesProfesor = () => {
   const [solicitudes, setSolicitudes] = useState([]);
+  const [filtro, setFiltro] = useState("todos");
+
 
   useEffect(() => {
     fetchSolicitudes();
@@ -31,9 +33,30 @@ const SolicitudesProfesor = () => {
     }
   };
 
+  const solicitudesFiltradas = solicitudes.filter(s => {
+  if (filtro === "todos") return true;
+  return s.tipo?.toLowerCase() === filtro;
+  });
+
+
   return (
-   <div className="table-container" style={{ marginTop: '80px' }}>
-      <h2>Solicitudes Revisión/Recuperación</h2>
+   <div className="table-container solicitudes-profesor" style={{ marginTop: '30px' }}>
+      <h2 className="titulo-profesor">Solicitudes Revisión/Recuperación</h2>
+
+      <div className="filtros-container">
+        <button className={filtro === "todos" ? "filtro-activo" : ""} onClick={() => setFiltro("todos")}>
+        Todos
+        </button>
+
+        <button className={filtro === "revision" ? "filtro-activo" : ""} onClick={() => setFiltro("revision")}>
+         Revisión
+        </button>
+
+        <button className={filtro === "recuperacion" ? "filtro-activo" : ""} onClick={() => setFiltro("recuperacion")}>
+        Recuperación
+        </button>
+      </div>
+
       {solicitudes && solicitudes.length > 0 ? (
         <table>
           <thead>
@@ -49,10 +72,10 @@ const SolicitudesProfesor = () => {
             </tr>
           </thead>
           <tbody>
-            {solicitudes.map(s => (
+            {solicitudesFiltradas.map(s => (
               <tr key={s.id}>
                 <td>{s.id}</td>
-                <td>{s.alumno?.nombre || s.alumno?.email}</td>
+                <td>{s.alumno?.nombreCompleto || s.alumno?.email}</td>
                 <td>{s.tipo}</td>
                 <td>{s.notas ? s.notas.join(', ') : '-'}</td>
                 <td>{s.descripcion || '-'}</td>
@@ -61,8 +84,9 @@ const SolicitudesProfesor = () => {
                 <td>
                   {s.estado === 'pendiente' && (
                     <>
-                      <button onClick={() => decide(s.id, 'aprobada')}>Aprobar</button>
-                      <button onClick={() => decide(s.id, 'rechazada')}>Rechazar</button>
+                      <button className="btn-azul" onClick={() => decide(s.id, 'aprobada')}>Aprobar</button>
+                      <button className="btn-rojo" onClick={() => decide(s.id, 'rechazada')}>Rechazar</button>
+
                     </>
                   )}
                 </td>
