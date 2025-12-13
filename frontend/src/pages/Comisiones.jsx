@@ -1,5 +1,6 @@
 import Form from '@components/Form';
-import '@styles/users.css';
+import Modal from '@components/Modal';
+import '@styles/comisiones.css';
 import { createHorario, getLugares, getHorariosPorLugar, asignarProfesorAHorario, asignarEstudiantesAProfesor, getProfesores, getEstudiantes, actualizarHorario, eliminarHorario } from '@services/comision.service.js';
 import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert.js';
 import { useEffect, useState } from 'react';
@@ -45,23 +46,30 @@ const Comisiones = () => {
   const lugarActual = lugares.find((l) => l.id_lugar === Number(lugarSeleccionado));
 
   return (
-    <div className="page-container" style={{ padding: '40px 20px 20px 20px', maxWidth: '1400px', margin: '0 auto' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '40px' }}>Gestión de Comisiones</h1>
-      
+    <div className="comisiones">
+      <div className="page-header">
+        <h1 className="titulo"><span className="material-symbols-outlined page-icon">balance</span> Gestión de Comisiones</h1>
+        <p className="subtitulo">Administración de horarios, profesores y estudiantes</p>
+      </div>
+
       {/* Dos columnas */}
-      <div style={{ display: 'flex', gap: '30px', marginBottom: '40px', alignItems: 'flex-start' }}>
+      <div className="grid grid-1-3">
         
         {/* Columna Izquierda */}
-        <div style={{ flex: '0 0 350px', maxWidth: '350px' }}>
-          <section style={{ padding: '20px', border: '1px solid #ccc', borderRadius: '8px', backgroundColor: '#f9f9f9' }}>
-            <h2 style={{ marginTop: 0 }}>Crear Horario</h2>
-            <Form
-            title=""
-            buttonText="Crear"
+        <div>
+          <section className="card card-amber">
+            <h2 className="titulo-seccion">
+              <span className="material-symbols-outlined page-icon">schedule</span> 
+              Programar evaluación
+            </h2>
+            <div>
+                <Form
+              title=""
+              buttonText="Crear"
             fields={[
               {
                 name: 'id_lugar',
-                label: 'Lugar',
+                label: 'Lugar de evaluación',
                 fieldType: 'select',
                 required: true,
                 options: lugares.map((lugar) => ({
@@ -112,20 +120,24 @@ const Comisiones = () => {
               }
             }}
             />
+            </div>
           </section>
         </div>
 
         {/* Columna Derecha - Ver horarios por lugar */}
-        <div style={{ flex: '1', minWidth: '500px' }}>
-          <section style={{ padding: '20px', border: '1px solid #ccc', borderRadius: '8px', backgroundColor: '#fff' }}>
-        <h2 style={{ marginTop: 0 }}>Ver horarios por lugar</h2>
-        <div style={{ marginBottom: '20px' }}>
-          <label htmlFor="selectLugar">Selecciona un lugar: </label>
+        <div>
+          <section className="card card-stone">
+        <h2 className="titulo-seccion">
+          <span className="material-symbols-outlined page-icon">event_available</span>
+          Evaluaciones programadas 
+        </h2>
+        <div className="mb-20">
+          <label htmlFor="selectLugar">Selecciona un lugar</label>
           <select
             id="selectLugar"
+            className="ds-input"
             value={lugarSeleccionado}
             onChange={(e) => handleLugarChange(e.target.value)}
-            style={{ padding: '8px', marginLeft: '10px' }}
           >
             <option value="">-- Selecciona un lugar --</option>
             {lugares.map((lugar) => (
@@ -137,49 +149,42 @@ const Comisiones = () => {
         </div>
 
         {lugarSeleccionado && (
-          <p style={{ marginBottom: '10px', fontWeight: 'bold' }}>
-            Horarios de: <span style={{ color: '#0066cc' }}>{lugarActual?.nombre || '—'}</span>
+          <p className="info-seleccion">
+            Horarios de: <span className="lugar">{lugarActual?.nombre || '—'}</span>
           </p>
         )}
 
         {horarios && horarios.length > 0 ? (
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
+          <table className="tabla tabla-comisiones">
             <thead>
-              <tr style={{ backgroundColor: '#f0f0f0', borderBottom: '2px solid #ccc' }}>
-                <th style={{ padding: '10px', textAlign: 'left' }}>Fecha</th>
-                <th style={{ padding: '10px', textAlign: 'left' }}>Hora Inicio</th>
-                <th style={{ padding: '10px', textAlign: 'left' }}>Hora Fin</th>
-                <th style={{ padding: '10px', textAlign: 'left' }}>Acciones</th>
+              <tr>
+                <th>Fecha</th>
+                <th>Hora Inicio</th>
+                <th>Hora Fin</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {horarios.map((horario) => (
-                <tr key={horario.id_horario} style={{ borderBottom: '1px solid #ddd' }}>
-                  <td style={{ padding: '10px' }}>{horario.fecha}</td>
-                  <td style={{ padding: '10px' }}>{horario.horaInicio}</td>
-                  <td style={{ padding: '10px' }}>{horario.horaFin}</td>
-                  <td style={{ padding: '10px' }}>
+                <tr key={horario.id_horario}>
+                  <td>{horario.fecha}</td>
+                  <td>{horario.horaInicio}</td>
+                  <td>{horario.horaFin}</td>
+                  <td className="celda-acciones">
                     <button 
-                      style={{ marginRight: '5px', cursor: 'pointer', padding: '5px 10px' }}
+                      className="btn btn-outline-amber"
                       onClick={() => setHorarioSeleccionado(horario.id_horario)}
                     >
                       Asignar Profesor
                     </button>
                     <button 
-                      style={{ marginRight: '5px', cursor: 'pointer', padding: '5px 10px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px' }}
+                      className="btn btn-primary"
                       onClick={() => setHorarioEditando(horario)}
                     >
-                      Editar
+                      <span className="material-symbols-outlined">edit</span>
                     </button>
                     <button
-                      style={{
-                        cursor: 'pointer',
-                        backgroundColor: '#ff6b6b',
-                        color: 'white',
-                        border: 'none',
-                        padding: '5px 10px',
-                        borderRadius: '4px',
-                      }}
+                      className="btn btn-danger-icon"
                       onClick={async () => {
                         if (window.confirm('¿Estás seguro de eliminar este horario?')) {
                           const res = await eliminarHorario(horario.id_horario);
@@ -193,7 +198,7 @@ const Comisiones = () => {
                         }
                       }}
                     >
-                      Eliminar
+                      <span className="material-symbols-outlined">delete</span>
                     </button>
                   </td>
                 </tr>
@@ -210,18 +215,18 @@ const Comisiones = () => {
           </section>
 
           {/* Asignar estudiantes a profesor */}
-          <section style={{ marginTop: '30px', padding: '20px', border: '1px solid #ccc', borderRadius: '8px', backgroundColor: '#e8f5e9' }}>
-            <h2 style={{ marginTop: 0 }}>Asignar estudiantes a profesor</h2>
+          <section className="card card-amber assign-card">
+            <h2 className="titulo-seccion">Asignar estudiantes a profesor</h2>
             <div>
-              <div style={{ marginBottom: '20px' }}>
+              <div className="mb-20">
                 <label htmlFor="selectProfesor" style={{ fontWeight: 'bold', marginBottom: '8px', display: 'block' }}>
                   Selecciona un profesor:
                 </label>
                 <select
                   id="selectProfesor"
+                  className="ds-input"
                   value={estudiantesSeleccionados.profesorId || ''}
                   onChange={(e) => setEstudiantesSeleccionados({ profesorId: e.target.value, estudiantes: [] })}
-                  style={{ padding: '8px', width: '100%', marginTop: '5px' }}
                 >
                   <option value="">-- Selecciona un profesor --</option>
                   {profesores.map((prof) => (
@@ -234,9 +239,9 @@ const Comisiones = () => {
 
               {estudiantesSeleccionados.profesorId && (
                 <>
-                  <div style={{ marginBottom: '20px' }}>
-                    <p style={{ fontWeight: 'bold', marginBottom: '10px' }}>Selecciona estudiantes:</p>
-                    <div style={{ maxHeight: '250px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px', borderRadius: '4px', backgroundColor: 'white' }}>
+                  <div className="mb-20">
+                    <p className="selection-info" style={{ marginBottom: '10px' }}>Selecciona estudiantes:</p>
+                    <div className="scroll-box">
                       {estudiantes.map((est) => (
                         <label key={est.id} style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
                           <input
@@ -264,6 +269,7 @@ const Comisiones = () => {
                   </div>
 
                   <button
+                    className="btn btn-primary btn-spacing"
                     onClick={async () => {
                       if (estudiantesSeleccionados.estudiantes.length === 0) {
                         showErrorAlert('Error', 'Debes seleccionar al menos un estudiante');
@@ -281,28 +287,13 @@ const Comisiones = () => {
                         showErrorAlert('Error', res.message || 'No se pudo asignar los estudiantes');
                       }
                     }}
-                    style={{
-                      padding: '10px 20px',
-                      backgroundColor: '#4CAF50',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      marginRight: '10px'
-                    }}
                   >
                     Asignar Estudiantes ({estudiantesSeleccionados.estudiantes.length})
                   </button>
 
                   <button
+                    className="btn btn-outline-amber"
                     onClick={() => setEstudiantesSeleccionados({ profesorId: '', estudiantes: [] })}
-                    style={{
-                      padding: '10px 20px',
-                      backgroundColor: '#ccc',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer'
-                    }}
                   >
                     Cancelar
                   </button>
@@ -313,127 +304,56 @@ const Comisiones = () => {
         </div>
       </div>
 
-      {horarioEditando && (
-        <section style={{ marginTop: '40px', padding: '20px', border: '1px solid #ccc', borderRadius: '8px', backgroundColor: '#fff3cd' }}>
-          <h2>Editar horario</h2>
-          <p style={{ marginBottom: '20px' }}>
-            <strong>Horario actual:</strong> {horarioEditando.fecha} de {horarioEditando.horaInicio} a {horarioEditando.horaFin}
-          </p>
-          <div style={{ maxWidth: '500px' }}>
-            <Form
-              title="Modificar horario"
-              buttonText="Actualizar"
-              fields={[
-                {
-                  name: 'fecha',
-                  label: 'Fecha',
-                  placeholder: 'DD-MM-YYYY',
-                  required: true,
-                  type: 'date',
-                  fieldType: 'input',
-                  defaultValue: horarioEditando.fecha,
-                },
-                {
-                  name: 'horaInicio',
-                  label: 'Hora inicio',
-                  placeholder: 'HH:MM',
-                  required: true,
-                  type: 'time',
-                  fieldType: 'input',
-                  defaultValue: horarioEditando.horaInicio,
-                },
-                {
-                  name: 'horaFin',
-                  label: 'Hora fin',
-                  placeholder: 'HH:MM',
-                  required: true,
-                  type: 'time',
-                  fieldType: 'input',
-                  defaultValue: horarioEditando.horaFin,
-                },
-              ]}
-              onSubmit={async (formData) => {
-                const payload = {
-                  fecha: formData.fecha,
-                  horaInicio: formData.horaInicio,
-                  horaFin: formData.horaFin,
-                };
-                const res = await actualizarHorario(horarioEditando.id_horario, payload);
-                if (res && res.status && res.status.toLowerCase() === 'success') {
-                  showSuccessAlert('Horario actualizado', res.message || 'Actualización exitosa');
-                  setHorarioEditando(null);
-                  if (lugarSeleccionado) {
-                    const data = await getHorariosPorLugar(lugarSeleccionado);
-                    setHorarios(data);
-                  }
-                } else {
-                  showErrorAlert('Error', res.message || 'No se pudo actualizar el horario');
-                }
-              }}
-            />
-            <button 
-              onClick={() => setHorarioEditando(null)}
-              style={{ marginTop: '10px', padding: '8px 16px', cursor: 'pointer' }}
-            >
-              Cancelar
-            </button>
-          </div>
-        </section>
-      )}
+      <Modal
+        open={Boolean(horarioEditando)}
+        type="edit"
+        title="Editar horario"
+        horario={horarioEditando}
+        onClose={() => setHorarioEditando(null)}
+        onSubmit={async (formData) => {
+          const payload = {
+            fecha: formData.fecha,
+            horaInicio: formData.horaInicio,
+            horaFin: formData.horaFin,
+          };
+          const res = await actualizarHorario(horarioEditando.id_horario, payload);
+          if (res && res.status && res.status.toLowerCase() === 'success') {
+            showSuccessAlert('Horario actualizado', res.message || 'Actualización exitosa');
+            setHorarioEditando(null);
+            if (lugarSeleccionado) {
+              const data = await getHorariosPorLugar(lugarSeleccionado);
+              setHorarios(data);
+            }
+          } else {
+            showErrorAlert('Error', res.message || 'No se pudo actualizar el horario');
+          }
+        }}
+      />
 
-      {horarioSeleccionado && (
-        <section style={{ marginTop: '40px', padding: '20px', border: '1px solid #ccc', borderRadius: '8px', backgroundColor: '#f9f9f9' }}>
-          <h2>Asignar profesor a horario</h2>
-          {(() => {
-            const horario = horarios.find(h => h.id_horario === horarioSeleccionado);
-            return horario ? (
-              <p style={{ marginBottom: '20px' }}>
-                <strong>Horario seleccionado:</strong> {horario.fecha} de {horario.horaInicio} a {horario.horaFin}
-              </p>
-            ) : null;
-          })()}
-          <div style={{ maxWidth: '500px' }}>
-            <Form
-              title="Seleccionar profesor"
-              buttonText="Asignar"
-              fields={[
-                {
-                  name: 'id_profesor',
-                  label: 'Profesor',
-                  fieldType: 'select',
-                  required: true,
-                  options: profesores.map((prof) => ({
-                    label: prof.nombreCompleto,
-                    value: prof.id,
-                  })),
-                },
-              ]}
-              onSubmit={async (formData) => {
-                const res = await asignarProfesorAHorario(
-                  horarioSeleccionado,
-                  Number(formData.id_profesor)
-                );
-                if (res && res.status && res.status.toLowerCase() === 'success') {
-                  showSuccessAlert('Profesor asignado', res.message || 'Asignación exitosa');
-                  setHorarioSeleccionado('');
-                  if (lugarSeleccionado) {
-                    const data = await getHorariosPorLugar(lugarSeleccionado);
-                    setHorarios(data);
-                  }
-                } else {
-                  showErrorAlert('Error', res.message || 'No se pudo asignar el profesor');
-                }
-              }}
-            />
-            <button 
-              onClick={() => setHorarioSeleccionado('')}
-              style={{ marginTop: '10px', padding: '8px 16px', cursor: 'pointer' }}
-            >
-              Cancelar
-            </button>
-          </div>
-        </section>
-      )}
+      <Modal
+        open={Boolean(horarioSeleccionado)}
+        type="assign"
+        title="Asignar profesor a horario"  
+        horario={horarios.find(h => h.id_horario === horarioSeleccionado)}
+        profesores={profesores}
+        onClose={() => setHorarioSeleccionado('')}
+        onSubmit={async (formData) => {
+          const res = await asignarProfesorAHorario(
+            horarioSeleccionado,
+            Number(formData.id_profesor)
+          );
+          if (res && res.status && res.status.toLowerCase() === 'success') {
+            showSuccessAlert('Profesor asignado', res.message || 'Asignación exitosa');
+            setHorarioSeleccionado('');
+            if (lugarSeleccionado) {
+              const data = await getHorariosPorLugar(lugarSeleccionado);
+              setHorarios(data);
+            }
+          } else {
+            showErrorAlert('Error', res.message || 'No se pudo asignar el profesor');
+          }
+        }}
+      />
     </div>
   );
 };
