@@ -1,22 +1,41 @@
+:root {
+  --form-amber-50: #fffbeb;
+  --form-amber-100: #fef3c7;
+  --form-amber-600: #d97706;
+  --form-amber-700: #b45309;
+  --form-amber-800: #92400e;
+  --form-stone-50: #fafaf9;
+  --form-stone-100: #f5f5f4;
+  --form-stone-200: #e7e5e4;
+  --form-stone-300: #d6d3d1;
+  --form-stone-600: #57534e;
+  --form-stone-700: #44403c;
+  --form-stone-800: #3f3836;
+  --form-danger: #dc2626;
+  --form-radius: 10px;
+  --form-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
 @media (max-width: 480px) {
     .form {
-        padding-left: 2px;
-		padding-right: 2px;
+        padding: 20px 16px;
         width: 90%;
     }
 
     .form h1 {
-        font-size: 24px;
-        margin-bottom: 2vh;
+        font-size: 22px;
+        margin-bottom: 16px;
     }
 
-    .form input, .form select {
-        padding: 10px;
+    .form input, 
+    .form select,
+    .form textarea {
+        padding: 10px 12px;
         font-size: 14px;
     }
 
     .form button {
-        padding: 10px;
+        padding: 12px;
         font-size: 16px;
     }
 
@@ -34,198 +53,242 @@
     }
 }
 
-
 .form {
-	background-color: #eef7ff; /*Color del formulario*/
-	padding: 7vh;
+	background-color: #ffffff;
+	padding: 28px 32px;
 	display: flex;
 	flex-direction: column;
-	border-radius: 24px;
-	align-items: center;
-	h1 {
-		color: #003366; /*Color del titulo del formulario*/
-		font-size: 30px;
-		font-weight: bold;
-		margin: 0;
-		margin-bottom: 4vh;
-	}
-	.container_inputs {
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-	}
-	label {
-		color: #003366; /*Color label de inputs del formulario*/
-		font-weight: bold;
-		margin-bottom: 0.7vh;
-	}
-	input {
-		display: flex;
-		border: 3px solid #003366; /*Color del borde de inputs del formulario*/
-		border-radius: 12px;
-		padding: 8px 5px;
-		background-repeat: no-repeat;
-		margin-bottom: 0.8vh;
-		background-color: #eef7ff;
-		font-weight: regular;
-		font-size: 16px;
-		color: #003366;
-		border-radius: 12px;
-		background-position: right 10px center;
-		background-size: 25px 25px;
-		box-sizing: border-box;
-	}
-	input::placeholder {
-		color: rgba(0, 51, 102, 0.3);
-		font-weight: light;
-	}
-	input:focus {
-		background-color: rgba(0, 110, 223, 0.14);
-		font-weight: regular;
-	}
-	select {
-		display: flex;
-		border: 3px solid #003366; /*Color del borde de selects del formulario*/
-		border-radius: 12px;
-		padding: 8px 5px;
-		background-repeat: no-repeat;
-		margin-bottom: 0.8vh;
-		background-color: #eef7ff;
-		font-weight: regular;
-		font-size: 16px;
-		color: #003366;
-		border-radius: 12px;
-		background-position: right 30px center;
-		background-size: 25px 25px;
-		box-sizing: border-box;
-		background-image: url('../assets/ChevronDownIcon.svg');
-		background-repeat: no-repeat;
-		background-position: calc(100% - 12px) center;
-		-webkit-appearance: none;
-		-moz-appearance: none;
-		appearance: none;
-	}
-	select::placeholder {
-		color: rgba(0, 51, 102, 0.3);
-		font-weight: light;
-	}
-	select:focus {
-		background-color: rgba(0, 110, 223, 0.14);
-		font-weight: regular;
-	}
-	textarea {
-		display: flex;
-		border: 3px solid #003366; /*Color del borde de textareas del formulario*/
-		border-radius: 12px;
-		padding: 8px 5px;
-		background-repeat: no-repeat;
-		margin-bottom: 0.8vh;
-		background-color: #eef7ff;
-		font-weight: regular;
-		font-size: 16px;
-		color: #003366;
-		border-radius: 12px;
-		background-position: right 10px center;
-		background-size: 25px 25px;
-		box-sizing: border-box;
-	}
-	textarea::placeholder {
-		color: rgba(0, 51, 102, 0.3);
-		font-weight: light;
-	}
-	textarea:focus {
-		background-color: rgba(0, 110, 223, 0.14);
-		font-weight: regular;
-	}
-	button {
-		padding: auto;
-		display: flex;
-		justify-content: center;
-		padding: 1.2vh 0;
-		border-radius: 12px;
-		border: none;
-		width: 100%;
-		background-color: #003366; /*Color del boton del formulario*/
-		color: #eef7ff;
-		font-weight: bold;
-		font-size: 16px;
-		border: 3px solid #003366; /*Color del borde del boton*/
-		margin-top: 10px;
-	}
-	button:hover{
-		border: 3px solid #003366;
-		background-color: #eef7ff;
-		color: #003366;
-		transition: .3s ease-out;
-	}
-	.footerContent {
-		display: flex;
-		align-items: center;
-		margin-top: 10px;
-	}
+	border-radius: var(--form-radius);
+	align-items: stretch;
+	box-shadow: var(--form-shadow);
+	border: 1px solid var(--form-stone-200);
 }
+
+.form h1 {
+	color: var(--form-stone-800);
+	font-size: 24px;
+	font-weight: 700;
+	margin: 0 0 20px 0;
+	text-align: left;
+}
+
+.form .container_inputs {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 16px;
+}
+
+.form label {
+	color: var(--form-stone-700);
+	font-weight: 600;
+	font-size: 14px;
+	margin-bottom: 6px;
+	display: block;
+}
+
+.form input {
+	display: block;
+	width: 100%;
+	border: 2px solid var(--form-stone-300);
+	border-radius: 8px;
+	padding: 10px 12px;
+	background-color: #ffffff;
+	font-weight: 400;
+	font-size: 15px;
+	color: var(--form-stone-800);
+	box-sizing: border-box;
+	transition: all 0.2s ease;
+	background-repeat: no-repeat;
+	background-position: right 12px center;
+	background-size: 20px 20px;
+}
+
+.form input::placeholder {
+	color: var(--form-stone-400);
+	font-weight: 300;
+}
+
+.form input:focus {
+	outline: none;
+	border-color: var(--form-amber-600);
+	background-color: var(--form-amber-50);
+	box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+}
+
+.form select {
+	display: block;
+	width: 100%;
+	border: 2px solid var(--form-stone-300);
+	border-radius: 8px;
+	padding: 10px 12px;
+	padding-right: 36px;
+	background-color: #ffffff;
+	font-weight: 400;
+	font-size: 15px;
+	color: var(--form-stone-800);
+	box-sizing: border-box;
+	transition: all 0.2s ease;
+	background-image: url('../assets/ChevronDownIcon.svg');
+	background-repeat: no-repeat;
+	background-position: calc(100% - 12px) center;
+	background-size: 20px 20px;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	cursor: pointer;
+}
+
+.form select:focus {
+	outline: none;
+	border-color: var(--form-amber-600);
+	background-color: var(--form-amber-50);
+	box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+}
+
+.form textarea {
+	display: block;
+	width: 100%;
+	border: 2px solid var(--form-stone-300);
+	border-radius: 8px;
+	padding: 10px 12px;
+	background-color: #ffffff;
+	font-weight: 400;
+	font-size: 15px;
+	color: var(--form-stone-800);
+	box-sizing: border-box;
+	transition: all 0.2s ease;
+	font-family: inherit;
+	resize: vertical;
+	min-height: 80px;
+}
+
+.form textarea::placeholder {
+	color: var(--form-stone-400);
+	font-weight: 300;
+}
+
+.form textarea:focus {
+	outline: none;
+	border-color: var(--form-amber-600);
+	background-color: var(--form-amber-50);
+	box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+}
+
+.form button {
+	padding: 12px 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 8px;
+	border: none;
+	width: 100%;
+	background: linear-gradient(90deg, var(--form-amber-700), var(--form-amber-800));
+	color: #ffffff;
+	font-weight: 700;
+	font-size: 16px;
+	margin-top: 8px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form button:hover {
+	background: linear-gradient(90deg, var(--form-amber-800), var(--form-amber-700));
+	transform: translateY(-1px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.form button:active {
+	transform: translateY(0);
+}
+
+.form .footerContent {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-top: 16px;
+	color: var(--form-stone-600);
+	font-size: 14px;
+}
+
 .form .error-message {
     visibility: hidden;
-    height: 20px;
-    color: red;
+    height: 18px;
+    color: var(--form-danger);
     font-size: 13px;
-	padding-left: 5px;
+	font-weight: 500;
+	padding-left: 4px;
+	margin-top: 4px;
 }
+
 .form .error-message.visible {
     visibility: visible;
 }
 
+/* Container para páginas de login/register */
 .container {
 	height: 100vh;	
-	background: linear-gradient(90deg, #003366, #001a33); /*Color principal para login (gradiente)*/
+	background: linear-gradient(135deg, var(--form-stone-800), var(--form-stone-700), var(--form-amber-800));
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	padding: 20px;
 }
 
-input[type='email'] {
+/* Iconos en inputs */
+.form input[type='email'] {
 	background-image: url('../assets/MentionIcon.svg');
+	padding-right: 40px;
 }
 
-input[name='rut'] {
+.form input[name='rut'] {
 	background-image: url('../assets/IdentityCardIcon.svg');
+	padding-right: 40px;
 }
 
-input[name='nombreCompleto'] {
+.form input[name='nombreCompleto'] {
 	background-image: url('../assets/PersonIcon.svg');
+	padding-right: 40px;
 }
 
-input[name='rol'] {
+.form input[name='rol'] {
 	background-image: url('../assets/PasskeyIcon.svg');
-	
+	padding-right: 40px;
 }
 
-.container_inputs {
+/* Container de inputs con posición relativa para el ícono de password */
+.form .container_inputs {
     position: relative;
-    margin-bottom: 0px;
 }
 
-input {
-    padding-right: 40px;
-    width: 100%;
+/* Ajuste para inputs de password con toggle */
+.form input[type='password'],
+.form input[name='password'],
+.form input[name='newPassword'] {
+    padding-right: 45px;
 }
 
+/* Toggle password visibility icon */
 .toggle-password-icon {
     position: absolute;
-    right: 15px;
-    top: 44%;
+    right: 12px;
+    top: 50%;
     transform: translateY(-50%);
-    width: 25px;
-    height: 25px;
+    margin-top: -9px;
+    width: 22px;
+    height: 22px;
     cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
 }
 
-.newPassword span {
-	top: 10px;
+.toggle-password-icon:hover {
+	opacity: 1;
 }
 
-.toggle-password-icon img{
-	width: 25px;
-	height: 25px;
-	margin-top: 4px;
+.toggle-password-icon img {
+	width: 22px;
+	height: 22px;
+	display: block;
 }

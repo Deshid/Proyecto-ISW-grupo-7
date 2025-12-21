@@ -8,9 +8,11 @@ import passport from "passport";
 import express, { json, urlencoded } from "express";
 import { cookieKey, HOST, PORT } from "./config/configEnv.js";
 import { connectDB } from "./config/configDb.js";
-import { createUsers } from "./config/initialSetup.js";
+import { createLugares, createUsers } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
 import { createDefaultEvaluations, createDefaultStudentEvaluations } from "./config/initialSetUpEvaluation.js";
+import { finalizarHorariosVencidos } from "./services/comision.service.js";
+import path from "path";
 
 async function setupServer() {
   try {
@@ -61,6 +63,8 @@ async function setupServer() {
     passportJwtSetup();
 
     app.use("/api", indexRoutes);
+    
+    app.use("/uploads", express.static(path.resolve("uploads")));
 
     app.listen(PORT, () => {
       console.log(`=> Servidor corriendo en ${HOST}:${PORT}/api`);
@@ -78,13 +82,21 @@ async function setupAPI() {
     await createDefaultStudentEvaluations();
     await setupServer();
 
+    await createLugares();
   } catch (error) {
     console.log("Error en index.js -> setupAPI(), el error es: ", error);
   }
 }
 
 setupAPI()
-  .then(() => console.log("=> API Iniciada exitosamente"))
+  .then(() => {
+    console.log("=> API Iniciada exitosamente");
+    finalizarHorariosVencidos();    
+    // Ejecutar cada minuto para verificar y finalizar horarios
+    setInterval(() => {
+      finalizarHorariosVencidos();
+    }, 60000); // 60000 ms = 1 minuto
+  })
   .catch((error) =>
     console.log("Error en index.js -> setupAPI(), el error es: ", error),
   );
