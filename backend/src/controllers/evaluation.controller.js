@@ -1,5 +1,6 @@
 "use strict";
 import evaluationService from "../services/evaluation.service.js";
+import { handleErrorClient, handleSuccess } from "../handlers/responseHandlers.js";
 
 const createEvaluation = async (req, res) => {
     try {
@@ -59,11 +60,45 @@ const getEvaluationById = async (req, res) => {
     try {
         const { id } = req.params;
         const userId = req.user.id;
-        const userRole = req.user.rol; // usar 'rol' que viene de la entidad User
+        const userRole = req.user.rol; 
         const evaluation = await evaluationService.getEvaluationById(id, userId, userRole);
         res.status(200).json(evaluation);
     } catch (err) {
         res.status(err.status || 400).json({ error: err.message });
+    }
+};
+
+export const evaluateStudentController = async (req, res) => {
+    try {
+        const { pautaId, estudianteId, puntajesItems } = req.body;
+        const profesorId = req.user.id;
+        
+        const result = await evaluationService.evaluateStudent({
+            profesorId,
+            pautaId,
+            estudianteId,
+            puntajesItems
+        });
+        
+        handleSuccess(res, 201, result.message, result.evaluacion);
+    } catch (error) {
+        handleErrorClient(res, 400, error.message);
+    }
+};
+
+export const getStudentGradesController = async (req, res) => {
+    try {
+        const paramId = req.params?.studentId;
+        const studentId = Number.parseInt(String(paramId), 10);
+
+        if (!Number.isFinite(studentId) || studentId <= 0) {
+            return handleErrorClient(res, 400, "studentId debe ser un entero positivo");
+        }
+
+        const grades = await evaluationService.getStudentGrades(studentId);
+        handleSuccess(res, 200, "Notas obtenidas", grades);
+    } catch (error) {
+        handleErrorClient(res, 400, error.message);
     }
 };
 
@@ -72,4 +107,6 @@ export default {
     listEvaluations,
     updateEvaluation,
     getEvaluationById,
+    evaluateStudentController,
+    getStudentGradesController,
 };
