@@ -4,7 +4,10 @@ import { DATABASE, DB_USERNAME, HOST, PASSWORD } from "./configEnv.js";
 import UserSchema from "../entity/user.entity.js";
 import LugarSchema, { HorarioSchema } from "../entity/lugar.entity.js";
 import SolicitudSchema from "../entity/solicitud.entity.js";
-import SolicitudRevisionSchema from "../entity/solicitud_revision.entity.js"; 
+import SolicitudRevisionSchema from "../entity/solicitud_revision.entity.js";
+import PautaSchema from "../entity/pautaSchema.entity.js";
+import ItemPautaSchema from "../entity/itemPautaSchema.entity.js";
+import EvaluacionEstudianteSchema from "../entity/evaluationSchema.entity.js"; 
 
 
 export const AppDataSource = new DataSource({
@@ -14,7 +17,16 @@ export const AppDataSource = new DataSource({
   username: `${DB_USERNAME}`,
   password: `${PASSWORD}`,
   database: `${DATABASE}`,
-  entities: [UserSchema, LugarSchema, HorarioSchema, SolicitudSchema, SolicitudRevisionSchema],
+  entities: [
+    UserSchema, 
+    LugarSchema, 
+    HorarioSchema, 
+    SolicitudSchema, 
+    SolicitudRevisionSchema,
+    PautaSchema,
+    ItemPautaSchema,
+    EvaluacionEstudianteSchema,
+  ],
   synchronize: true,
   logging: false,
 });
