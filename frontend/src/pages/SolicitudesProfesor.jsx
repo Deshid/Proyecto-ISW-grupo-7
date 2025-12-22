@@ -41,8 +41,10 @@ const SolicitudesProfesor = () => {
 
   return (
    <div className="table-container solicitudes-profesor" style={{ marginTop: '30px' }}>
-      <h2 className="titulo-profesor">Solicitudes Revisión/Recuperación</h2>
-
+      <div className="page-header">
+       <h1 className="titulo"><span className="material-symbols-outlined page-icon">balance</span>Solicitudes</h1>
+       <p className="subtitulo">Control de solicitudes académicas: revisión y recuperación</p>
+      </div>
       <div className="filtros-container">
         <button className={filtro === "todos" ? "filtro-activo" : ""} onClick={() => setFiltro("todos")}>
         Todos
@@ -61,7 +63,7 @@ const SolicitudesProfesor = () => {
         <table>
           <thead>
             <tr>
-              <th>ID</th>
+              {/*<th>ID</th>*/}
               <th>Alumno</th>
               <th>Tipo</th>
               <th>Notas</th>
@@ -74,7 +76,7 @@ const SolicitudesProfesor = () => {
           <tbody>
             {solicitudesFiltradas.map(s => (
               <tr key={s.id}>
-                <td>{s.id}</td>
+               {/*<td>{s.id}</td>*/}
                 <td>{s.alumno?.nombreCompleto || s.alumno?.email}</td>
                 <td>{s.tipo}</td>
                 <td>{s.notas ? s.notas.join(', ') : '-'}</td>
