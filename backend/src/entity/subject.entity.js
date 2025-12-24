@@ -23,6 +23,15 @@ const SubjectSchema = new EntitySchema({
             unique: true,
         },
     ],
+    relations: {
+        usuariosEncomendados: {  // Nombre más descriptivo
+            type: "many-to-many",
+            target: "User",      // Entidad relacionada
+            joinColumn: {
+                    name: "subject_id"
+            },
+        }
+},
 });
 
-export { SubjectSchema };
+export default SubjectSchema;
