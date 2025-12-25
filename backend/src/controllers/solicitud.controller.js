@@ -70,7 +70,7 @@ export async function getSolicitudesStudent(req, res) {
 
 export async function getSolicitudesProfesor(req, res) {
   try {
-    const [solicitudes, err] = await getSolicitudesByProfesorService();
+    const [solicitudes, err] = await getSolicitudesByProfesorService(req.user.email);
     if (err) return handleErrorClient(res, 404, err);
 
     solicitudes.length === 0 ? handleSuccess(res, 204) : handleSuccess(res, 200, "Solicitudes encontradas", solicitudes);

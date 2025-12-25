@@ -2,6 +2,7 @@
 import Solicitud from "../entity/solicitud.entity.js";
 import User from "../entity/user.entity.js";
 import { AppDataSource } from "../config/configDb.js";
+import { In } from "typeorm";
 
 export async function createSolicitudService(data) {
   try {
@@ -50,7 +51,6 @@ export async function getSolicitudesByStudentService(emailAlumno) {
       order: { createdAt: "DESC" },
     });
 
-    // Attach alumno object to each solicitud to preserve previous shape
     for (const s of solicitudes) {
       s.alumno = userFound;
     }
@@ -61,17 +61,32 @@ export async function getSolicitudesByStudentService(emailAlumno) {
   }
 }
 
-export async function getSolicitudesByProfesorService() {
+export async function getSolicitudesByProfesorService(emailProfesor) {
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
+    const userRepository = AppDataSource.getRepository(User);
 
+    const profesor = await userRepository.findOne({
+      where: { email: emailProfesor },
+      relations: ['estudiantes']
+    });
+    
+    if (!profesor) return [null, "Profesor no encontrado"];
+
+    
+    const estudianteIds = profesor.estudiantes.map(e => e.id);
+
+    if (estudianteIds.length === 0) {
+      return [[], null]; 
+    }
+
+    // Encuentra solicitudes solo de estudiantes asignados
     const solicitudes = await solicitudRepository.find({
+      where: { alumnoId: In(estudianteIds) },
       order: { createdAt: "DESC" },
     });
 
-    // Attach alumno objects (fetch per solicitud). This preserves the
-    // previous response shape that included solicitud.alumno.
-    const userRepository = AppDataSource.getRepository(User);
+   
     for (const s of solicitudes) {
       if (s.alumnoId) {
         try {
@@ -103,7 +118,6 @@ export async function updateSolicitudEstadoService(id, payload) {
 
     const saved = await solicitudRepository.save(solicitudFound);
 
-    // attach alumno object if available
     const userRepository = AppDataSource.getRepository(User);
     if (saved.alumnoId) {
       try {
