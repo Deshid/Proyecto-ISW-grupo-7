@@ -10,6 +10,14 @@ const EvaluacionEstudianteSchema = new EntitySchema({
             primary: true,
             generated: true,
         },
+        asiste: {
+            type: "boolean",
+            default: true,
+        },
+        repiticion: {
+            type: "boolean",
+            default: false,
+        },
         puntaje_obtenido: {
             type: "int",
             nullable: false,
