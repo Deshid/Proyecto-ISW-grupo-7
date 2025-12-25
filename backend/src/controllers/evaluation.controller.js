@@ -77,7 +77,9 @@ export const evaluateStudentController = async (req, res) => {
             profesorId,
             pautaId,
             estudianteId,
-            puntajesItems
+            puntajesItems,
+            asiste,
+            repeticion,
         });
         
         handleSuccess(res, 201, result.message, result.evaluacion);
