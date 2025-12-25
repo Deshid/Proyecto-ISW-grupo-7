@@ -143,7 +143,6 @@ const evaluateStudent = async ({ profesorId, pautaId, estudianteId, puntajesItem
 
     try {
         const pautaRepo = queryRunner.manager.getRepository("Pauta");
-        const itemRepo = queryRunner.manager.getRepository("ItemPauta");
         const evalRepo = queryRunner.manager.getRepository("EvaluacionEstudiante");
 
         const pauta = await pautaRepo.findOne({
@@ -154,25 +153,39 @@ const evaluateStudent = async ({ profesorId, pautaId, estudianteId, puntajesItem
         if (!pauta) throw new Error("Pauta no encontrada");
         if (pauta.creador.id !== profesorId) throw new Error("No autorizado");
 
+            // Validar repetición: solo si existe una previa en la misma pauta
+        const previa = await evalRepo.findOne({
+        where: { estudiante: 
+                    { id: estudianteId }, 
+                pauta: 
+                    { id: pautaId } 
+                },
+        });
+        if (repeticion && !previa) throw new Error("La repetición solo se permite si existe una evaluación previa");
+
         // Calcular puntaje total obtenido y máximo
         let puntajeObtenido = 0;
-        let puntajeMaximo = 0;
+        let puntajeMaximo = pauta.items.reduce((acc, it) => acc + Number(it.puntaje_maximo), 0);
 
-        for (const item of pauta.items) {
-            const puntajeItem = puntajesItems.find(p => p.itemId === item.id);
-            if (!puntajeItem) throw new Error(`Falta puntaje para item ${item.id}`);
-            
-            puntajeObtenido += Number(puntajeItem.puntaje);
-            puntajeMaximo += Number(item.puntaje_maximo);
+        if (asiste) {
+            for (const item of pauta.items) {
+                const puntajeItem = puntajesItems?.find(p => p.itemId === item.id);
+                if (!puntajeItem) throw new Error(`Falta puntaje para item ${item.id}`);
+                puntajeObtenido += Number(puntajeItem.puntaje);
+            }
+            nota = calculateGrade(puntajeObtenido, puntajeMaximo, pauta.porcentaje_escala);
+        } else {
+            puntajeObtenido = 0;
+            nota = 1;
         }
-
-        const nota = calculateGrade(puntajeObtenido, puntajeMaximo, pauta.porcentaje_escala);
 
         const evaluacion = evalRepo.create({
             estudiante: { id: estudianteId },
             pauta: { id: pautaId },
             puntaje_obtenido: puntajeObtenido,
-            nota: nota,
+            nota,
+            asiste,
+            repeticion: repeticion,
         });
 
         const savedEval = await evalRepo.save(evaluacion);
