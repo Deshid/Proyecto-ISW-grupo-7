@@ -8,6 +8,7 @@ eliminarHorarioService,
 getEstudiantesPorProfesorService,
 getHorariosPorLugarService, 
 getHorariosPorProfesorService,
+getProfesoresConEstudiantesService,
 } from "../services/comision.service.js";
 import {
   actualizarHorarioValidation,
@@ -261,6 +262,19 @@ export async function getEstudiantesPorProfesor(req, res) {
     return estudiantes.length === 0
       ? handleSuccess(res, 204)
       : handleSuccess(res, 200, "Estudiantes encontrados", estudiantes);
+  } catch (error) {
+    return handleErrorServer(res, 500, error.message);
+  }
+}
+
+/* Obtener profesores con sus estudiantes */
+export async function getProfesoresConEstudiantes(req, res) {
+  try {
+    const [profesores, serviceError] = await getProfesoresConEstudiantesService();
+    if (serviceError) return handleErrorClient(res, 400, serviceError);
+    return profesores.length === 0
+      ? handleSuccess(res, 204)
+      : handleSuccess(res, 200, "Profesores encontrados", profesores);
   } catch (error) {
     return handleErrorServer(res, 500, error.message);
   }

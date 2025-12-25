@@ -35,6 +35,17 @@ export async function getHorariosPorLugar(id_lugar) {
   }
 }
 
+/* Obtener horarios por profesor */
+export async function getHorariosPorProfesor(id_profesor) {
+  try {
+    const response = await axios.get(`/horarios/profesor/${id_profesor}`);
+    return response.data.data || [];
+  } catch (error) {
+    console.error('Error al obtener horarios del profesor:', error);
+    return [];
+  }
+}
+
 /* Asignar profesor a horario */
 export async function asignarProfesorAHorario(id_horario, id_profesor) {
   try {
@@ -62,9 +73,8 @@ export async function asignarEstudiantesAProfesor(id_profesor, listaEstudiantes)
 /* Obtener profesores */
 export async function getProfesores() {
   try {
-    const response = await axios.get('/user/');
-    const users = response.data.data || [];
-    return users.filter(user => user.rol === 'profesor');
+    const response = await axios.get('/profesores');
+    return response.data.data || [];
   } catch (error) {
     console.error('Error al obtener profesores:', error);
     return [];

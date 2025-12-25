@@ -16,7 +16,7 @@ const Sidebar = () => {
         { path: '/home', label: 'Inicio', icon: 'home', roles: ['administrador', 'profesor', 'estudiante', 'usuario'] },
         { path: '/users', label: 'Usuarios', icon: 'group', roles: ['administrador'] },
         { path: '/evaluations', label: 'Evaluaciones', icon: 'assignment', roles: ['profesor'] },
-        { path: '/comisiones', label: 'Comisiones', icon: 'event', roles: ['administrador', 'profesor'] },
+        { path: '/comisiones/programar', label: 'Comisiones', icon: 'event', roles: ['administrador', 'profesor'] },
         { path: '/solicitud', label: 'Solicitar Revisión/Recuperación', icon: 'note_add', roles: ['usuario', 'estudiante'] },
         { path: '/solicitudes', label: 'Ver Solicitudes', icon: 'folder', roles: ['profesor'] },
     ];
