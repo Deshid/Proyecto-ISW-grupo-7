@@ -7,6 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default defineConfig({
+  
   plugins: [react()],
   preview: {port:443, host:true},
   resolve: {
@@ -19,6 +20,11 @@ export default defineConfig({
       '@styles': path.resolve(__dirname, './src/styles'),
       '@assets': path.resolve(__dirname, './src/assets'),
       '@helpers': path.resolve(__dirname, './src/helpers')
+    }
+  },
+  server: {
+    watch: {
+        usePolling: true
     }
   }
 });
