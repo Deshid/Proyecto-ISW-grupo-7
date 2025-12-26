@@ -78,6 +78,13 @@ export const createHorarioValidation = Joi.object({
       "any.required": "La hora de fin es obligatoria.",
       "any.invalid": "La hora de fin debe ser posterior a la hora de inicio.",
     }),
+  modalidad: Joi.string()
+    .valid("presencial", "online", "híbrida")
+    .optional()
+    .messages({
+      "string.base": "La modalidad debe ser un texto.",
+      "any.only": "La modalidad debe ser: presencial, online o híbrida.",
+    }),
 })
   .unknown(false)
   .messages({
@@ -95,6 +102,13 @@ export const actualizarHorarioValidation = Joi.object({
       "date.iso": "La fecha debe estar en formato (YYYY-MM-DD).",
       "date.min": "La fecha no puede ser anterior al día actual.",
       "any.required": "La fecha es obligatoria.",
+    }),
+  modalidad: Joi.string()
+    .valid("presencial", "online", "híbrida")
+    .optional()
+    .messages({
+      "string.base": "La modalidad debe ser un texto.",
+      "any.only": "La modalidad debe ser: presencial, online o híbrida.",
     }),
   horaInicio: Joi.string()
     .pattern(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/)
