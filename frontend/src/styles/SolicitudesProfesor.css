@@ -29,7 +29,7 @@
 }
 
 .solicitudes-profesor thead {
-  background: #92400e;       /* azul oscuro */
+  background: #92400e;       
   color: white;
 }
 
@@ -43,7 +43,7 @@
 }
 
 .solicitudes-profesor tbody tr:hover {
-  background-color: #e8f2ff; /* celeste suave */
+  background-color: #e8f2ff; 
   transition: 0.2s;
 }
 

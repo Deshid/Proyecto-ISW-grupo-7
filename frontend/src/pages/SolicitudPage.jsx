@@ -44,7 +44,7 @@ const SolicitudPage = () => {
         prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id]
       );
     } else {
-      // Para recuperación, solo una selección con radio
+      // Para recuperación, solo una selección 
       setSelectedEvaluations([id]);
     }
   };
@@ -101,7 +101,10 @@ const SolicitudPage = () => {
 
   return (
     <div className="solicitud-container">
-      <h2>Solicitar Revisión/Recuperación</h2>
+      <div className="page-header">
+         <h1 className="titulo"><span className="material-symbols-outlined page-icon">balance</span>Solicitud</h1>
+        <p className="subtitulo">Solicitar Revisión/Recuperación de evaluaciones</p>
+      </div>
 
       <form onSubmit={onSubmit} className="solicitud-form">
         <label>
@@ -113,11 +116,11 @@ const SolicitudPage = () => {
         </label>
 
         <div>
-          <h3>Seleccionar Evaluaciones</h3>
+          <h3>Seleccionar Evaluaciones:</h3>
           {tipo === 'revision' ? (
             // Mostrar evaluaciones donde asistió con checkboxes para múltiples selecciones
             evaluacionesParaRevision.map(evaluacion => (
-              <div key={evaluacion.id}>
+              <div key={evaluacion.id} className="evaluacion-item">
                 <input
                   type="checkbox"
                   id={`eval-${evaluacion.id}`}
@@ -134,7 +137,7 @@ const SolicitudPage = () => {
           ) : (
             // Mostrar evaluaciones filtradas con radio para una sola selección
             evaluacionesParaRecuperacion.map(evaluacion => (
-              <div key={evaluacion.id}>
+              <div key={evaluacion.id} className="evaluacion-item">
                 <input
                   type="radio"
                   name="recuperacion"
@@ -154,11 +157,11 @@ const SolicitudPage = () => {
 
         {tipo === 'revision' && (
           <>
-            <button type="button" onClick={() => setShowPautas(!showPautas)}>
+            <button type="button" className="pauta-btn" onClick={() => setShowPautas(!showPautas)}>
               {showPautas ? 'Ocultar Pautas' : 'Mostrar Todas las Pautas'}
             </button>
             {showPautas && (
-              <div>
+              <div className="pautas-container">
                 {pautas.map(pauta => (
                   <div key={pauta.id}>
                     <h4>{pauta.nombre_pauta}</h4>
@@ -188,6 +191,7 @@ const SolicitudPage = () => {
             value={descripcion} 
             onChange={(e) => setDescripcion(e.target.value)} 
             maxLength={maxDescripcionLength}
+            placeholder="Escriba aquí su caso..."
           />
           <div className="char-counter">
             {descripcion.length}/{maxDescripcionLength} caracteres
@@ -211,7 +215,7 @@ const SolicitudPage = () => {
             <li key={s.id}>
               <strong>{s.tipo}</strong> – Estado: {s.estado}
               {s.descripcion && <div>Descripción: {s.descripcion}</div>}
-              {s.justificacionProfesor && <div>Justificación: {s.justificacionProfesor}</div>}
+              {s.justificacionProfesor && <div className="justificacion-text">Justificación: {s.justificacionProfesor}</div>}
               {s.evidenciaPath && <div><a href={s.evidenciaPath} target="_blank">Ver evidencia</a></div>}
             </li>
           ))}

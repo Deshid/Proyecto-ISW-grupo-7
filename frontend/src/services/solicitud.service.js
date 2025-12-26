@@ -1,8 +1,6 @@
 import api from './root.service.js';
 
 export const createSolicitud = async (formData) => {
-  // formData should be an instance of FormData when containing files
-  // Let the browser set Content-Type (including boundary) for multipart requests
   const res = await api.post('/solicitud', formData, {
     headers: { 'Content-Type': undefined },
   });
