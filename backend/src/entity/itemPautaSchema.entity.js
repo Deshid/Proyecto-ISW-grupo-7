@@ -15,9 +15,7 @@ const ItemPautaSchema = new EntitySchema({
         nullable: false,
     },
     puntaje_maximo: {
-        type: "decimal",
-        precision: 7,
-        scale: 2,
+        type: "int",
         nullable: false,
     },
     },
