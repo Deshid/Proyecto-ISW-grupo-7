@@ -31,7 +31,11 @@ import { AppDataSource } from "../config/configDb.js";
 export async function getLugares(req, res) {
   try {
     const lugarRepository = AppDataSource.getRepository("Lugar");
-    const lugares = await lugarRepository.find();
+    const lugares = await lugarRepository.find({
+      order: {
+        nombre: "ASC"
+      }
+    });
     
     if (!lugares || lugares.length === 0) {
       return handleSuccess(res, 200, "No hay lugares disponibles", []);
@@ -56,12 +60,13 @@ export async function createHorario(req, res) {
       return handleErrorClient(res, 400, messages);
     }
 
-    const { id_lugar, fecha, horaInicio, horaFin } = value;
+    const { id_lugar, fecha, horaInicio, horaFin, modalidad } = value;
     const [nuevoHorario, serviceError] = await createHorarioService(
       id_lugar,
       fecha,
       horaInicio,
-      horaFin
+      horaFin,
+      modalidad
     );
     
     if (serviceError) {
@@ -120,12 +125,13 @@ export async function actualizarHorario(req, res) {
     }
 
     const { id_horario } = paramValue;
-    const { fecha, horaInicio, horaFin } = bodyValue;
+    const { fecha, horaInicio, horaFin, modalidad } = bodyValue;
     const [horarioActualizado, error] = await actualizarHorarioService(
       id_horario,
       fecha,
       horaInicio,
-      horaFin
+      horaFin,
+      modalidad
     );
     if (error) return handleErrorClient(res, 400, error);
 
