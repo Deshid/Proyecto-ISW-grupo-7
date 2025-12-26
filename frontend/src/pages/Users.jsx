@@ -647,7 +647,7 @@ const Users = () => {
               ))}
             </select>
             <button onClick={() => setIsSubjectModalOpen(true)}>
-              Crear/Borrar temas
+              Crear///Borrar temas
             </button>
 
             <button
