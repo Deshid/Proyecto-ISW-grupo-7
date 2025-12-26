@@ -23,3 +23,13 @@ export const updateSolicitudEstado = async (id, payload) => {
   const res = await api.patch(`/solicitud/${id}`, payload);
   return res.data;
 };
+
+export const getEvaluacionesEstudiante = async () => {
+  const res = await api.get('/solicitud/evaluaciones');
+  return res.data;
+};
+
+export const getPautas = async () => {
+  const res = await api.get('/solicitud/pautas');
+  return res.data;
+};

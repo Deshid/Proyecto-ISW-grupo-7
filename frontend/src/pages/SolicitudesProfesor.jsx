@@ -79,7 +79,7 @@ const SolicitudesProfesor = () => {
                {/*<td>{s.id}</td>*/}
                 <td>{s.alumno?.nombreCompleto || s.alumno?.email}</td>
                 <td>{s.tipo}</td>
-                <td>{s.notas ? s.notas.join(', ') : '-'}</td>
+                <td>{s.evaluaciones && s.evaluaciones.length > 0 ? s.evaluaciones.map(e => `${e.pauta?.nombre_pauta || 'Sin nombre'}: ${e.nota}`).join(', ') : '-'}</td>
                 <td>{s.descripcion || '-'}</td>
                 <td>{s.evidenciaPath ? <a href={s.evidenciaPath} target="_blank" rel="norefeCompletorrer">Ver</a> : '-'}</td>
                 <td>{s.estado}</td>

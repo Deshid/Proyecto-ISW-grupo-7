@@ -16,8 +16,11 @@ export async function createSolicitudService(data) {
     if (data.notas) {
       try {
         notasToSave = typeof data.notas === 'string' ? JSON.parse(data.notas) : data.notas;
+        if (Array.isArray(notasToSave)) {
+          notasToSave = notasToSave.map(id => Number(id));
+        }
       } catch (e) {
-        notasToSave = Array.isArray(data.notas) ? data.notas : null;
+        notasToSave = Array.isArray(data.notas) ? data.notas.map(id => Number(id)) : null;
       }
     }
 
@@ -100,6 +103,19 @@ export async function getSolicitudesByProfesorService(emailProfesor) {
       }
     }
 
+    // Cargar evaluaciones para cada solicitud
+    for (const s of solicitudes) {
+      if (s.notas && s.notas.length > 0) {
+        try {
+          s.evaluaciones = await getEvaluacionesByIds(s.notas);
+        } catch (e) {
+          s.evaluaciones = [];
+        }
+      } else {
+        s.evaluaciones = [];
+      }
+    }
+
     return [solicitudes, null];
   } catch (error) {
     return [null, error.message];
@@ -118,6 +134,14 @@ export async function updateSolicitudEstadoService(id, payload) {
 
     const saved = await solicitudRepository.save(solicitudFound);
 
+    // Si es recuperación aprobada, marcar repiticion=true en las evaluaciones
+    if (solicitudFound.tipo === "recuperacion" && payload.estado === "aprobada" && solicitudFound.notas && solicitudFound.notas.length > 0) {
+      const evalRepo = AppDataSource.getRepository("EvaluacionEstudiante");
+      for (const evalId of solicitudFound.notas) {
+        await evalRepo.update({ id: evalId }, { repiticion: true });
+      }
+    }
+
     const userRepository = AppDataSource.getRepository(User);
     if (saved.alumnoId) {
       try {
@@ -130,6 +154,45 @@ export async function updateSolicitudEstadoService(id, payload) {
     }
 
     return [saved, null];
+  } catch (error) {
+    return [null, error.message];
+  }
+}
+
+export async function getEvaluacionesEstudianteService(emailAlumno) {
+  try {
+    const userRepository = AppDataSource.getRepository(User);
+    const userFound = await userRepository.findOneBy({ email: emailAlumno });
+    if (!userFound) return [null, "Usuario alumno no encontrado"];
+
+    const evalRepo = AppDataSource.getRepository("EvaluacionEstudiante");
+    const evaluaciones = await evalRepo.find({
+      where: { estudiante: { id: userFound.id } },
+      relations: ["pauta"],
+    });
+    return [evaluaciones, null];
+  } catch (error) {
+    return [null, error.message];
+  }
+}
+
+export async function getEvaluacionesByIds(ids) {
+  if (!ids || ids.length === 0) return [];
+  const evalRepo = AppDataSource.getRepository("EvaluacionEstudiante");
+  const evaluaciones = await evalRepo.find({
+    where: { id: In(ids) },
+    relations: ["pauta", "estudiante"],
+  });
+  return evaluaciones;
+}
+
+export async function getPautasService() {
+  try {
+    const pautaRepo = AppDataSource.getRepository("Pauta");
+    const pautas = await pautaRepo.find({
+      relations: ["items", "creador"],
+    });
+    return [pautas, null];
   } catch (error) {
     return [null, error.message];
   }

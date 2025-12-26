@@ -14,6 +14,7 @@
   text-align: center;
   margin-bottom: 25px;
   font-size: 26px;
+  font-family: inherit;
 }
 
 /* === TABLA === */
@@ -35,6 +36,7 @@
   padding: 12px 16px;
   border-bottom: 1px solid #d7e5f6;
   font-size: 15px;
+  font-family: inherit;
   text-align: center;
 }
 
@@ -53,6 +55,7 @@
   cursor: pointer;
   margin-right: 8px;
   font-weight: 600;
+  font-family: inherit;
 }
 
 .btn-azul:hover {
@@ -67,6 +70,7 @@
   color: white;
   cursor: pointer;
   font-weight: 600;
+  font-family: inherit;
 }
 
 .btn-rojo:hover {
@@ -77,6 +81,7 @@
 .solicitudes-profesor a {
   color: #0d5edb;
   font-weight: 600;
+  font-family: inherit;
 }
 
 .filtros-container {
@@ -94,6 +99,7 @@
   cursor: pointer;
   font-weight: 600;
   transition: 0.2s;
+  font-family: inherit;
 }
 
 .filtros-container button:hover {
