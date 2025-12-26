@@ -55,6 +55,18 @@ export default function Modal({ open, onClose, title, children, type, horario, p
                   fieldType: 'input',
                   defaultValue: horario.horaFin?.substring(0, 5) || horario.horaFin,
                 },
+                {
+                  name: 'modalidad',
+                  label: 'Modalidad',
+                  fieldType: 'select',
+                  required: false,
+                  defaultValue: horario.modalidad || '',
+                  options: [
+                    { label: 'Presencial', value: 'presencial' },
+                    { label: 'Online', value: 'online' },
+                    { label: 'Híbrida', value: 'híbrida' },
+                  ],
+                },
               ]}
               onSubmit={onSubmit}
             />

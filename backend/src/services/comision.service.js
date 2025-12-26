@@ -4,7 +4,7 @@ import User from "../entity/user.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 
 /* Crear horario */
-export async function createHorarioService(id_lugar, fecha, horaInicio, horaFin) {
+export async function createHorarioService(id_lugar, fecha, horaInicio, horaFin, modalidad) {
     try {
         const lugarRepository = AppDataSource.getRepository(Lugar);
         const lugar = await lugarRepository.findOneBy({ id_lugar: id_lugar });
@@ -36,6 +36,7 @@ export async function createHorarioService(id_lugar, fecha, horaInicio, horaFin)
             fecha: fechaStr,
             horaInicio: horaInicio,
             horaFin: horaFin,
+            modalidad: modalidad || null,
         });
         await horarioRepository.save(nuevoHorario);
         return [nuevoHorario, null];
@@ -54,6 +55,10 @@ export async function getHorariosPorLugarService(id_lugar) {
                 estado: "activo"
             },
             relations: ["lugar"],
+            order: {
+                fecha: "ASC",
+                horaInicio: "ASC"
+            }
         });
         return horarios;
     }
@@ -64,7 +69,7 @@ export async function getHorariosPorLugarService(id_lugar) {
 }
 
 /* Actualizar horario */
-export async function actualizarHorarioService(id_horario, fecha, horaInicio, horaFin) {
+export async function actualizarHorarioService(id_horario, fecha, horaInicio, horaFin, modalidad) {
     try {
         const horarioRepository = AppDataSource.getRepository("Horario");
         const horario = await horarioRepository.findOneBy({ id_horario: id_horario });
@@ -79,6 +84,9 @@ export async function actualizarHorarioService(id_horario, fecha, horaInicio, ho
         horario.fecha = fechaStr;
         horario.horaInicio = horaInicio;
         horario.horaFin = horaFin;
+        if (modalidad !== undefined) {
+            horario.modalidad = modalidad;
+        }
         await horarioRepository.save(horario);
         return [horario, null];
     } catch (error) {

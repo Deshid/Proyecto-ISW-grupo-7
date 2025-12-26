@@ -21,6 +21,19 @@ const Profesores = () => {
     return hora.substring(0, 5);
   };
 
+  const estadoHorario = (horario) => {
+    if (!horario) return '';
+    if (horario.estado) {
+      return horario.estado.charAt(0).toUpperCase() + horario.estado.slice(1);
+    }
+    try {
+      const fin = new Date(`${horario.fecha}T${formatHora(horario.horaFin)}:00`);
+      return fin < new Date() ? 'Finalizado' : 'Activo';
+    } catch {
+      return 'Activo';
+    }
+  };
+
   useEffect(() => {
     const fetchProfesores = async () => {
       const data = await getProfesores();
@@ -44,6 +57,37 @@ const Profesores = () => {
     setShowModal(false);
     setProfesorSeleccionado(null);
     setEstudiantesSeleccionados({ profesorId: '', estudiantes: [] });
+  };
+
+  const handleSorteo = () => {
+    try {
+      const input = window.prompt('¿Cuántos estudiantes quieres tener seleccionados en total?', '3');
+      const nTotal = Number(input);
+      if (!nTotal || nTotal < 1) return;
+
+      setEstudiantesSeleccionados((prev) => {
+        const yaSeleccionados = new Set(prev.estudiantes);
+        // IDs disponibles que aún no están seleccionados
+        const idsNoSeleccionados = estudiantes
+          .map((e) => e.id)
+          .filter((id) => !yaSeleccionados.has(id));
+
+        // Si ya hay suficientes, no hacemos nada
+        if (prev.estudiantes.length >= nTotal) {
+          return prev;
+        }
+
+        const faltan = nTotal - prev.estudiantes.length;
+        // Mezclar y tomar los faltantes sin duplicar
+        const nuevos = [...idsNoSeleccionados]
+          .sort(() => Math.random() - 0.5)
+          .slice(0, Math.max(0, Math.min(faltan, idsNoSeleccionados.length)));
+
+        return { ...prev, estudiantes: [...prev.estudiantes, ...nuevos] };
+      });
+    } catch (err) {
+      console.error('Error en sorteo:', err);
+    }
   };
 
   const recargarProfesores = async () => {
@@ -171,12 +215,14 @@ const Profesores = () => {
               </div>
             </div>
 
-            <div className="modal-footer">
+            <div className="modal-footer" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
               <button
-                className="btn btn-primary btn-cancel"
-                onClick={handleCloseModal}
+                className="btn btn-outline-amber"
+                onClick={handleSorteo}
+                title="Seleccionar estudiantes aleatoriamente"
               >
-                Cancelar
+                <span className="material-symbols-outlined">shuffle</span>
+                Sorteo
               </button>
               <button
                 className="btn btn-outline-amber"
@@ -210,7 +256,7 @@ const Profesores = () => {
       {/* Modal para ver horarios asignados */}
       {showHorariosModal && (
         <div className="modal-overlay" onClick={handleCloseHorariosModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content horarios-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <span className="material-symbols-outlined page-icon">schedule</span>
               <h3>Horarios Asignados</h3>
@@ -229,17 +275,23 @@ const Profesores = () => {
                   <table className="tabla tabla-comisiones" style={{ fontSize: '14px' }}>
                     <thead>
                       <tr>
+                        <th>Lugar</th>
+                        <th>Modalidad</th>
                         <th>Fecha</th>
                         <th>Inicio</th>
                         <th>Fin</th>
+                        <th>Estado</th>
                       </tr>
                     </thead>
                     <tbody>
                       {horariosProfesor.map((horario, idx) => (
                         <tr key={idx}>
+                          <td>{horario.lugar?.nombre || '—'}</td>
+                          <td>{horario.modalidad ? horario.modalidad.charAt(0).toUpperCase() + horario.modalidad.slice(1) : '—'}</td>
                           <td>{horario.fecha}</td>
                           <td>{formatHora(horario.horaInicio)}</td>
                           <td>{formatHora(horario.horaFin)}</td>
+                          <td>{estadoHorario(horario)}</td>
                         </tr>
                       ))}
                     </tbody>
