@@ -115,4 +115,50 @@ export class SubjectAssignController {
             });
         }
     }
+
+    // DELETE: Eliminar todos los temas de un usuario
+    static async removeAllSubjectsFromUser(req, res) {
+    try {
+        const { userId } = req.params;
+        
+        if (!userId) {
+        return res.status(400).json({
+            success: false,
+            message: "Se requiere userId"
+        });
+        }
+        
+        const result = await RelationService.removeAllSubjectsFromUser(
+        parseInt(userId)
+        );
+        
+        const status = result.success ? 200 : 400;
+        return res.status(status).json(result);
+        
+    } catch (error) {
+        return res.status(500).json({
+        success: false,
+        message: "Error interno del servidor",
+        error: error.message
+        });
+    }
+    }
+
+    // Limpiar relaciones huérfanas (subject_id que no existen)
+    static async cleanOrphanRelations(req, res) {
+    try {
+        const result = await RelationService.cleanOrphanRelations();
+        
+        const status = result.success ? 200 : 400;
+        return res.status(status).json(result);
+        
+    } catch (error) {
+        return res.status(500).json({
+        success: false,
+        message: "Error interno del servidor",
+        error: error.message
+        });
+    }
+    }
+
 }

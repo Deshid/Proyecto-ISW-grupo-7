@@ -217,4 +217,81 @@ export class SubjectAssignService {
             };
         }
     }
+
+    // Eliminar TODOS los temas asignados a un usuario
+    static async removeAllSubjectsFromUser(userId) {
+    try {
+        // Buscar todas las relaciones del usuario
+        const relations = await UserSubjectRepository.find({
+        where: { userId }
+        });
+        
+        if (relations.length === 0) {
+        return {
+            success: true,
+            message: "El usuario no tiene temas asignados",
+            removedCount: 0
+        };
+        }
+        
+        // Eliminar todas las relaciones
+        await UserSubjectRepository.remove(relations);
+        
+        return {
+        success: true,
+        message: `Se eliminaron ${relations.length} tema(s) del usuario`,
+        removedCount: relations.length,
+        data: relations
+        };
+        
+    } catch (error) {
+        console.error(`Error eliminando temas del usuario ${userId}:`, error);
+        return {
+        success: false,
+        message: "Error al eliminar temas del usuario",
+        error: error.message
+        };
+    }
+    }
+
+    // En RelationService.js
+    static async cleanOrphanRelations() {
+    try {
+        // Obtener todos los subject_id existentes
+        const existingSubjects = await SubjectRepository.find({ select: ['id'] });
+        const existingSubjectIds = existingSubjects.map(s => s.id);
+        
+        // Encontrar relaciones con subject_id que no existen
+        const orphanRelations = await UserSubjectRepository
+        .createQueryBuilder('relation')
+        .where('relation.subjectId NOT IN (:...ids)', { ids: existingSubjectIds.length > 0 ? existingSubjectIds : [0] })
+        .getMany();
+        
+        if (orphanRelations.length === 0) {
+        return {
+            success: true,
+            message: "No hay relaciones huérfanas",
+            removedCount: 0
+        };
+        }
+        
+        // Eliminarlas
+        await UserSubjectRepository.remove(orphanRelations);
+        
+        return {
+        success: true,
+        message: `Se eliminaron ${orphanRelations.length} relación(es) huérfana(s)`,
+        removedCount: orphanRelations.length,
+        data: orphanRelations
+        };
+        
+    } catch (error) {
+        console.error("Error limpiando relaciones huérfanas:", error);
+        return {
+        success: false,
+        message: "Error limpiando relaciones",
+        error: error.message
+        };
+    }
+    }
 }
