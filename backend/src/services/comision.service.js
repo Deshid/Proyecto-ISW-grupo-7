@@ -12,13 +12,16 @@ export async function createHorarioService(id_lugar, fecha, horaInicio, horaFin)
             return [null, "Lugar no encontrado"];
         }
         
+        // Convertir fecha a string ISO si viene como Date para evitar problemas de zona horaria
+        const fechaStr = fecha instanceof Date ? fecha.toISOString().split("T")[0] : fecha;
+        
         const horarioRepository = AppDataSource.getRepository("Horario");
         
         // Validar que no exista horario duplicado
         const horarioDuplicado = await horarioRepository.findOne({
             where: {
                 lugar: { id_lugar: id_lugar },
-                fecha: fecha,
+                fecha: fechaStr,
                 horaInicio: horaInicio,
                 horaFin: horaFin,
             },
@@ -30,7 +33,7 @@ export async function createHorarioService(id_lugar, fecha, horaInicio, horaFin)
         
         const nuevoHorario = horarioRepository.create({
             lugar: lugar,
-            fecha: fecha,
+            fecha: fechaStr,
             horaInicio: horaInicio,
             horaFin: horaFin,
         });
@@ -46,7 +49,10 @@ export async function getHorariosPorLugarService(id_lugar) {
     try {
         const horarioRepository = AppDataSource.getRepository("Horario");
         const horarios = await horarioRepository.find({
-            where: { lugar: { id_lugar: id_lugar } },
+            where: { 
+                lugar: { id_lugar: id_lugar },
+                estado: "activo"
+            },
             relations: ["lugar"],
         });
         return horarios;
@@ -65,7 +71,12 @@ export async function actualizarHorarioService(id_horario, fecha, horaInicio, ho
         if (!horario) {
             return [null, "Horario no encontrado"];
         }
-        horario.fecha = fecha;
+        if (horario.estado === "finalizado") {
+            return [null, "No se puede actualizar un horario finalizado"];
+        }
+        // Arreglo para evitar problemas de zona horaria
+        const fechaStr = fecha instanceof Date ? fecha.toISOString().split("T")[0] : fecha;
+        horario.fecha = fechaStr;
         horario.horaInicio = horaInicio;
         horario.horaFin = horaFin;
         await horarioRepository.save(horario);
@@ -84,6 +95,9 @@ export async function eliminarHorarioService(id_horario) {
         if (!horario) {
             return [null, "Horario no encontrado"];
         }
+        if (horario.estado === "finalizado") {
+            return [null, "No se puede eliminar un horario finalizado"];
+        }
         await horarioRepository.remove(horario);
         return [horario, null];
     } catch (error) {
@@ -100,6 +114,9 @@ export async function asignarProfesorAHorarioService(id_horario, id_profesor) {
         const horario = await horarioRepository.findOneBy({ id_horario: id_horario });
         if (!horario) {
             return [null, "Horario no encontrado"];
+        }
+        if (horario.estado === "finalizado") {
+            return [null, "No se puede asignar profesor a un horario finalizado"];
         }
         const profesor = await userRepository.findOneBy({ id: id_profesor, rol: "profesor" });
         if (!profesor) {
@@ -133,19 +150,135 @@ export async function getHorariosPorProfesorService(id_profesor) {
 export async function asignarEstudiantesAProfesorService(id_profesor, listaEstudiantes) {
     try {
         const userRepository = AppDataSource.getRepository(User);
-        const profesor = await userRepository.findOneBy({ id: id_profesor, rol: "profesor" });
+        
+        // Usar QueryBuilder para cargar el profesor con sus relaciones
+        const profesor = await userRepository
+            .createQueryBuilder("profesor")
+            .leftJoinAndSelect("profesor.estudiantes", "estudiante")
+            .where("profesor.id = :id", { id: id_profesor })
+            .andWhere("profesor.rol = :rol", { rol: "profesor" })
+            .getOne();
+        
         if (!profesor) {
             return [null, "Profesor no encontrado"];
         }
+        
         const estudiantes = await userRepository.findByIds(listaEstudiantes, { where: { rol: "estudiante" } });
+        
         if (estudiantes.length !== listaEstudiantes.length) {
             return [null, "Uno o más estudiantes no encontrados"];
         }
+        
+        // Verifica si algún estudiante ya tiene un profesor asignado
+        const profesoresRepository = AppDataSource.getRepository(User);
+        const profesoresConEstudiantes = await profesoresRepository
+            .createQueryBuilder("profesor")
+            .leftJoinAndSelect("profesor.estudiantes", "estudiante")
+            .where("profesor.rol = :rol", { rol: "profesor" })
+            .getMany();
+        
+        const estudiantesYaAsignados = [];
+        for (const est of estudiantes) {
+            for (const prof of profesoresConEstudiantes) {
+                if (prof.estudiantes && prof.estudiantes.some(e => e.id === est.id)) {
+                    // Si el profesor actual ya tiene este estudiante, no es error
+                    if (prof.id !== id_profesor) {
+                        estudiantesYaAsignados.push({
+                            nombre: est.nombreCompleto,
+                            profesor: prof.nombreCompleto
+                        });
+                    }
+                }
+            }
+        }
+        
+        if (estudiantesYaAsignados.length > 0) {
+            const mensajes = estudiantesYaAsignados.map(e => 
+                `${e.nombre} ya está asignado a ${e.profesor}`
+            ).join(", ");
+            return [null, `Los siguientes estudiantes ya tienen profesor asignado: ${mensajes}`];
+        }
+        
         profesor.estudiantes = estudiantes;
-        await userRepository.save(profesor);
-        return [profesor, null];
+        const profesorGuardado = await userRepository.save(profesor);
+        
+        return [profesorGuardado, null];
     } catch (error) {
         console.error("Error al asignar estudiantes al profesor:", error);
         return [null, "Error interno del servidor"];
+    }
+}
+
+/* Obtener estudiantes por profesor */
+export async function getEstudiantesPorProfesorService(id_profesor) {
+    try {
+        const userRepository = AppDataSource.getRepository(User);
+        const profesor = await userRepository.findOne({
+            where: { id: id_profesor, rol: "profesor" },
+            relations: ["estudiantes"],
+        });
+        if (!profesor) {
+            return [null, "Profesor no encontrado"];
+        }
+        return [profesor.estudiantes, null];
+    } catch (error) {
+        console.error("Error al obtener estudiantes por profesor:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+/* Obtener profesores con sus estudiantes asignados */
+export async function getProfesoresConEstudiantesService() {
+    try {
+        const userRepository = AppDataSource.getRepository(User);
+        const profesores = await userRepository
+            .createQueryBuilder("profesor")
+            .leftJoinAndSelect("profesor.estudiantes", "estudiante")
+            .where("profesor.rol = :rol", { rol: "profesor" })
+            .orderBy("profesor.nombreCompleto", "ASC")
+            .getMany();
+        
+        // Transformar la respuesta para que sea más clara
+        const profesoresFormateados = profesores.map(prof => ({
+            ...prof,
+            estudiantesAsignados: prof.estudiantes || []
+        }));
+        
+        return [profesoresFormateados, null];
+    } catch (error) {
+        console.error("Error al obtener profesores con estudiantes:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+/* Finalizar horarios automáticamente */
+export async function finalizarHorariosVencidos() {
+    try {
+        const horarioRepository = AppDataSource.getRepository("Horario");
+        const ahora = new Date();
+        const fechaHoy = ahora.toISOString().split("T")[0];
+        const horaActual = ahora.toTimeString().split(" ")[0].substring(0, 5);
+
+        // Buscar todos los horarios activos que ya pasaron
+        const horariosVencidos = await horarioRepository
+            .createQueryBuilder("horario")
+            .where("horario.estado = :estado", { estado: "activo" })
+            .andWhere(
+                "(horario.fecha < :fechaHoy OR (horario.fecha = :fechaHoy AND horario.horaFin <= :horaActual))",
+                { fechaHoy, horaActual }
+            )
+            .getMany();
+
+        // Actualizar estado a finalizado
+        for (const horario of horariosVencidos) {
+            horario.estado = "finalizado";
+            await horarioRepository.save(horario);
+        }
+
+        console.log(`* => ${horariosVencidos.length} horarios finalizados automáticamente`);
+        return horariosVencidos.length;
+    } catch (error) {
+        console.error("Error al finalizar horarios vencidos:", error);
+        return 0;
     }
 }

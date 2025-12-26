@@ -23,54 +23,54 @@ async function createUsers() {
       ),
       userRepository.save(
         userRepository.create({
-          nombreCompleto: "Diego Sebastián Ampuero Belmar",
+          nombreCompleto: "Estudiante 1",
           rut: "21.151.897-9",
-          email: "usuario1.2024@gmail.cl",
+          email: "estudiante1.2024@gmail.cl",
           password: await encryptPassword("user1234"),
           rol: "estudiante",
         })
       ),
         userRepository.save(
           userRepository.create({
-            nombreCompleto: "Alexander Benjamín Marcelo Carrasco Fuentes",
+            nombreCompleto: "Estudiante 2",
             rut: "20.630.735-8",
-            email: "usuario2.2024@gmail.cl",
+            email: "estudiante2.2024@gmail.cl",
             password: await encryptPassword("user1234"),
             rol: "estudiante",
           }),
       ),
       userRepository.save(
         userRepository.create({
-          nombreCompleto: "Pablo Andrés Castillo Fernández",
+          nombreCompleto: "Estudiante 3",
           rut: "20.738.450-K",
-          email: "usuario3.2024@gmail.cl",
+          email: "estudiante3.2024@gmail.cl",
           password: await encryptPassword("user1234"),
           rol: "estudiante",
         }),
       ),
       userRepository.save(
         userRepository.create({
-          nombreCompleto: "Felipe Andrés Henríquez Zapata",
+          nombreCompleto: "Estudiante 4",
           rut: "20.976.635-3",
-          email: "usuario4.2024@gmail.cl",
+          email: "estudiante4.2024@gmail.cl",
           password: await encryptPassword("user1234"),
           rol: "estudiante",
         }),
       ),
       userRepository.save(
         userRepository.create({
-          nombreCompleto: "Diego Alexis Meza Ortega",
+          nombreCompleto: "Estudiante 5",
           rut: "21.172.447-1",
-          email: "usuario5.2024@gmail.cl",
+          email: "estudiante5.2024@gmail.cl",
           password: await encryptPassword("user1234"),
           rol: "estudiante",
         }),
       ),
       userRepository.save(
         userRepository.create({
-          nombreCompleto: "Juan Pablo Rosas Martin",
+          nombreCompleto: "Estudiante 6",
           rut: "20.738.415-1",
-          email: "usuario6.2024@gmail.cl",
+          email: "estudiante6.2024@gmail.cl",
           password: await encryptPassword("user1234"),
           rol: "estudiante",
         }),
@@ -93,6 +93,133 @@ async function createUsers() {
           rol: "profesor",
         }),
       ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Estudiante 7",
+          rut: "19.987.654-3",
+          email: "estudiante7.2024@gmail.cl",
+          password: await encryptPassword("user1234"),
+          rol: "estudiante",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Estudiante 8",
+          rut: "21.456.789-0",
+          email: "estudiante8.2024@gmail.cl",
+          password: await encryptPassword("user1234"),
+          rol: "estudiante",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Estudiante 9",
+          rut: "20.654.321-2",
+          email: "estudiante9.2024@gmail.cl",
+          password: await encryptPassword("user1234"),
+          rol: "estudiante",
+        }),
+      ),
+      /** agregar 50 estudiantes */
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Estudiante 10",
+          rut: "22.000.001-1",
+          email: "estudiante10.2024@gmail.cl",
+          password: await encryptPassword("user1234"),
+          rol: "estudiante",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Estudiante 11",
+          rut: "22.000.002-2",
+          email: "estudiante11.2024@gmail.cl",
+          password: await encryptPassword("user1234"),
+          rol: "estudiante",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Estudiante 12",
+          rut: "22.000.003-3",
+          email: "estudiante12.2024@gmail.cl",
+          password: await encryptPassword("user1234"),
+          rol: "estudiante",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Estudiante 13",
+          rut: "22.000.004-4",
+          email: "estudiante13.2024@gmail.cl",
+          password: await encryptPassword("user1234"),
+          rol: "estudiante",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Estudiante 14",
+          rut: "22.000.005-5",
+          email: "estudiante14.2024@gmail.cl",
+          password: await encryptPassword("user1234"),
+          rol: "estudiante",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Estudiante 15",
+          rut: "22.000.006-6",
+          email: "estudiante15.2024@gmail.cl",
+          password: await encryptPassword("user1234"),
+          rol: "estudiante",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Estudiante 16",
+          rut: "22.000.007-7",
+          email: "estudiante16.2024@gmail.cl",
+          password: await encryptPassword("user1234"),
+          rol: "estudiante",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Estudiante 17",
+          rut: "22.000.008-8",
+          email: "estudiante17.2024@gmail.cl",
+          password: await encryptPassword("user1234"),
+          rol: "estudiante",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Estudiante 18",
+          rut: "22.000.009-9",
+          email: "estudiante18.2024@gmail.cl",
+          password: await encryptPassword("user1234"),
+          rol: "estudiante",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Estudiante 19",
+          rut: "22.000.010-0",
+          email: "estudiante19.2024@gmail.cl",
+          password: await encryptPassword("user1234"),
+          rol: "estudiante",
+        }),
+      ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Estudiante 20",
+          rut: "22.000.011-1",
+          email: "estudiante20.2024@gmail.cl",
+          password: await encryptPassword("user1234"),
+          rol: "estudiante",
+        }),
+      ),
     ]);
     console.log("* => Usuarios creados exitosamente");
   } catch (error) {
@@ -109,25 +236,25 @@ async function createLugares() {
       lugarRepository.save(
         lugarRepository.create({
           id_lugar: 1,
-          nombre: "Sala de Reuniones A",
-          descripcion: "Sala equipada con proyector y pizarra blanca.",
-          ubicacion: "Piso 2, Edificio Central",
+          nombre: "Sala A",
+          descripcion: "Descripción de la Sala A.",
+          ubicacion: "Piso 1",
         })
       ),
       lugarRepository.save(
         lugarRepository.create({
           id_lugar: 2,
-          nombre: "Auditorio Principal",
-          descripcion: "Auditorio con capacidad para 200 personas.",
-          ubicacion: "Piso 1, Edificio de Conferencias",
+          nombre: "Sala B",
+          descripcion: "Descripción de la Sala B.",
+          ubicacion: "Piso 2",
         })
       ),
       lugarRepository.save(
         lugarRepository.create({
           id_lugar: 3,
-          nombre: "Sala B",
-          descripcion: "Espacio para reuniones pequeñas.",
-          ubicacion: "Piso 3, Edificio Central",
+          nombre: "Sala C",
+          descripcion: "Descripción de la Sala C.",
+          ubicacion: "Piso 3",
         })
       ),
     ]);

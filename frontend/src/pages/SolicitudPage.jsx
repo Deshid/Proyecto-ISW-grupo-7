@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createSolicitud, getSolicitudesAlumno } from '@services/solicitud.service.js';
 import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
-import '@styles/form.css';
+import '@styles/SolicitudPage.css';
 
 const SolicitudPage = () => {
   const [tipo, setTipo] = useState('revision');
@@ -27,55 +27,41 @@ const SolicitudPage = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Validar antes de enviar
       if (tipo === 'revision') {
-        if (!evaluacion || evaluacion.trim().length === 0) {
-          showErrorAlert('Error', 'Debes indicar la evaluación a revisar');
-          return;
-        }
-      } else if (tipo === 'recuperacion') {
-        if (!descripcion || descripcion.trim().length === 0) {
-          showErrorAlert('Error', 'Debes describir el caso de recuperación');
-          return;
-        }
-        if (!evidencia) {
-          showErrorAlert('Error', 'La recuperación requiere una imagen de evidencia');
-          return;
-        }
+        if (!evaluacion.trim()) return showErrorAlert('Error', 'Debes indicar la evaluación a revisar');
+      } else {
+        if (!descripcion.trim()) return showErrorAlert('Error', 'Debes describir el caso de recuperación');
+        if (!evidencia) return showErrorAlert('Error', 'Debes subir una evidencia');
       }
 
       const formData = new FormData();
       formData.append('tipo', tipo);
-      
+      formData.append('modalidad', modalidad);
+
       if (tipo === 'revision') {
         formData.append('descripcion', evaluacion);
-        formData.append('modalidad', modalidad);
       } else {
         formData.append('descripcion', descripcion);
         if (evidencia) formData.append('evidencia', evidencia);
       }
 
-      console.log('[SolicitudPage] Enviando FormData:', { tipo, descripcion: (tipo === 'revision' ? evaluacion : descripcion).substring(0, 50), tieneEvidencia: !!evidencia });
-      
       await createSolicitud(formData);
       showSuccessAlert('Solicitud enviada', 'Su solicitud fue enviada correctamente');
-      
-      // reset
+
       setEvaluacion('');
       setDescripcion('');
       setEvidencia(null);
       fetchMisSolicitudes();
     } catch (error) {
-      console.error('[SolicitudPage] Error al enviar:', error);
-      console.error('[SolicitudPage] Error response:', error?.response);
       showErrorAlert('Error', error?.response?.data?.message || 'Error al enviar la solicitud');
     }
   };
 
   return (
-    <div className="table-container" style={{ marginTop: '80px' }}>
+    <div className="solicitud-container">
       <h2>Solicitar Revisión/Recuperación</h2>
-      <form onSubmit={onSubmit}>
+
+      <form onSubmit={onSubmit} className="solicitud-form">
         <label>
           Tipo:
           <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
@@ -87,15 +73,15 @@ const SolicitudPage = () => {
         {tipo === 'revision' && (
           <>
             <label>
-              Evaluación a revisar (Ej: Evaluación 1, Examen Final, etc.):
+              Evaluación a revisar:
               <input
                 type="text"
                 value={evaluacion}
                 onChange={(e) => setEvaluacion(e.target.value)}
                 placeholder="Ej: Evaluación 1"
-                required
               />
             </label>
+
             <label>
               Modalidad:
               <select value={modalidad} onChange={(e) => setModalidad(e.target.value)}>
@@ -112,6 +98,7 @@ const SolicitudPage = () => {
               Descripción del caso:
               <textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
             </label>
+
             <label>
               Evidencia (imagen):
               <input type="file" accept="image/*" onChange={(e) => setEvidencia(e.target.files[0])} />
@@ -119,25 +106,23 @@ const SolicitudPage = () => {
           </>
         )}
 
-        <button type="submit">Enviar solicitud</button>
+        <button type="submit" className="solicitud-btn">Enviar solicitud</button>
       </form>
 
-      <section>
-        <h3>Mis solicitudes</h3>
-        {misSolicitudes && misSolicitudes.length > 0 ? (
-          <ul>
-            {misSolicitudes.map(s => (
-              <li key={s.id}>
-                <strong>{s.tipo}</strong> - Estado: {s.estado}
-                {s.justificacionProfesor && (<div>Justificación: {s.justificacionProfesor}</div>)}
-                {s.evidenciaPath && (<div><a href={s.evidenciaPath} target="_blank" rel="noreferrer">Ver evidencia</a></div>)}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div>No hay solicitudes.</div>
-        )}
-      </section>
+      <h3>Mis solicitudes</h3>
+      {misSolicitudes.length > 0 ? (
+        <ul className="solicitudes-list">
+          {misSolicitudes.map(s => (
+            <li key={s.id}>
+              <strong>{s.tipo}</strong> – Estado: {s.estado}
+              {s.justificacionProfesor && <div>Justificación: {s.justificacionProfesor}</div>}
+              {s.evidenciaPath && <div><a href={s.evidenciaPath} target="_blank">Ver evidencia</a></div>}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div>No hay solicitudes.</div>
+      )}
     </div>
   );
 };

@@ -1,16 +1,19 @@
 "use strict";
 import {
 actualizarHorarioService,
-//asignarEstudiantesAProfesorService,
+asignarEstudiantesAProfesorService,
 asignarProfesorAHorarioService,
 createHorarioService,
 eliminarHorarioService,
+getEstudiantesPorProfesorService,
 getHorariosPorLugarService, 
 getHorariosPorProfesorService,
+getProfesoresConEstudiantesService,
 } from "../services/comision.service.js";
 import {
   actualizarHorarioValidation,
-  asignarProfesorValidation,
+  asignarEstudiantesAProfesorValidation,
+  asignarProfesorBodyValidation,
   createHorarioValidation,
   idHorarioParamValidation,
   idLugarParamValidation,
@@ -180,22 +183,98 @@ export async function getHorariosPorProfesor(req, res) {
 /* Asignar profesor a un horario */
 export async function asignarProfesorAHorario(req, res) {
   try {
-    // Validar body
-    const { error, value } = asignarProfesorValidation.validate(req.body, {
+    // Validar parámetro
+    const { error: paramError } = idHorarioParamValidation.validate({ id_horario: req.params.id_horario });
+    if (paramError) {
+      return handleErrorClient(res, 400, paramError.details[0].message);
+    }
+
+    // Validar body (solo id_profesor)
+    const { error: bodyError, value } = asignarProfesorBodyValidation.validate(req.body, {
       abortEarly: false,
     });
-    if (error) {
-      const messages = error.details.map((e) => e.message).join(", ");
+    if (bodyError) {
+      const messages = bodyError.details.map((e) => e.message).join(", ");
       return handleErrorClient(res, 400, messages);
     }
 
-    const { id_horario, id_profesor } = value;
+    const id_horario = Number(req.params.id_horario);
+    const { id_profesor } = value;
+    
     const [horarioAsignado, serviceError] = await asignarProfesorAHorarioService(
       id_horario,
       id_profesor
     );
     if (serviceError) return handleErrorClient(res, 400, serviceError);
     return handleSuccess(res, 200, "Profesor asignado al horario", horarioAsignado);
+  } catch (error) {
+    return handleErrorServer(res, 500, error.message);
+  }
+}
+
+/* Asignar estudiantes a un profesor */
+export async function asignarEstudiantesAProfesor(req, res) {
+  try {
+    // Validar parámetro
+    const { error: paramError } = idProfesorParamValidation.validate({ id_profesor: req.params.id_profesor });
+    if (paramError) {
+      return handleErrorClient(res, 400, paramError.details[0].message);
+    }
+
+    // Validar listaEstudiantes
+    const { error: bodyError, value } = asignarEstudiantesAProfesorValidation.validate(req.body, {
+      abortEarly: false,
+    });
+    if (bodyError) {
+      const messages = bodyError.details.map((e) => e.message).join(", ");
+      return handleErrorClient(res, 400, messages);
+    }
+
+    const { listaEstudiantes } = value;
+
+    const id_profesor = Number(req.params.id_profesor);
+    
+    const [profesorActualizado, serviceError] = await asignarEstudiantesAProfesorService(
+      id_profesor,
+      listaEstudiantes
+    );
+    if (serviceError) return handleErrorClient(res, 400, serviceError);
+    return handleSuccess(res, 200, "Estudiantes asignados al profesor", profesorActualizado);
+  } catch (error) {
+    return handleErrorServer(res, 500, error.message);
+  }
+}
+
+/* Obtener estudiantes por profesor */
+export async function getEstudiantesPorProfesor(req, res) {
+  try {
+    // Validar parámetro
+    const { error, value } = idProfesorParamValidation.validate(req.params, {
+      abortEarly: false,
+    });
+    if (error) {
+      const messages = error.details.map((e) => e.message).join(", ");
+      return handleErrorClient(res, 400, messages);
+    }
+    const { id_profesor } = value;
+    const [estudiantes, serviceError] = await getEstudiantesPorProfesorService(id_profesor);
+    if (serviceError) return handleErrorClient(res, 400, serviceError);
+    return estudiantes.length === 0
+      ? handleSuccess(res, 204)
+      : handleSuccess(res, 200, "Estudiantes encontrados", estudiantes);
+  } catch (error) {
+    return handleErrorServer(res, 500, error.message);
+  }
+}
+
+/* Obtener profesores con sus estudiantes */
+export async function getProfesoresConEstudiantes(req, res) {
+  try {
+    const [profesores, serviceError] = await getProfesoresConEstudiantesService();
+    if (serviceError) return handleErrorClient(res, 400, serviceError);
+    return profesores.length === 0
+      ? handleSuccess(res, 204)
+      : handleSuccess(res, 200, "Profesores encontrados", profesores);
   } catch (error) {
     return handleErrorServer(res, 500, error.message);
   }

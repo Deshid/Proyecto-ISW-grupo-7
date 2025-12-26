@@ -1,0 +1,115 @@
+/* Sidebar styles*/
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background: linear-gradient(180deg, #443d3b, #1c1917); /* stone-800 a stone-900 */
+  box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.sidebar-header {
+  padding: 24px 18px;
+  border-bottom: 1px solid #57534e; /* stone-600 */
+  background: linear-gradient(90deg, #78350f, #443d3b); /* amber-900 a stone-800 */
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  color: #fef3c7; /* amber-100 */
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.sidebar-header p {
+  margin: 8px 0 0 0;
+  font-size: 13px;
+  color: #fde68a; /* amber-200 */
+}
+
+.sidebar-navegacion { flex: 1; padding: 16px; }
+
+.sidebar-navegacion ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-navegacion li { width: 100%; }
+.sidebar-navegacion li + li { margin-top: 8px; }
+
+.sidebar-navegacion a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  color: #e7e5e4; /* stone-200 */
+  text-decoration: none;
+  border-left: 4px solid transparent;
+  transition: background .2s ease, color .2s ease, border-color .2s ease;
+  font-weight: 400;
+  border-radius: 10px;
+}
+
+/* Icons */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.sidebar-icon {
+  font-size: 22px;
+  line-height: 1;
+  color: #e7e5e4; /* stone-200 */
+}
+
+.sidebar-navegacion a.active .sidebar-icon,
+.sidebar-navegacion a:hover .sidebar-icon {
+  color: #ffffff;
+}
+
+.sidebar-navegacion a:hover {
+  background: #44403c; /* stone-700 */
+  color: #ffffff;
+}
+
+.sidebar-navegacion a.active {
+  color: #ffffff;
+  border-left-color: transparent;
+  background: linear-gradient(90deg, #b45309, #92400e);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+  font-weight: 400;
+}
+
+.sidebar-navegacion a.active .material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+}
+
+.sidebar-pie {
+  border-top: 1px solid #57534e;
+  padding: 8px 0;
+}
+
+.sidebar-pie a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  color: #ef4444; 
+  text-decoration: none;
+  transition: background .2s ease, color .2s ease;
+  font-weight: 400;
+}
+
+.sidebar-pie a:hover {
+  background: #44403c; /* stone-700 */
+  color: #dc2626; /* red-600 */
+}
+
+/* Footer */
+.sidebar-pie .sidebar-icon { color: #ef4444; }
+.sidebar-pie a:hover .sidebar-icon { color: #dc2626; }

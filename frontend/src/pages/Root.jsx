@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import Navbar from '@components/Navbar';
+import Sidebar from '@components/Sidebar';
 import { AuthProvider } from '@context/AuthContext';
 
 function Root()  {
@@ -17,8 +17,10 @@ function PageRoot() {
     
 return (
     <>
-        {shouldShowNavbar && <Navbar />}
-        <Outlet />
+        {shouldShowNavbar && <Sidebar />}
+        <div style={{ marginLeft: shouldShowNavbar ? '250px' : '0', minHeight: '100vh' }}>
+            <Outlet />
+        </div>
     </>
 );
 }
