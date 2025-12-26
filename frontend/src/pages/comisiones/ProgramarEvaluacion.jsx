@@ -78,6 +78,17 @@ const ProgramarEvaluacion = () => {
                     })),
                   },
                   {
+                    name: 'modalidad',
+                    label: 'Modalidad',
+                    fieldType: 'select',
+                    required: false,
+                    options: [
+                      { label: 'Presencial', value: 'presencial' },
+                      { label: 'Online', value: 'online' },
+                      { label: 'Híbrida', value: 'híbrida' },
+                    ],
+                  },
+                  {
                     name: 'fecha',
                     label: 'Fecha',
                     placeholder: 'DD-MM-YYYY',
@@ -109,6 +120,9 @@ const ProgramarEvaluacion = () => {
                     horaInicio: formData.horaInicio,
                     horaFin: formData.horaFin,
                   };
+                  if (formData.modalidad) {
+                    payload.modalidad = formData.modalidad;
+                  }
                   const res = await createHorario(payload);
                   if (res && res.status && res.status.toLowerCase() === 'success') {
                     showSuccessAlert(
@@ -161,6 +175,7 @@ const ProgramarEvaluacion = () => {
                     <th>Fecha</th>
                     <th>Hora Inicio</th>
                     <th>Hora Fin</th>
+                    <th>Modalidad</th>
                     <th>Acciones</th>
                   </tr>
                 </thead>
@@ -170,6 +185,7 @@ const ProgramarEvaluacion = () => {
                       <td>{horario.fecha}</td>
                       <td>{formatHora(horario.horaInicio)}</td>
                       <td>{formatHora(horario.horaFin)}</td>
+                      <td>{horario.modalidad ? horario.modalidad.charAt(0).toUpperCase() + horario.modalidad.slice(1) : '—'}</td>
                       <td className="celda-acciones">
                         <button 
                           className="btn btn-outline-amber"
@@ -228,6 +244,9 @@ const ProgramarEvaluacion = () => {
             horaInicio: formData.horaInicio,
             horaFin: formData.horaFin,
           };
+          if (formData.modalidad) {
+            payload.modalidad = formData.modalidad;
+          }
           const res = await actualizarHorario(horarioEditando.id_horario, payload);
           if (res && res.status && res.status.toLowerCase() === 'success') {
             showSuccessAlert('Horario actualizado', res.message || 'Actualización exitosa');

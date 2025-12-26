@@ -74,7 +74,9 @@ export async function asignarEstudiantesAProfesor(id_profesor, listaEstudiantes)
 export async function getProfesores() {
   try {
     const response = await axios.get('/profesores');
-    return response.data.data || [];
+    const profesores = response.data.data || [];
+    const collator = new Intl.Collator('es', { sensitivity: 'base', numeric: true });
+    return profesores.sort((a, b) => collator.compare(a.nombreCompleto || '', b.nombreCompleto || ''));
   } catch (error) {
     console.error('Error al obtener profesores:', error);
     return [];
@@ -86,7 +88,10 @@ export async function getEstudiantes() {
   try {
     const response = await axios.get('/user/');
     const users = response.data.data || [];
-    return users.filter(user => user.rol === 'estudiante');
+    const collator = new Intl.Collator('es', { sensitivity: 'base', numeric: true });
+    return users
+      .filter(user => user.rol === 'estudiante')
+      .sort((a, b) => collator.compare(a.nombreCompleto || '', b.nombreCompleto || ''));
   } catch (error) {
     console.error('Error al obtener estudiantes:', error);
     return [];
