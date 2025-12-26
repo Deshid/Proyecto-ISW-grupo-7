@@ -9,6 +9,7 @@ const SolicitudPage = () => {
   const [selectedEvaluations, setSelectedEvaluations] = useState([]);
   const [modalidad, setModalidad] = useState('presencial');
   const [descripcion, setDescripcion] = useState('');
+  const maxDescripcionLength = 200;
   const [evidencia, setEvidencia] = useState(null);
   const [misSolicitudes, setMisSolicitudes] = useState([]);
   const [evaluaciones, setEvaluaciones] = useState([]);
@@ -183,7 +184,14 @@ const SolicitudPage = () => {
 
         <label>
           Descripción:
-          <textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+          <textarea 
+            value={descripcion} 
+            onChange={(e) => setDescripcion(e.target.value)} 
+            maxLength={maxDescripcionLength}
+          />
+          <div className="char-counter">
+            {descripcion.length}/{maxDescripcionLength} caracteres
+          </div>
         </label>
 
         {tipo === 'recuperacion' && (
