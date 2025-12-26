@@ -4,8 +4,8 @@
   padding: 15px;
   transform: translateY(-45px);
   border-radius: 12px;
-  border: 1px solid #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 52, 126, 0.15);
+ /* border: 1px solid #ffffff;*/
+  /*box-shadow: 0 4px 12px rgba(0, 52, 126, 0.15);*/
 }
 
 /* === TÍTULO === */
@@ -26,6 +26,7 @@
   border-radius: 8px;
   overflow: hidden;
   transform: translateY(15px);
+  box-shadow: 0 4px 12px rgba(0, 52, 126, 0.15);
 }
 
 .solicitudes-profesor thead {
@@ -48,7 +49,8 @@
 }
 
 .decision-cell {
-  max-width: 300px;
+  max-width: 500px;
+  min-width: 120px;
   word-wrap: break-word;
   white-space: normal;
 }
