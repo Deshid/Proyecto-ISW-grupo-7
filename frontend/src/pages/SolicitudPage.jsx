@@ -231,7 +231,7 @@ const SolicitudPage = () => {
               )}
               
               {s.descripcion && <div>Descripción: {s.descripcion}</div>}
-              {s.justificacionProfesor && <div className="justificacion-text">Justificación: {s.justificacionProfesor}</div>}
+              {s.justificacionProfesor && <div className="justificacion-text">Respuesta Profesor: {s.justificacionProfesor}</div>}
               {s.evidenciaPath && <div><a href={s.evidenciaPath} target="_blank">Ver evidencia</a></div>}
             </li>
           ))}
