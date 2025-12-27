@@ -1,0 +1,121 @@
+/* Estilos base (MODIFICADOS para hacerlo más pequeño) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* REDUCIDO: menos padding y max-width */
+.modal-content {
+  background-color: white;
+  padding: 1.5rem; /* Reducido de 2rem */
+  border-radius: 8px;
+  width: 90%;
+  max-width: 450px; /* Reducido de 500px */
+  position: relative;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-height: 85vh; /* Limita la altura */
+  overflow-y: auto; /* Scroll si es necesario */
+}
+
+/* Botón de cerrar MÁS GRANDE y mejor posicionado */
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.8rem; /* Aumentado de 1.5rem */
+  cursor: pointer;
+  color: #666;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001; /* Asegura que esté sobre todo */
+}
+
+.close-button:hover {
+  color: #333;
+  background-color: #f0f0f0;
+  border-radius: 50%;
+}
+
+.message {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* ========== NUEVOS ESTILOS (también reducidos) ========== */
+
+/* Separador */
+.modal-content hr {
+  margin: 1.5rem 0; /* Reducido de 2rem */
+  border: none;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Títulos más pequeños */
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 0.8rem; /* Reducido */
+  color: #333;
+  font-size: 1.1rem; /* Reducido de 1.2rem */
+  font-weight: 600;
+}
+
+/* Etiquetas */
+.modal-content label {
+  display: block;
+  margin-bottom: 0.4rem; /* Reducido */
+  color: #555;
+  font-weight: 500;
+  font-size: 0.9rem; /* Reducido */
+}
+
+/* Input más compacto */
+.modal-content input[type="text"] {
+  width: 100%;
+  padding: 0.6rem; /* Reducido de 0.75rem */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95rem; /* Reducido */
+  margin-bottom: 0.8rem; /* Reducido */
+  box-sizing: border-box;
+}
+
+/* Botón de borrar más compacto */
+.delete-button {
+  width: 100%;
+  padding: 0.7rem; /* Reducido de 0.75rem */
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.95rem; /* Reducido */
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 0.8rem; /* Reducido */
+}

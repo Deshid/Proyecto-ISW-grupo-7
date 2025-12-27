@@ -128,6 +128,11 @@
 .celda-acciones .btn { margin-right: 0; flex-shrink: 0; padding: 8px 12px; font-size: 14px; }
 .celda-acciones .btn:last-child { margin-right: 0; }
 
+/* Acciones un poco más compactas */
+.tabla-comisiones .celda-acciones { gap: 4px; flex-wrap: nowrap; line-height: 1; }
+.tabla-comisiones .celda-acciones .btn { padding: 6px 8px; font-size: 12px; min-width: auto; }
+.tabla-comisiones .celda-acciones .material-symbols-outlined { font-size: 18px; }
+
 /* Botones */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; border-radius: 8px; font-weight: 700; font-family: inherit; border: none; cursor: pointer; transition: background .2s ease, color .2s ease; }
 .btn-primary { color: var(--amber-800); background: transparent; }
@@ -364,6 +369,12 @@
   animation: slideUp 0.3s ease-in-out;
 }
 
+/* Modal más amplio para horarios asignados del profesor */
+.modal-content.horarios-modal {
+  max-width: 600px;
+  width: min(95vw, 600px);
+}
+
 @keyframes slideUp {
   from {
     opacity: 0;
@@ -389,7 +400,7 @@
   position: absolute;
   left: 20px;
   font-size: 20px;
-  color: var(--stone-700);
+  color: var(--amber-700);
 }
 
 .modal-header h3 {
