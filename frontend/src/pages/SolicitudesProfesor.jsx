@@ -62,18 +62,22 @@ const SolicitudesProfesor = () => {
       </div>
       <div className="filtros-container">
         <button className={filtro === "todos" ? "filtro-activo" : ""} onClick={() => setFiltro("todos")}>
-        Todos
+          <span className="material-symbols-outlined">list</span>
+          Todos
         </button>
 
         <button className={filtro === "revision" ? "filtro-activo" : ""} onClick={() => setFiltro("revision")}>
-         Revisión
+          <span className="material-symbols-outlined">search</span>
+          Revisión
         </button>
 
         <button className={filtro === "recuperacion" ? "filtro-activo" : ""} onClick={() => setFiltro("recuperacion")}>
-        Recuperación
+          <span className="material-symbols-outlined">refresh</span>
+          Recuperación
         </button>
         <button className={filtro === "pendiente" ? "filtro-activo" : ""} onClick={() => setFiltro("pendiente")}>
-        Pendiente
+          <span className="material-symbols-outlined">schedule</span>
+          Pendiente
         </button>
       </div>
 
@@ -106,8 +110,12 @@ const SolicitudesProfesor = () => {
                 <td className="decision-cell">
                   {s.estado === 'pendiente' ? (
                     <>
-                      <button className="btn-azul" onClick={() => openDecisionModal(s.id, 'aprobada')}>Aprobar</button>
-                      <button className="btn-rojo" onClick={() => openDecisionModal(s.id, 'rechazada')}>Rechazar</button>
+                      <button className="btn-azul" onClick={() => openDecisionModal(s.id, 'aprobada')}>
+                        Aprobar
+                      </button>
+                      <button className="btn-rojo" onClick={() => openDecisionModal(s.id, 'rechazada')}>
+                        Rechazar
+                      </button>
                     </>
                   ) : (
                     s.justificacionProfesor || '-'
@@ -147,9 +155,11 @@ const SolicitudesProfesor = () => {
 
       <div className="modal-buttons">
         <button className="btn-rojo" onClick={() => setModalOpen(false)}>
+          <span className="material-symbols-outlined">close</span>
           Cancelar
         </button>
         <button className="btn-azul" onClick={handleDecisionSubmit}>
+          <span className="material-symbols-outlined">check</span>
           Confirmar {decision === 'aprobada' ? 'Aprobación' : 'Rechazo'}
         </button>
       </div>

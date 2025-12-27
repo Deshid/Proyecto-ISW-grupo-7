@@ -116,7 +116,7 @@ const SolicitudPage = () => {
         </label>
 
         <div>
-          <h3>Seleccionar Evaluaciones:</h3>
+          <label>Seleccionar Evaluaciones:</label>
           {tipo === 'revision' ? (
             // Mostrar evaluaciones donde asistió con checkboxes para múltiples selecciones
             evaluacionesParaRevision.map(evaluacion => (
@@ -158,6 +158,7 @@ const SolicitudPage = () => {
         {tipo === 'revision' && (
           <>
             <button type="button" className="pauta-btn" onClick={() => setShowPautas(!showPautas)}>
+              <span className="material-symbols-outlined">{showPautas ? 'visibility_off' : 'visibility'}</span>
               {showPautas ? 'Ocultar Pautas' : 'Mostrar Todas las Pautas'}
             </button>
             {showPautas && (
@@ -205,7 +206,10 @@ const SolicitudPage = () => {
           </label>
         )}
 
-        <button type="submit" className="solicitud-btn">Enviar solicitud</button>
+        <button type="submit" className="solicitud-btn">
+          <span className="material-symbols-outlined">send</span>
+          Enviar solicitud
+        </button>
       </form>
 
       <h3>Mis solicitudes</h3>
@@ -214,8 +218,20 @@ const SolicitudPage = () => {
           {misSolicitudes.map(s => (
             <li key={s.id}>
               <strong>{s.tipo}</strong> – Estado: {s.estado}
+              
+              {s.modalidad && <div>Modalidad: {s.modalidad}</div>}
+              
+              {s.notas && s.notas.length > 0 && (
+                <div>Notas Seleccionadas:   
+                  {s.notas.map(notaId => {
+                    const evaluacion = evaluaciones.find(e => e.id === Number(notaId));
+                    return evaluacion ? ` ${evaluacion.pauta?.nombre_pauta} (Nota: ${evaluacion.nota})` : `ID: ${notaId}`;
+                  }).join(', ')}
+                </div>
+              )}
+              
               {s.descripcion && <div>Descripción: {s.descripcion}</div>}
-              {s.justificacionProfesor && <div className="justificacion-text">Justificación: {s.justificacionProfesor}</div>}
+              {s.justificacionProfesor && <div className="justificacion-text">Respuesta Profesor: {s.justificacionProfesor}</div>}
               {s.evidenciaPath && <div><a href={s.evidenciaPath} target="_blank">Ver evidencia</a></div>}
             </li>
           ))}
