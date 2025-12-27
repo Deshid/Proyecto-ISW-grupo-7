@@ -9,6 +9,7 @@ import {
 	getHorariosPorLugar,
 	getHorariosPorProfesor,
 	getLugares,
+	getProfesoresConEstudiantes,
 } from "../controllers/comision.controller.js";
 
 const router = Router();
@@ -30,6 +31,7 @@ router.post("/profesor/:id_profesor/asignar-estudiantes", asignarEstudiantesAPro
 router.get("/horarios/profesor/:id_profesor", getHorariosPorProfesor);
 /* Obtener estudiantes por profesor */
 router.get("/profesor/:id_profesor/estudiantes", getEstudiantesPorProfesor);
-
+/* Obtener profesores con sus estudiantes */
+router.get("/profesores", getProfesoresConEstudiantes);
 
 export default router;

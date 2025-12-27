@@ -35,6 +35,17 @@ export async function getHorariosPorLugar(id_lugar) {
   }
 }
 
+/* Obtener horarios por profesor */
+export async function getHorariosPorProfesor(id_profesor) {
+  try {
+    const response = await axios.get(`/horarios/profesor/${id_profesor}`);
+    return response.data.data || [];
+  } catch (error) {
+    console.error('Error al obtener horarios del profesor:', error);
+    return [];
+  }
+}
+
 /* Asignar profesor a horario */
 export async function asignarProfesorAHorario(id_horario, id_profesor) {
   try {
@@ -62,9 +73,10 @@ export async function asignarEstudiantesAProfesor(id_profesor, listaEstudiantes)
 /* Obtener profesores */
 export async function getProfesores() {
   try {
-    const response = await axios.get('/user/');
-    const users = response.data.data || [];
-    return users.filter(user => user.rol === 'profesor');
+    const response = await axios.get('/profesores');
+    const profesores = response.data.data || [];
+    const collator = new Intl.Collator('es', { sensitivity: 'base', numeric: true });
+    return profesores.sort((a, b) => collator.compare(a.nombreCompleto || '', b.nombreCompleto || ''));
   } catch (error) {
     console.error('Error al obtener profesores:', error);
     return [];
@@ -76,7 +88,10 @@ export async function getEstudiantes() {
   try {
     const response = await axios.get('/user/');
     const users = response.data.data || [];
-    return users.filter(user => user.rol === 'estudiante');
+    const collator = new Intl.Collator('es', { sensitivity: 'base', numeric: true });
+    return users
+      .filter(user => user.rol === 'estudiante')
+      .sort((a, b) => collator.compare(a.nombreCompleto || '', b.nombreCompleto || ''));
   } catch (error) {
     console.error('Error al obtener estudiantes:', error);
     return [];

@@ -4,6 +4,8 @@ import {
   getSolicitudesByStudentService,
   getSolicitudesByProfesorService,
   updateSolicitudEstadoService,
+  getEvaluacionesEstudianteService,
+  getPautasService,
 } from "../services/solicitud.service.js";
 import { createSolicitudValidation, updateSolicitudValidation } from "../validations/solicitud.validation.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
@@ -24,7 +26,7 @@ export async function createSolicitud(req, res) {
 
     if (body.tipo === "revision") {
       if (!body.descripcion || body.descripcion.trim().length === 0) {
-        return handleErrorClient(res, 400, "Para solicitudes de revisión se debe indicar la evaluación a revisar");
+        return handleErrorClient(res, 400, "Para solicitudes de revisión se debe indicar lo que desea revisar de las evaluaciones");
       }
     }
 
@@ -70,7 +72,7 @@ export async function getSolicitudesStudent(req, res) {
 
 export async function getSolicitudesProfesor(req, res) {
   try {
-    const [solicitudes, err] = await getSolicitudesByProfesorService();
+    const [solicitudes, err] = await getSolicitudesByProfesorService(req.user.email);
     if (err) return handleErrorClient(res, 404, err);
 
     solicitudes.length === 0 ? handleSuccess(res, 204) : handleSuccess(res, 200, "Solicitudes encontradas", solicitudes);
@@ -91,6 +93,28 @@ export async function updateSolicitudEstado(req, res) {
     if (err) return handleErrorClient(res, 404, err);
 
     handleSuccess(res, 200, "Solicitud actualizada", updated);
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
+
+export async function getEvaluacionesEstudiante(req, res) {
+  try {
+    const [evaluaciones, err] = await getEvaluacionesEstudianteService(req.user.email);
+    if (err) return handleErrorClient(res, 404, err);
+
+    evaluaciones.length === 0 ? handleSuccess(res, 204) : handleSuccess(res, 200, "Evaluaciones del estudiante", evaluaciones);
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
+
+export async function getPautas(req, res) {
+  try {
+    const [pautas, err] = await getPautasService();
+    if (err) return handleErrorClient(res, 404, err);
+
+    pautas.length === 0 ? handleSuccess(res, 204) : handleSuccess(res, 200, "Pautas disponibles", pautas);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }

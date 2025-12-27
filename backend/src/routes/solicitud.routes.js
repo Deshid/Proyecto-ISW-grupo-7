@@ -11,6 +11,8 @@ import {
   getSolicitudesStudent,
   getSolicitudesProfesor,
   updateSolicitudEstado,
+  getEvaluacionesEstudiante,
+  getPautas,
 } from "../controllers/solicitud.controller.js";
 
 const router = Router();
@@ -44,5 +46,11 @@ router.get("/profesor", authenticateJwt, isProfesor, getSolicitudesProfesor);
 
 // profesor actualiza estado y justificacion
 router.patch("/:id", authenticateJwt, isProfesor, updateSolicitudEstado);
+
+// obtener evaluaciones del estudiante
+router.get("/evaluaciones", authenticateJwt, getEvaluacionesEstudiante);
+
+// obtener todas las pautas
+router.get("/pautas", authenticateJwt, getPautas);
 
 export default router;

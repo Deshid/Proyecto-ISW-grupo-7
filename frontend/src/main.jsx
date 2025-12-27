@@ -1,10 +1,9 @@
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import Evaluations from '@pages/Evaluations';
 import Login from '@pages/Login';
 import Home from '@pages/Home';
 import Users from '@pages/Users';
-import Comisiones from '@pages/Comisiones';
 import Register from '@pages/Register';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
@@ -12,6 +11,10 @@ import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
 import SolicitudPage from "@pages/SolicitudPage";
 import SolicitudesProfesor from '@pages/SolicitudesProfesor';
+import ComisionesLayout from '@pages/comisiones/ComisionesLayout';
+import ProgramarEvaluacion from '@pages/comisiones/ProgramarEvaluacion';
+import Profesores from '@pages/comisiones/Profesores';
+import Estudiantes from '@pages/comisiones/Estudiantes';
 
 const router = createBrowserRouter([
   {
@@ -52,9 +55,27 @@ const router = createBrowserRouter([
       path: '/comisiones',
       element: (
         <ProtectedRoute allowedRoles={['administrador','profesor']}>
-          <Comisiones />
+          <ComisionesLayout />
         </ProtectedRoute>
       ),
+      children: [
+        {
+          index: true,
+          element: <Navigate to="programar" replace />
+        },
+        {
+          path: 'programar',
+          element: <ProgramarEvaluacion />
+        },
+        {
+          path: 'profesores',
+          element: <Profesores />
+        },
+        {
+          path: 'estudiantes',
+          element: <Estudiantes />
+        }
+      ]
     },
     {
         path: '/solicitud',

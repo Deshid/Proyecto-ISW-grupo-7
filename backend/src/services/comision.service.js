@@ -4,7 +4,7 @@ import User from "../entity/user.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 
 /* Crear horario */
-export async function createHorarioService(id_lugar, fecha, horaInicio, horaFin) {
+export async function createHorarioService(id_lugar, fecha, horaInicio, horaFin, modalidad) {
     try {
         const lugarRepository = AppDataSource.getRepository(Lugar);
         const lugar = await lugarRepository.findOneBy({ id_lugar: id_lugar });
@@ -36,6 +36,7 @@ export async function createHorarioService(id_lugar, fecha, horaInicio, horaFin)
             fecha: fechaStr,
             horaInicio: horaInicio,
             horaFin: horaFin,
+            modalidad: modalidad || null,
         });
         await horarioRepository.save(nuevoHorario);
         return [nuevoHorario, null];
@@ -54,6 +55,10 @@ export async function getHorariosPorLugarService(id_lugar) {
                 estado: "activo"
             },
             relations: ["lugar"],
+            order: {
+                fecha: "ASC",
+                horaInicio: "ASC"
+            }
         });
         return horarios;
     }
@@ -64,7 +69,7 @@ export async function getHorariosPorLugarService(id_lugar) {
 }
 
 /* Actualizar horario */
-export async function actualizarHorarioService(id_horario, fecha, horaInicio, horaFin) {
+export async function actualizarHorarioService(id_horario, fecha, horaInicio, horaFin, modalidad) {
     try {
         const horarioRepository = AppDataSource.getRepository("Horario");
         const horario = await horarioRepository.findOneBy({ id_horario: id_horario });
@@ -79,6 +84,9 @@ export async function actualizarHorarioService(id_horario, fecha, horaInicio, ho
         horario.fecha = fechaStr;
         horario.horaInicio = horaInicio;
         horario.horaFin = horaFin;
+        if (modalidad !== undefined) {
+            horario.modalidad = modalidad;
+        }
         await horarioRepository.save(horario);
         return [horario, null];
     } catch (error) {
@@ -150,12 +158,21 @@ export async function getHorariosPorProfesorService(id_profesor) {
 export async function asignarEstudiantesAProfesorService(id_profesor, listaEstudiantes) {
     try {
         const userRepository = AppDataSource.getRepository(User);
-        const profesor = await userRepository.findOneBy({ id: id_profesor, rol: "profesor" });
+        
+        // Usar QueryBuilder para cargar el profesor con sus relaciones
+        const profesor = await userRepository
+            .createQueryBuilder("profesor")
+            .leftJoinAndSelect("profesor.estudiantes", "estudiante")
+            .where("profesor.id = :id", { id: id_profesor })
+            .andWhere("profesor.rol = :rol", { rol: "profesor" })
+            .getOne();
+        
         if (!profesor) {
             return [null, "Profesor no encontrado"];
         }
         
         const estudiantes = await userRepository.findByIds(listaEstudiantes, { where: { rol: "estudiante" } });
+        
         if (estudiantes.length !== listaEstudiantes.length) {
             return [null, "Uno o más estudiantes no encontrados"];
         }
@@ -191,8 +208,9 @@ export async function asignarEstudiantesAProfesorService(id_profesor, listaEstud
         }
         
         profesor.estudiantes = estudiantes;
-        await userRepository.save(profesor);
-        return [profesor, null];
+        const profesorGuardado = await userRepository.save(profesor);
+        
+        return [profesorGuardado, null];
     } catch (error) {
         console.error("Error al asignar estudiantes al profesor:", error);
         return [null, "Error interno del servidor"];
@@ -213,6 +231,30 @@ export async function getEstudiantesPorProfesorService(id_profesor) {
         return [profesor.estudiantes, null];
     } catch (error) {
         console.error("Error al obtener estudiantes por profesor:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+/* Obtener profesores con sus estudiantes asignados */
+export async function getProfesoresConEstudiantesService() {
+    try {
+        const userRepository = AppDataSource.getRepository(User);
+        const profesores = await userRepository
+            .createQueryBuilder("profesor")
+            .leftJoinAndSelect("profesor.estudiantes", "estudiante")
+            .where("profesor.rol = :rol", { rol: "profesor" })
+            .orderBy("profesor.nombreCompleto", "ASC")
+            .getMany();
+        
+        // Transformar la respuesta para que sea más clara
+        const profesoresFormateados = profesores.map(prof => ({
+            ...prof,
+            estudiantesAsignados: prof.estudiantes || []
+        }));
+        
+        return [profesoresFormateados, null];
+    } catch (error) {
+        console.error("Error al obtener profesores con estudiantes:", error);
         return [null, "Error interno del servidor"];
     }
 }
