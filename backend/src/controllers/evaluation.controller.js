@@ -70,7 +70,8 @@ const getEvaluationById = async (req, res) => {
 
 export const evaluateStudentController = async (req, res) => {
     try {
-        const { pautaId, estudianteId, puntajesItems } = req.body;
+        const { pautaId, estudianteId, puntajesItems, asiste = true, repeticion = false } = req.body;
+        console.log("[evaluateStudentController] body flags:", { asiste, repeticion });
         const profesorId = req.user.id;
         
         const result = await evaluationService.evaluateStudent({
@@ -84,6 +85,7 @@ export const evaluateStudentController = async (req, res) => {
         
         handleSuccess(res, 201, result.message, result.evaluacion);
     } catch (error) {
+        console.error("[evaluateStudentController] error:", error);
         handleErrorClient(res, 400, error.message);
     }
 };

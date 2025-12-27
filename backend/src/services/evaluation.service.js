@@ -136,7 +136,12 @@ const getEvaluationById = async (id, userId, userRole) => {
 };
 
 
-const evaluateStudent = async ({ profesorId, pautaId, estudianteId, puntajesItems }) => {
+const evaluateStudent = async ({ profesorId, 
+    pautaId, 
+    estudianteId, 
+    puntajesItems, 
+    asiste: _asiste = true, 
+    repeticion: _repeticion = false }) => {
     const queryRunner = AppDataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -144,6 +149,7 @@ const evaluateStudent = async ({ profesorId, pautaId, estudianteId, puntajesItem
     try {
         const pautaRepo = queryRunner.manager.getRepository("Pauta");
         const evalRepo = queryRunner.manager.getRepository("EvaluacionEstudiante");
+        const detalleRepo = queryRunner.manager.getRepository("DetalleEvaluacion");
 
         const pauta = await pautaRepo.findOne({
             where: { id: pautaId },
@@ -153,7 +159,6 @@ const evaluateStudent = async ({ profesorId, pautaId, estudianteId, puntajesItem
         if (!pauta) throw new Error("Pauta no encontrada");
         if (pauta.creador.id !== profesorId) throw new Error("No autorizado");
 
-            // Validar repetición: solo si existe una previa en la misma pauta
         const previa = await evalRepo.findOne({
         where: { estudiante: 
                     { id: estudianteId }, 
@@ -161,16 +166,24 @@ const evaluateStudent = async ({ profesorId, pautaId, estudianteId, puntajesItem
                     { id: pautaId } 
                 },
         });
-        if (repeticion && !previa) throw new Error("La repetición solo se permite si existe una evaluación previa");
+        if (_repeticion && !previa) throw new Error("La repetición solo se permite si existe una evaluación previa");
 
-        // Calcular puntaje total obtenido y máximo
+        // Coercer a booleanos para evitar referencias inesperadas
+        console.log("[evaluateStudent] raw flags:", { _asiste, _repeticion });
+        const attended = Boolean(_asiste);
+        const repeated = Boolean(_repeticion);
+
         let puntajeObtenido = 0;
         let puntajeMaximo = pauta.items.reduce((acc, it) => acc + Number(it.puntaje_maximo), 0);
+        let nota = 1;
 
-        if (asiste) {
+        if (attended) {
             for (const item of pauta.items) {
                 const puntajeItem = puntajesItems?.find(p => p.itemId === item.id);
-                if (!puntajeItem) throw new Error(`Falta puntaje para item ${item.id}`);
+                if (!puntajeItem) {
+                    const expectedIds = pauta.items.map(it => it.id);
+                    throw new Error(`Falta puntaje para item ${item.id}. Asegúrate de usar los IDs reales de la pauta: ${expectedIds.join(', ')}`);
+                }
                 puntajeObtenido += Number(puntajeItem.puntaje);
             }
             nota = calculateGrade(puntajeObtenido, puntajeMaximo, pauta.porcentaje_escala);
@@ -184,11 +197,25 @@ const evaluateStudent = async ({ profesorId, pautaId, estudianteId, puntajesItem
             pauta: { id: pautaId },
             puntaje_obtenido: puntajeObtenido,
             nota,
-            asiste,
-            repeticion: repeticion,
+            asiste: attended,
+            repeticion: repeated,
         });
 
         const savedEval = await evalRepo.save(evaluacion);
+        
+        if (attended && Array.isArray(puntajesItems) && puntajesItems.length > 0) {
+            const detalles = puntajesItems.map(pi =>
+                detalleRepo.create({
+                    evaluacion: { id: savedEval.id },
+                    item: { id: pi.itemId },
+                    puntaje_obtenido: Number(pi.puntaje),
+                    comentario: pi.comentario || null,
+                })
+            );
+
+            await detalleRepo.save(detalles);
+        }
+
         await queryRunner.commitTransaction();
 
         return { message: "Estudiante evaluado exitosamente", evaluacion: savedEval };
@@ -209,7 +236,7 @@ const getStudentGrades = async (estudianteId) => {
     
     return await evalRepo.find({
         where: { estudiante: { id: estudianteId } },
-        relations: ["pauta", "estudiante"],
+        relations: ["pauta", "estudiante", "detalles", "detalles.item"],
     });
 };
 

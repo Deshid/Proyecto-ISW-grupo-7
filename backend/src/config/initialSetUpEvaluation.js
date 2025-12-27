@@ -88,6 +88,7 @@ export async function createDefaultEvaluations() {
 export async function createDefaultStudentEvaluations() {
   try {
     const evalRepo = AppDataSource.getRepository("EvaluacionEstudiante");
+    const detalleRepo = AppDataSource.getRepository("DetalleEvaluacion");
     const userRepo = AppDataSource.getRepository("User");
     const pautaRepo = AppDataSource.getRepository("Pauta");
 
@@ -125,14 +126,14 @@ export async function createDefaultStudentEvaluations() {
         estudiante: { id: estudiantes[0].id },
         pauta: { id: p0.id },
         asiste: false,
-        repiticion: false,
+        repeticion: false,
         puntaje_obtenido: 0,
         nota: 1.0,
       });
       await evalRepo.save(evalAbsent);
     }
 
-    // 2) Repetición: crear primera evaluación (asiste=true), luego segunda con repiticion=true
+    // 2) Repetición: crear primera evaluación (asiste=true), luego segunda con repeticion=true
     const prevEval = await evalRepo.findOne({
       where: { estudiante: { id: estudiantes[1].id }, pauta: { id: p1.id } }
     });
@@ -143,15 +144,27 @@ export async function createDefaultStudentEvaluations() {
         estudiante: { id: estudiantes[1].id },
         pauta: { id: p1.id },
         asiste: true,
-        repiticion: false,
+        repeticion: false,
         puntaje_obtenido: score1,
         nota: nota1,
       });
-      await evalRepo.save(firstAttempt);
+      const savedFirst = await evalRepo.save(firstAttempt);
+      
+      // Crear detalles para primera evaluación
+      const detalles1 = p1.items.map((item, idx) => {
+        const puntaje = Math.round(Number(item.puntaje_maximo) * 0.40);
+        return detalleRepo.create({
+          evaluacion: { id: savedFirst.id },
+          item: { id: item.id },
+          puntaje_obtenido: puntaje,
+          comentario: `Intento inicial - item ${idx + 1}`,
+        });
+      });
+      await detalleRepo.save(detalles1);
     }
     // segunda oportunidad (repetición)
     const repExists = await evalRepo.findOne({
-      where: { estudiante: { id: estudiantes[1].id }, pauta: { id: p1.id }, repiticion: true }
+      where: { estudiante: { id: estudiantes[1].id }, pauta: { id: p1.id }, repeticion: true }
     });
     if (!repExists) {
       const score2 = Math.round(max1 * 0.80); // mejora en repetición
@@ -160,16 +173,28 @@ export async function createDefaultStudentEvaluations() {
         estudiante: { id: estudiantes[1].id },
         pauta: { id: p1.id },
         asiste: true,
-        repiticion: true,
+        repeticion: true,
         puntaje_obtenido: score2,
         nota: nota2,
       });
-      await evalRepo.save(secondAttempt);
+      const savedSecond = await evalRepo.save(secondAttempt);
+      
+      // Crear detalles para repetición (mejorados)
+      const detalles2 = p1.items.map((item, idx) => {
+        const puntaje = Math.round(Number(item.puntaje_maximo) * 0.80);
+        return detalleRepo.create({
+          evaluacion: { id: savedSecond.id },
+          item: { id: item.id },
+          puntaje_obtenido: puntaje,
+          comentario: `Repetición - mejoró significativamente en item ${idx + 1}`,
+        });
+      });
+      await detalleRepo.save(detalles2);
     }
 
     // 3) Aprobado: asiste=true, porcentaje alto
     const approvedExists = await evalRepo.findOne({
-      where: { estudiante: { id: estudiantes[2].id }, pauta: { id: p2.id }, repiticion: false, asiste: true }
+      where: { estudiante: { id: estudiantes[2].id }, pauta: { id: p2.id }, repeticion: false, asiste: true }
     });
     if (!approvedExists) {
       const score3 = Math.round(max2 * 0.75);
@@ -178,11 +203,23 @@ export async function createDefaultStudentEvaluations() {
         estudiante: { id: estudiantes[2].id },
         pauta: { id: p2.id },
         asiste: true,
-        repiticion: false,
+        repeticion: false,
         puntaje_obtenido: score3,
         nota: nota3,
       });
-      await evalRepo.save(evalApproved);
+      const savedApproved = await evalRepo.save(evalApproved);
+      
+      // Crear detalles para aprobado
+      const detalles3 = p2.items.map((item, idx) => {
+        const puntaje = Math.round(Number(item.puntaje_maximo) * 0.75);
+        return detalleRepo.create({
+          evaluacion: { id: savedApproved.id },
+          item: { id: item.id },
+          puntaje_obtenido: puntaje,
+          comentario: `Buen desempeño en item ${idx + 1}`,
+        });
+      });
+      await detalleRepo.save(detalles3);
     }
 
     console.log("* => Evaluaciones de estudiantes por defecto creadas/actualizadas");
