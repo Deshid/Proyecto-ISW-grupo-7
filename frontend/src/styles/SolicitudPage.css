@@ -88,21 +88,22 @@
 }
 
 .pauta-btn {
-  background: #065f46; 
-  border: none;
+  background: #ffffff; 
+  border: 2px solid #d97706;
+;
   padding: 13px;
   font-size: 16px;
-  color: white;
+  color: #b45309;
   border-radius: 10px;
   cursor: pointer;
-  width: 220px;
+  width: 300px;
   margin-top: 5px;
   font-weight: 600;
   transition: 0.25s;
 }
 
 .pauta-btn:hover {
-  background: #71cea2;
+  background: #f1e7d4;
   transform: scale(1.03);
 }
 
@@ -150,7 +151,7 @@
 
   background: linear-gradient(
     to right,
-    #fff4c2  0%,
+    #f1e7d4  0%,
     #d97706 120%  
   );
 
@@ -161,7 +162,7 @@
 
 /* Contenedor de pautas */
 .pautas-container {
-  background: #d5d1ce;
+  background: #f1e7d4;
   border: 2px solid #3f3836;
   border-radius: 10px;
   padding: 15px;
