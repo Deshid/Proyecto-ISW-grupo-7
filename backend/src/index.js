@@ -10,6 +10,7 @@ import { cookieKey, HOST, PORT } from "./config/configEnv.js";
 import { connectDB } from "./config/configDb.js";
 import { createLugares, createUsers } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
+import { createDefaultEvaluations, createDefaultStudentEvaluations } from "./config/initialSetUpEvaluation.js";
 import { finalizarHorariosVencidos } from "./services/comision.service.js";
 import path from "path";
 
@@ -76,8 +77,11 @@ async function setupServer() {
 async function setupAPI() {
   try {
     await connectDB();
-    await setupServer();
     await createUsers();
+    await createDefaultEvaluations();
+    await createDefaultStudentEvaluations();
+    await setupServer();
+
     await createLugares();
   } catch (error) {
     console.log("Error en index.js -> setupAPI(), el error es: ", error);

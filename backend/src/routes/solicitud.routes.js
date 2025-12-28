@@ -11,11 +11,13 @@ import {
   getSolicitudesStudent,
   getSolicitudesProfesor,
   updateSolicitudEstado,
+  getEvaluacionesEstudiante,
+  getPautas,
 } from "../controllers/solicitud.controller.js";
 
 const router = Router();
 
-// ensure upload folder exists
+// Crea carpeta /uploads si no existe.
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const uploadsDir = path.join(__dirname, "..", "..", "uploads", "solicitudes");
@@ -31,7 +33,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } }); // limit 5MB
+const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } }); // Tamaño maximo de imagen 10MB
 
 // estudiante crea solicitud (posible archivo si es recuperacion)
 router.post("/", authenticateJwt, upload.single("evidencia"), createSolicitud);
@@ -44,5 +46,11 @@ router.get("/profesor", authenticateJwt, isProfesor, getSolicitudesProfesor);
 
 // profesor actualiza estado y justificacion
 router.patch("/:id", authenticateJwt, isProfesor, updateSolicitudEstado);
+
+// obtener evaluaciones del estudiante
+router.get("/evaluaciones", authenticateJwt, getEvaluacionesEstudiante);
+
+// obtener todas las pautas
+router.get("/pautas", authenticateJwt, getPautas);
 
 export default router;
