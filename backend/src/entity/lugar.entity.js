@@ -50,6 +50,11 @@ export const HorarioSchema = new EntitySchema({
         horaFin: {
             type: "time",
         },
+        modalidad: {
+            type: "varchar",
+            length: 50,
+            nullable: true,
+        },
         estado: {
             type: "varchar",
             length: 20,
