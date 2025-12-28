@@ -82,26 +82,25 @@ const EvaluateStudentSection = () => {
 
     setLoading(true);
     try {
-      const puntajesItems = evaluationData.asiste
-        ? pautas
-            .find((p) => p.id == selectedPautaId)
-            .items.map((item) => ({
-              itemId: item.id,
-              puntaje: Number(puntajes[item.id] ?? 0),
-              comentario: comentarios[item.id] ?? null,
-            }))
-        : [];
+      const payload = {
+        pautaId: selectedPautaId,
+        estudianteId: selectedStudentId,
+        asiste: evaluationData.asiste,
+        repeticion: evaluationData.repeticion,
+      };
 
-      await evaluationService.evaluateStudent(
-        {
-          pautaId: selectedPautaId,
-          estudianteId: selectedStudentId,
-          asiste: evaluationData.asiste,
-          repeticion: evaluationData.repeticion,
-          puntajesItems,
-        },
-        token
-      );
+      // Solo incluir puntajesItems si asiste es true
+      if (evaluationData.asiste) {
+        payload.puntajesItems = pautas
+          .find((p) => p.id == selectedPautaId)
+          .items.map((item) => ({
+            itemId: item.id,
+            puntaje: Number(puntajes[item.id] ?? 0),
+            comentario: comentarios[item.id] ?? null,
+          }));
+      }
+
+      await evaluationService.evaluateStudent(payload, token);
 
       showAlert("success", "Éxito", "Evaluación registrada exitosamente");
       setSelectedPautaId("");
@@ -130,7 +129,6 @@ const EvaluateStudentSection = () => {
               value={selectedPautaId}
               onChange={(e) => {
                 setSelectedPautaId(e.target.value);
-                setPuntajes({});
               }}
               disabled={loading}
             >

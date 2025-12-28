@@ -163,6 +163,7 @@ const updateStudentEvaluation = async ({ profesorId, evaluacionId, puntajesItems
         // Actualizar evaluación
         evaluacion.puntaje_obtenido = puntajeObtenido;
         evaluacion.nota = nuevaNota;
+        evaluacion.fecha_edicion = new Date();
         await evalRepo.save(evaluacion);
 
         // Eliminar detalles antiguos con query builder (evita problemas de criterio en relaciones)
@@ -187,7 +188,7 @@ const updateStudentEvaluation = async ({ profesorId, evaluacionId, puntajesItems
         // Recargar evaluación con relaciones para devolver “detalles” actualizados
         const evaluacionActualizada = await evalRepo.findOne({
         where: { id: evaluacionId },
-        relations: ["pauta", "pauta.creador", "pauta.items", "detalles"],
+        relations: ["pauta", "pauta.creador", "pauta.items", "estudiante", "detalles", "detalles.item"],
         });
 
         await queryRunner.commitTransaction();

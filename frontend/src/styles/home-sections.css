@@ -509,3 +509,232 @@
 .evaluation-footer p strong {
   color: #4CAF50;
 }
+
+/* Accordion for evaluations */
+.evaluations-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.accordion-item {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.accordion-header {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f7f7f7;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  gap: 0.75rem;
+}
+
+.accordion-title {
+  font-weight: 700;
+  color: #333;
+}
+
+.accordion-count {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.accordion-icon {
+  transition: transform 0.2s ease;
+}
+
+.accordion-icon.open {
+  transform: rotate(180deg);
+}
+
+.accordion-body {
+  padding: 0.75rem 0.75rem 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.evaluation-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+.evaluation-row:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.row-left p {
+  margin: 0;
+  color: #444;
+}
+
+.row-student {
+  font-weight: 700;
+}
+
+.row-date {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.row-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.badge {
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.badge.score {
+  background-color: #4CAF50;
+}
+
+.badge.grade {
+  background-color: #2196F3;
+}
+
+.badge.repeat {
+  background-color: #FF9800;
+}
+
+.badge.edit {
+  background-color: #9C27B0;
+}
+
+/* Modal for evaluation details */
+.evaluation-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.evaluation-modal {
+  background: #fff;
+  border-radius: 10px;
+  width: min(700px, 90vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  padding: 1.5rem;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.modal-meta p {
+  margin: 0.25rem 0;
+  color: #555;
+}
+
+.modal-details h4 {
+  margin: 1rem 0 0.5rem 0;
+}
+
+.modal-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.edit-toggle-btn {
+  padding: 0.4rem 0.8rem;
+  background-color: #2196F3;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.edit-form .detail-item label {
+  display: block;
+  font-weight: 600;
+  margin: 0.5rem 0 0.25rem 0;
+  color: #444;
+}
+
+.edit-form input[type="number"],
+.edit-form textarea {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.75rem;
+}
+
+.save-btn {
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  padding: 0.7rem 1.1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  border-top: 1px solid #eee;
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.modal-footer p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  line-height: 1;
+}
