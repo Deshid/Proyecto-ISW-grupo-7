@@ -15,44 +15,18 @@ export const createHorarioValidation = Joi.object({
     }),
   fecha: Joi.date()
     .iso()
-    .min("now")
     .required()
     .messages({
       "date.base": "La fecha debe ser una fecha válida.",
       "date.iso": "La fecha debe estar en formato (YYYY-MM-DD).",
-      "date.min": "La fecha no puede ser anterior al día actual.",
       "any.required": "La fecha es obligatoria.",
     }),
   horaInicio: Joi.string()
     .pattern(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/)
     .required()
-    .custom((value, helpers) => {
-      const fecha = helpers.state.ancestors[0].fecha;
-      if (!fecha) return value;
-      
-      const fechaReserva = new Date(fecha);
-      const hoy = new Date();
-      hoy.setHours(0, 0, 0, 0);
-      fechaReserva.setHours(0, 0, 0, 0);
-      
-      // validar que la hora no sea pasada
-      if (fechaReserva.getTime() === hoy.getTime()) {
-        const ahora = new Date();
-        const [hora, minutos] = value.split(":");
-        const horaReserva = new Date();
-        horaReserva.setHours(parseInt(hora), parseInt(minutos), 0, 0);
-        
-        if (horaReserva < ahora) {
-          return helpers.error("any.invalid");
-        }
-      }
-      
-      return value;
-    })
     .messages({
       "string.pattern.base": "La hora de inicio debe estar en formato HH:MM.",
       "any.required": "La hora de inicio es obligatoria.",
-      "any.invalid": "La hora de inicio no puede ser anterior a la hora actual.",
     }),
   horaFin: Joi.string()
     .pattern(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/)
@@ -95,12 +69,10 @@ export const createHorarioValidation = Joi.object({
 export const actualizarHorarioValidation = Joi.object({
   fecha: Joi.date()
     .iso()
-    .min("now")
     .required()
     .messages({
       "date.base": "La fecha debe ser una fecha válida.",
       "date.iso": "La fecha debe estar en formato (YYYY-MM-DD).",
-      "date.min": "La fecha no puede ser anterior al día actual.",
       "any.required": "La fecha es obligatoria.",
     }),
   modalidad: Joi.string()
@@ -113,33 +85,9 @@ export const actualizarHorarioValidation = Joi.object({
   horaInicio: Joi.string()
     .pattern(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/)
     .required()
-    .custom((value, helpers) => {
-      const fecha = helpers.state.ancestors[0].fecha;
-      if (!fecha) return value;
-      
-      const fechaReserva = new Date(fecha);
-      const hoy = new Date();
-      hoy.setHours(0, 0, 0, 0);
-      fechaReserva.setHours(0, 0, 0, 0);
-      
-      // validar que la hora no sea pasada
-      if (fechaReserva.getTime() === hoy.getTime()) {
-        const ahora = new Date();
-        const [hora, minutos] = value.split(":");
-        const horaReserva = new Date();
-        horaReserva.setHours(parseInt(hora), parseInt(minutos), 0, 0);
-        
-        if (horaReserva < ahora) {
-          return helpers.error("any.invalid");
-        }
-      }
-      
-      return value;
-    })
     .messages({
       "string.pattern.base": "La hora de inicio debe estar en formato HH:MM (24h).",
       "any.required": "La hora de inicio es obligatoria.",
-      "any.invalid": "La hora de inicio no puede ser anterior a la hora actual.",
     }),
   horaFin: Joi.string()
     .pattern(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/)
