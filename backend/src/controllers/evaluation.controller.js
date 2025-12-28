@@ -2,7 +2,7 @@
 import evaluationService from "../services/evaluation.service.js";
 import { handleErrorClient, handleSuccess } from "../handlers/responseHandlers.js";
 
-const createEvaluation = async (req, res) => {
+export const createEvaluationController = async (req, res) => {
     try {
         const profesorId = req.user.id;
         const { nombre_pauta, items } = req.body;
@@ -23,7 +23,7 @@ const createEvaluation = async (req, res) => {
     }
 };
 
-const listEvaluations = async (req, res) => {
+export const listEvaluationsController = async (req, res) => {
     try {
         const profesorId = req.user?.id;
         const list = await evaluationService.listEvaluations(profesorId);
@@ -34,70 +34,26 @@ const listEvaluations = async (req, res) => {
 };
 
 
-const updateEvaluation = async ({ profesorId, pautaId, nombre_pauta, items }) => {
-    const queryRunner = AppDataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
+export const updateEvaluationController = async (req, res) => {
     try {
-        const pautaRepo = queryRunner.manager.getRepository("Pauta");
-        const itemRepo  = queryRunner.manager.getRepository("ItemPauta");
-        const evalRepo  = queryRunner.manager.getRepository("EvaluacionEstudiante"); // <-- faltaba
+        const profesorId = req.user.id;
+        const pautaId = Number(req.params.id);
+        const { nombre_pauta, items } = req.body;
 
-        const pautaIdNum = Number(pautaId);
+        const result = await evaluationService.updateEvaluation({
+            profesorId,
+            pautaId,
+            nombre_pauta,
+            items,
+    });
 
-        const pauta = await pautaRepo.findOne({
-            where: { id: pautaIdNum },
-            relations: ["creador", "items"],
-        });
-
-        if (!pauta) throw new Error("Pauta no encontrada");
-        if (pauta.creador.id !== profesorId) throw new Error("No autorizado: no eres el creador de esta pauta");
-
-        const evaluacionesCount = await evalRepo.count({
-            where: { pauta: { id: pautaIdNum } },
-        });
-        if (evaluacionesCount > 0) {
-            throw new Error("No se puede modificar una pauta que ya tiene evaluaciones asociadas");
-        }
-
-        if (!Array.isArray(items) || items.length === 0) {
-            throw new Error("La pauta debe contener al menos un item");
-        }
-        for (const it of items) {
-            if (!it.descripcion || it.puntaje_maximo === undefined) {
-                throw new Error("Cada item debe tener 'descripcion' y 'puntaje_maximo'");
-            }
-            if (Number(it.puntaje_maximo) < 1) {
-                throw new Error("puntaje_maximo no puede ser menor que 1");
-            }
-        }
-
-        pauta.nombre_pauta = nombre_pauta;
-        await pautaRepo.save(pauta);
-
-        await itemRepo.delete({ pauta: { id: pautaIdNum } });
-
-        const itemEntities = items.map((it) =>
-            itemRepo.create({
-                descripcion: it.descripcion,
-                puntaje_maximo: it.puntaje_maximo,
-                pauta: { id: pautaIdNum },
-            })
-        );
-        const savedItems = await itemRepo.save(itemEntities);
-
-        await queryRunner.commitTransaction();
-        return { message: "Pauta actualizada exitosamente", pauta, items: savedItems };
-    } catch (err) {
-        await queryRunner.rollbackTransaction();
-        throw err;
-    } finally {
-        await queryRunner.release();
+        handleSuccess(res, 200, result.message, { pauta: result.pauta, items: result.items });
+    } catch (error) {
+        handleErrorClient(res, 400, error.message);
     }
 };
 
-const getEvaluationById = async (req, res) => {
+export const getEvaluationByIdController = async (req, res) => {
     try {
         const { id } = req.params;
         const userId = req.user.id;
@@ -166,11 +122,11 @@ export const getStudentGradesController = async (req, res) => {
 };
 
 export default {
-    createEvaluation,
-    listEvaluations,
-    updateEvaluation,
-    getEvaluationById,
+    createEvaluationController,    
     evaluateStudentController,
-    updateStudentEvaluationController,
+    getEvaluationByIdController,
     getStudentGradesController,
+    listEvaluationsController,
+    updateEvaluationController,
+    updateStudentEvaluationController,
 };

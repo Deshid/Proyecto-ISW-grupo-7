@@ -59,66 +59,60 @@ const listEvaluations = async (profesorId) => {
     return pautas;
 }
 
+
 const updateEvaluation = async ({ profesorId, pautaId, nombre_pauta, items }) => {
-    const queryRunner = AppDataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+  const queryRunner = AppDataSource.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
 
-    try {
-        const pautaRepo = queryRunner.manager.getRepository("Pauta");
-        const itemRepo = queryRunner.manager.getRepository("ItemPauta");
+  try {
+    const pautaRepo = queryRunner.manager.getRepository("Pauta");
+    const itemRepo  = queryRunner.manager.getRepository("ItemPauta");
+    const evalRepo  = queryRunner.manager.getRepository("EvaluacionEstudiante"); // necesario
 
-    const pauta = await pautaRepo.findOne({ 
-        where: { id: pautaId }, 
-        relations: ["creador", "items"] 
+    const pauta = await pautaRepo.findOne({
+      where: { id: Number(pautaId) },
+      relations: ["creador", "items"],
     });
 
     if (!pauta) throw new Error("Pauta no encontrada");
     if (pauta.creador.id !== profesorId) throw new Error("No autorizado: no eres el creador de esta pauta");
 
-    const evaluacionesCount = await evalRepo.count({
-        where: { pauta: { id: pautaId } },
-    });
-    if (evaluacionesCount > 0) {
-        throw new Error("No se puede modificar una pauta que ya tiene evaluaciones asociadas");
-    }
+    const evaluacionesCount = await evalRepo.count({ where: { pauta: { id: Number(pautaId) } } });
+    if (evaluacionesCount > 0) throw new Error("No se puede modificar una pauta que ya tiene evaluaciones asociadas");
 
-    if (!Array.isArray(items) || items.length === 0) {
-        throw new Error("La pauta debe contener al menos un item");
-    }
+    if (!Array.isArray(items) || items.length === 0) throw new Error("La pauta debe contener al menos un item");
     for (const it of items) {
-        if (!it.descripcion || it.puntaje_maximo === undefined) {
-            throw new Error("Cada item debe tener 'descripcion' y 'puntaje_maximo'");
-        }
-        if (Number(it.puntaje_maximo) < 1) {
-            throw new Error("puntaje_maximo no puede ser menor que 1");
-        }
+      if (!it.descripcion || it.puntaje_maximo === undefined) {
+        throw new Error("Cada item debe tener 'descripcion' y 'puntaje_maximo'");
+      }
+      if (Number(it.puntaje_maximo) < 1) throw new Error("puntaje_maximo no puede ser menor que 1");
     }
 
     pauta.nombre_pauta = nombre_pauta;
     await pautaRepo.save(pauta);
 
-    await itemRepo.delete({ pauta: { id: pautaId } });
+    await itemRepo.delete({ pauta: { id: Number(pautaId) } });
 
     const itemEntities = items.map((it) =>
-        itemRepo.create({
+      itemRepo.create({
         descripcion: it.descripcion,
         puntaje_maximo: it.puntaje_maximo,
-        pauta: { id: pautaId },
-        })
+        pauta: { id: Number(pautaId) },
+      })
     );
     const savedItems = await itemRepo.save(itemEntities);
 
     await queryRunner.commitTransaction();
-
     return { message: "Pauta actualizada exitosamente", pauta, items: savedItems };
-    } catch (err) {
-        await queryRunner.rollbackTransaction();
-        throw err;
-    } finally {
-        await queryRunner.release();
-    }
+  } catch (err) {
+    await queryRunner.rollbackTransaction();
+    throw err;
+  } finally {
+    await queryRunner.release();
+  }
 };
+
 
 const getEvaluationById = async (id, userId, userRole) => {
     const pautaRepo = AppDataSource.getRepository("Pauta");

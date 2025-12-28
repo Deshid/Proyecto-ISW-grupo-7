@@ -1,10 +1,17 @@
 "use strict";
 import { Router } from "express";
-import evaluationController from "../controllers/evaluation.controller.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import { authorize } from "../middlewares/authorization.middleware.js";
-import { evaluateStudentController, getStudentGradesController } from "../controllers/evaluation.controller.js";
-import { updateStudentEvaluationController } from "../controllers/evaluation.controller.js";    
+import {
+    createEvaluationController,
+    evaluateStudentController,
+    getEvaluationByIdController,
+    getStudentGradesController,
+    listEvaluationsController,
+    updateEvaluationController,
+    updateStudentEvaluationController,
+    
+} from "../controllers/evaluation.controller.js";
 
 const router = Router();
 
@@ -12,7 +19,7 @@ router.post(
     "/evaluations-create",
     authenticateJwt,
     authorize(["profesor"]),
-    evaluationController.createEvaluation
+    createEvaluationController
 );
 
 router.post(
@@ -25,20 +32,21 @@ router.get(
     "/evaluations-list",
     authenticateJwt,
     authorize(["profesor"]),
-    evaluationController.listEvaluations
+    listEvaluationsController
 );
 
 router.get(
     "/grades/:studentId?",
     authenticateJwt,
     authorize(["profesor", "estudiante"]),
-    getStudentGradesController);
+    getStudentGradesController
+);
 
 router.put(
     "/:id",
     authenticateJwt,
     authorize(["profesor"]),
-    evaluationController.updateEvaluation
+    updateEvaluationController
 );
 
 router.put(
@@ -52,7 +60,7 @@ router.get(
     "/:id",
     authenticateJwt,
     authorize(["profesor", "estudiante"]),
-    evaluationController.getEvaluationById
+    getEvaluationByIdController
 );
 
 export default router;
