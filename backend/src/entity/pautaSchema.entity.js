@@ -23,7 +23,7 @@ const PautaSchema = new EntitySchema({
         porcentaje_escala: {
         type: "decimal",
         precision: 5,
-        scale: 2,
+        scale: 2,   
         nullable: false,
         default: 51,
     },

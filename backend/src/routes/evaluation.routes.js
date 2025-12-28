@@ -4,6 +4,7 @@ import evaluationController from "../controllers/evaluation.controller.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import { authorize } from "../middlewares/authorization.middleware.js";
 import { evaluateStudentController, getStudentGradesController } from "../controllers/evaluation.controller.js";
+import { updateStudentEvaluationController } from "../controllers/evaluation.controller.js";    
 
 const router = Router();
 
@@ -38,6 +39,13 @@ router.put(
     authenticateJwt,
     authorize(["profesor"]),
     evaluationController.updateEvaluation
+);
+
+router.put(
+    "/student-evaluation/:id",
+    authenticateJwt,
+    authorize(["profesor"]),
+    updateStudentEvaluationController
 );
 
 router.get(

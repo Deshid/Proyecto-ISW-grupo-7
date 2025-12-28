@@ -33,26 +33,67 @@ const listEvaluations = async (req, res) => {
     }
 };
 
-const updateEvaluation = async (req, res) => {
+
+const updateEvaluation = async ({ profesorId, pautaId, nombre_pauta, items }) => {
+    const queryRunner = AppDataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
-        const profesorId = req.user.id;
-        const { id } = req.params;
-        const { nombre_pauta, items } = req.body;
+        const pautaRepo = queryRunner.manager.getRepository("Pauta");
+        const itemRepo  = queryRunner.manager.getRepository("ItemPauta");
+        const evalRepo  = queryRunner.manager.getRepository("EvaluacionEstudiante"); // <-- faltaba
 
-    if (!nombre_pauta || !items || !Array.isArray(items) || items.length === 0) {
-        return res.status(400).json({ error: "nombre_pauta e items (array no vacío) son requeridos" });
-    }
+        const pautaIdNum = Number(pautaId);
 
-    const result = await evaluationService.updateEvaluation({
-        profesorId,
-        pautaId: id,
-        nombre_pauta,
-        items,
-    });
+        const pauta = await pautaRepo.findOne({
+            where: { id: pautaIdNum },
+            relations: ["creador", "items"],
+        });
 
-    res.status(200).json(result);
+        if (!pauta) throw new Error("Pauta no encontrada");
+        if (pauta.creador.id !== profesorId) throw new Error("No autorizado: no eres el creador de esta pauta");
+
+        const evaluacionesCount = await evalRepo.count({
+            where: { pauta: { id: pautaIdNum } },
+        });
+        if (evaluacionesCount > 0) {
+            throw new Error("No se puede modificar una pauta que ya tiene evaluaciones asociadas");
+        }
+
+        if (!Array.isArray(items) || items.length === 0) {
+            throw new Error("La pauta debe contener al menos un item");
+        }
+        for (const it of items) {
+            if (!it.descripcion || it.puntaje_maximo === undefined) {
+                throw new Error("Cada item debe tener 'descripcion' y 'puntaje_maximo'");
+            }
+            if (Number(it.puntaje_maximo) < 1) {
+                throw new Error("puntaje_maximo no puede ser menor que 1");
+            }
+        }
+
+        pauta.nombre_pauta = nombre_pauta;
+        await pautaRepo.save(pauta);
+
+        await itemRepo.delete({ pauta: { id: pautaIdNum } });
+
+        const itemEntities = items.map((it) =>
+            itemRepo.create({
+                descripcion: it.descripcion,
+                puntaje_maximo: it.puntaje_maximo,
+                pauta: { id: pautaIdNum },
+            })
+        );
+        const savedItems = await itemRepo.save(itemEntities);
+
+        await queryRunner.commitTransaction();
+        return { message: "Pauta actualizada exitosamente", pauta, items: savedItems };
     } catch (err) {
-    res.status(err.status || 400).json({ error: err.message });
+        await queryRunner.rollbackTransaction();
+        throw err;
+    } finally {
+        await queryRunner.release();
     }
 };
 
@@ -90,6 +131,24 @@ export const evaluateStudentController = async (req, res) => {
     }
 };
 
+export const updateStudentEvaluationController = async (req, res) => {
+    try {
+        const { id } = req.params; // ID de la evaluación
+        const { puntajesItems } = req.body;
+        const profesorId = req.user.id;
+
+        const result = await evaluationService.updateStudentEvaluation({
+            profesorId,
+            evaluacionId: Number(id),
+            puntajesItems,
+        });
+
+        handleSuccess(res, 200, result.message, result.evaluacion);
+    } catch (error) {
+        handleErrorClient(res, 400, error.message);
+    }
+};
+
 export const getStudentGradesController = async (req, res) => {
     try {
         const paramId = req.params?.studentId;
@@ -112,5 +171,6 @@ export default {
     updateEvaluation,
     getEvaluationById,
     evaluateStudentController,
+    updateStudentEvaluationController,
     getStudentGradesController,
 };

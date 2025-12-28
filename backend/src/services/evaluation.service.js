@@ -76,6 +76,13 @@ const updateEvaluation = async ({ profesorId, pautaId, nombre_pauta, items }) =>
     if (!pauta) throw new Error("Pauta no encontrada");
     if (pauta.creador.id !== profesorId) throw new Error("No autorizado: no eres el creador de esta pauta");
 
+    const evaluacionesCount = await evalRepo.count({
+        where: { pauta: { id: pautaId } },
+    });
+    if (evaluacionesCount > 0) {
+        throw new Error("No se puede modificar una pauta que ya tiene evaluaciones asociadas");
+    }
+
     if (!Array.isArray(items) || items.length === 0) {
         throw new Error("La pauta debe contener al menos un item");
     }
@@ -135,6 +142,84 @@ const getEvaluationById = async (id, userId, userRole) => {
     return pauta;
 };
 
+const updateStudentEvaluation = async ({ profesorId, evaluacionId, puntajesItems }) => {
+    const queryRunner = AppDataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+        const evalRepo = queryRunner.manager.getRepository("EvaluacionEstudiante");
+        const detalleRepo = queryRunner.manager.getRepository("DetalleEvaluacion");
+
+        const evaluacion = await evalRepo.findOne({
+            where: { id: evaluacionId },
+            relations: ["pauta", "pauta.creador", "pauta.items", "detalles"],
+        });
+
+        if (!evaluacion) throw new Error("Evaluación no encontrada");
+        if (evaluacion.pauta.creador.id !== profesorId) throw new Error("No autorizado");
+        if (!evaluacion.asiste) throw new Error("No se puede modificar una evaluación de ausencia");
+
+        // Validar que se incluyan todos los items
+        if (!Array.isArray(puntajesItems) || puntajesItems.length !== evaluacion.pauta.items.length) {
+            throw new Error("Debe incluir puntajes para todos los items de la pauta");
+        }
+
+        // Recalcular puntaje total y nota
+        let puntajeObtenido = 0;
+        const puntajeMaximo = evaluacion.pauta.items.reduce((acc, it) => acc + Number(it.puntaje_maximo), 0);
+
+        for (const item of evaluacion.pauta.items) {
+            const pi = puntajesItems.find(p => p.itemId === item.id);
+            if (!pi) throw new Error(`Falta puntaje para item ${item.id}`);
+            if (Number(pi.puntaje) > Number(item.puntaje_maximo)) {
+                throw new Error(`Puntaje ${pi.puntaje} excede el máximo ${item.puntaje_maximo} para item ${item.id}`);
+            }
+            puntajeObtenido += Number(pi.puntaje);
+        }
+
+        const nuevaNota = calculateGrade(puntajeObtenido, puntajeMaximo, evaluacion.pauta.porcentaje_escala);
+
+        // Actualizar evaluación
+        evaluacion.puntaje_obtenido = puntajeObtenido;
+        evaluacion.nota = nuevaNota;
+        await evalRepo.save(evaluacion);
+
+        // Eliminar detalles antiguos con query builder (evita problemas de criterio en relaciones)
+        await detalleRepo.createQueryBuilder()
+        .delete()
+        .from("DetalleEvaluacion")
+        .where("id_evaluacion = :id", { id: evaluacionId })
+        .execute();
+
+        // Crear nuevos detalles
+        const nuevosDetalles = puntajesItems.map((pi) =>
+        detalleRepo.create({
+            evaluacion: { id: evaluacionId },
+            item: { id: pi.itemId },
+            puntaje_obtenido: Number(pi.puntaje),
+            comentario: pi.comentario || null,
+        })
+        );
+
+        await detalleRepo.save(nuevosDetalles);
+
+        // Recargar evaluación con relaciones para devolver “detalles” actualizados
+        const evaluacionActualizada = await evalRepo.findOne({
+        where: { id: evaluacionId },
+        relations: ["pauta", "pauta.creador", "pauta.items", "detalles"],
+        });
+
+        await queryRunner.commitTransaction();
+
+        return { message: "Evaluación actualizada exitosamente", evaluacion: evaluacionActualizada };
+    } catch (err) {
+        await queryRunner.rollbackTransaction();
+        throw err;
+    } finally {
+        await queryRunner.release();
+    }
+};
 
 const evaluateStudent = async ({ profesorId, 
     pautaId, 
@@ -182,7 +267,9 @@ const evaluateStudent = async ({ profesorId,
                 const puntajeItem = puntajesItems?.find(p => p.itemId === item.id);
                 if (!puntajeItem) {
                     const expectedIds = pauta.items.map(it => it.id);
-                    throw new Error(`Falta puntaje para item ${item.id}. Asegúrate de usar los IDs reales de la pauta: ${expectedIds.join(', ')}`);
+                    const mensaje = `Falta puntaje para item ${item.id}. `
+                                  + `Asegúrate de usar los IDs reales de la pauta: ${expectedIds.join(", ")}`;
+                    throw new Error(mensaje);
                 }
                 puntajeObtenido += Number(puntajeItem.puntaje);
             }
@@ -247,5 +334,6 @@ export default {
     updateEvaluation,
     getEvaluationById,    
     evaluateStudent,
+    updateStudentEvaluation,
     getStudentGrades,
 };
