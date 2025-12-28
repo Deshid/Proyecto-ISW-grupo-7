@@ -33,7 +33,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } }); // Tamaño maximo de imagen 5MB
+const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } }); // Tamaño maximo de imagen 10MB
 
 // estudiante crea solicitud (posible archivo si es recuperacion)
 router.post("/", authenticateJwt, upload.single("evidencia"), createSolicitud);
