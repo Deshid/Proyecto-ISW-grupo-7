@@ -33,6 +33,25 @@ export const listEvaluationsController = async (req, res) => {
     }
 };
 
+export const listProfessorReviewsController = async (req, res) => {
+    try {
+        const profesorId = req.user.id;
+        const reviews = await evaluationService.listProfessorReviews(profesorId);
+        handleSuccess(res, 200, "Evaluaciones listadas", reviews);
+    } catch (error) {
+        handleErrorClient(res, 400, error.message);
+    }
+};
+
+export const listStudentsController = async (req, res) => {
+    try {
+        const students = await evaluationService.listStudents();
+        handleSuccess(res, 200, "Estudiantes listados", students);
+    } catch (error) {
+        console.error("[listStudentsController] error:", error);
+        handleErrorClient(res, 400, error.message);
+    }
+};
 
 export const updateEvaluationController = async (req, res) => {
     try {
@@ -121,12 +140,27 @@ export const getStudentGradesController = async (req, res) => {
     }
 };
 
+export const deleteEvaluationController = async (req, res) => {
+    try {
+        const profesorId = req.user.id;
+        const pautaId = Number(req.params.id);
+
+        const result = await evaluationService.deleteEvaluation(pautaId, profesorId);
+        handleSuccess(res, 200, result.message);
+    } catch (error) {
+        handleErrorClient(res, error.status || 400, error.message);
+    }
+};
+
 export default {
     createEvaluationController,    
     evaluateStudentController,
     getEvaluationByIdController,
     getStudentGradesController,
     listEvaluationsController,
+    listProfessorReviewsController,
+    listStudentsController,
     updateEvaluationController,
     updateStudentEvaluationController,
+    deleteEvaluationController,
 };

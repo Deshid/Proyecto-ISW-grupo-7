@@ -307,6 +307,80 @@ const getStudentGrades = async (estudianteId) => {
     });
 };
 
+// Listar evaluaciones realizadas sobre pautas del profesor
+const listProfessorReviews = async (profesorId) => {
+    const evalRepo = AppDataSource.getRepository("EvaluacionEstudiante");
+    return await evalRepo.find({
+        where: { pauta: { creador: { id: profesorId } } },
+        relations: ["pauta", "pauta.creador", "estudiante", "detalles", "detalles.item"],
+        order: { fecha_evaluacion: "DESC" },
+    });
+};
+
+const deleteEvaluation = async (pautaId, profesorId) => {
+    const queryRunner = AppDataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+        const pautaRepo = queryRunner.manager.getRepository("Pauta");
+        const evalRepo = queryRunner.manager.getRepository("EvaluacionEstudiante");
+        
+        const pauta = await pautaRepo.findOne({
+            where: { id: pautaId },
+            // No dependemos de una relación "evaluaciones" aquí; validamos con un conteo aparte
+            relations: ["creador"],
+        });
+
+        if (!pauta) {
+            const error = new Error("Pauta no encontrada");
+            error.status = 404;
+            throw error;
+        }
+
+        if (pauta.creador.id !== profesorId) {
+            const error = new Error("No autorizado: no eres el creador de esta pauta");
+            error.status = 403;
+            throw error;
+        }
+
+        // Verificar si hay evaluaciones asociadas
+        const evaluacionesCount = await evalRepo.count({
+            where: { pauta: { id: pautaId } }
+        });
+
+        if (evaluacionesCount > 0) {
+            const error = new Error(`No se puede eliminar una pauta que tiene ${evaluacionesCount}`
+                 + " evaluación(es) asociada(s)");
+            error.status = 400;
+            throw error;
+        }
+
+        // Eliminar primero los items de la pauta para evitar violación de FK
+        const itemRepo = queryRunner.manager.getRepository("ItemPauta");
+        await itemRepo.delete({ pauta: { id: pautaId } });
+
+        // Luego eliminar la pauta
+        await pautaRepo.remove(pauta);
+        await queryRunner.commitTransaction();
+
+        return { message: "Pauta eliminada exitosamente" };
+    } catch (err) {
+        await queryRunner.rollbackTransaction();
+        throw err;
+    } finally {
+        await queryRunner.release();
+    }
+};
+
+// Listar estudiantes (usuarios con rol "estudiante")
+const listStudents = async () => {
+    const userRepo = AppDataSource.getRepository("User");
+    return await userRepo.find({
+        where: { rol: "estudiante" },
+        select: ["id", "nombreCompleto", "email", "rut"],
+    });
+};
 
 export default {
     createEvaluation,
@@ -316,4 +390,7 @@ export default {
     evaluateStudent,
     updateStudentEvaluation,
     getStudentGrades,
+    listProfessorReviews,
+    listStudents,
+    deleteEvaluation,
 };

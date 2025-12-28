@@ -107,6 +107,36 @@ export async function getStudentGrades(studentId, token) {
     return res.json();
 }
 
+export async function getProfessorReviews(token) {
+    const res = await fetch(`${API_URL}/api/evaluation/reviews`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+    });
+    if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al obtener evaluaciones");
+    }
+    return res.json();
+}
+
+export async function getStudents(token) {
+    const res = await fetch(`${API_URL}/api/evaluation/students`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+    });
+    if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al obtener estudiantes");
+    }
+    return res.json();
+}
+
 /**
  * @param {Number} evaluacionId - ID de la evaluación
  * @param {Object} data - { puntajesItems }
@@ -126,3 +156,31 @@ export async function updateStudentEvaluation(evaluacionId, data, token) {
     }
     return res.json();
 }
+
+export async function deleteEvaluation(pautaId, token) {
+    const res = await fetch(`${API_URL}/api/evaluation/${pautaId}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+    });
+    if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al eliminar pauta");
+    }
+    return res.json();
+}
+
+export default {
+    getEvaluations,
+    getPautaById,
+    createEvaluation,
+    updateEvaluation,
+    evaluateStudent,
+    getStudentGrades,
+    getProfessorReviews,
+    getStudents,
+    updateStudentEvaluation,
+    deleteEvaluation,
+};

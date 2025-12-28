@@ -12,10 +12,13 @@ import {
 
 import {
     createEvaluationController,
+    deleteEvaluationController,
     evaluateStudentController,
     getEvaluationByIdController,
     getStudentGradesController,
     listEvaluationsController,
+    listProfessorReviewsController,
+    listStudentsController,
     updateEvaluationController,
     updateStudentEvaluationController,
 } from "../controllers/evaluation.controller.js";
@@ -46,6 +49,20 @@ router.get(
 );
 
 router.get(
+    "/reviews",
+    authenticateJwt,
+    authorize(["profesor"]),
+    listProfessorReviewsController
+);
+
+router.get(
+    "/students",
+    authenticateJwt,
+    authorize(["profesor"]),
+    listStudentsController
+);
+
+router.get(
     "/grades/:studentId?",
     authenticateJwt,
     authorize(["profesor", "estudiante"]),
@@ -73,6 +90,13 @@ router.get(
     authenticateJwt,
     authorize(["profesor", "estudiante"]),
     getEvaluationByIdController
+);
+
+router.delete(
+    "/:id",
+    authenticateJwt,
+    authorize(["profesor"]),
+    deleteEvaluationController
 );
 
 export default router;

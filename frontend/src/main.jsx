@@ -9,6 +9,8 @@ import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
+import '@styles/home.css';
+import '@styles/home-sections.css';
 
 const router = createBrowserRouter([
   {
