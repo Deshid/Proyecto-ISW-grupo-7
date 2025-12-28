@@ -2,6 +2,7 @@ import '@styles/comisiones.css';
 import MiniHeader from '@components/MiniHeader';
 import { asignarEstudiantesAProfesor, getProfesores, getEstudiantes, getHorariosPorProfesor } from '@services/comision.service.js';
 import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert.js';
+import { formatFecha } from '@helpers/formatData.js';
 import { useEffect, useState } from 'react';
 
 const Profesores = () => {
@@ -67,9 +68,16 @@ const Profesores = () => {
 
       setEstudiantesSeleccionados((prev) => {
         const yaSeleccionados = new Set(prev.estudiantes);
-        // IDs disponibles que aún no están seleccionados
-        const idsNoSeleccionados = estudiantes
+        // Id disponibles que NO están asignados a ningún profesor Y NO están seleccionados
+        const idsDisponibles = estudiantes
           .map((e) => e.id)
+          .filter((id) => {
+            // Excluir si ya está asignado a algún profesor
+            const estaAsignado = profesores.some(prof => 
+              prof.estudiantes && prof.estudiantes.some(e => e.id === id)
+            );
+            return !estaAsignado;
+          })
           .filter((id) => !yaSeleccionados.has(id));
 
         // Si ya hay suficientes, no hacemos nada
@@ -79,9 +87,9 @@ const Profesores = () => {
 
         const faltan = nTotal - prev.estudiantes.length;
         // Mezclar y tomar los faltantes sin duplicar
-        const nuevos = [...idsNoSeleccionados]
+        const nuevos = [...idsDisponibles]
           .sort(() => Math.random() - 0.5)
-          .slice(0, Math.max(0, Math.min(faltan, idsNoSeleccionados.length)));
+          .slice(0, Math.max(0, Math.min(faltan, idsDisponibles.length)));
 
         return { ...prev, estudiantes: [...prev.estudiantes, ...nuevos] };
       });
@@ -189,29 +197,51 @@ const Profesores = () => {
               </p>
               
               <div className="scroll-box modal-scroll">
-                {estudiantes.map((est) => (
-                  <label key={est.id} className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={estudiantesSeleccionados.estudiantes.includes(est.id)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setEstudiantesSeleccionados(prev => ({
-                            ...prev,
-                            estudiantes: [...prev.estudiantes, est.id]
-                          }));
-                        } else {
-                          setEstudiantesSeleccionados(prev => ({
-                            ...prev,
-                            estudiantes: prev.estudiantes.filter(id => id !== est.id)
-                          }));
-                        }
-                      }}
-                      className="checkbox-input"
-                    />
-                    <span className="checkbox-text">{est.nombreCompleto} - {est.email}</span>
-                  </label>
-                ))}
+                {estudiantes
+                  .filter((est) => {
+                    // Mostrar solo estudiantes sin asignar
+                    const estaAsignado = profesores.some(prof => 
+                      prof.estudiantes && prof.estudiantes.some(e => e.id === est.id)
+                    );
+                    return !estaAsignado;
+                  })
+                  .length === 0 ? (
+                  <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>
+                    No hay estudiantes disponibles para asignar. Todos están ya asignados a un profesor.
+                  </p>
+                ) : (
+                  estudiantes
+                    .filter((est) => {
+                      // Mostrar solo estudiantes sin asignar
+                      const estaAsignado = profesores.some(prof => 
+                        prof.estudiantes && prof.estudiantes.some(e => e.id === est.id)
+                      );
+                      return !estaAsignado;
+                    })
+                    .map((est) => (
+                      <label key={est.id} className="checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={estudiantesSeleccionados.estudiantes.includes(est.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setEstudiantesSeleccionados(prev => ({
+                                ...prev,
+                              estudiantes: [...prev.estudiantes, est.id]
+                            }));
+                          } else {
+                            setEstudiantesSeleccionados(prev => ({
+                              ...prev,
+                              estudiantes: prev.estudiantes.filter(id => id !== est.id)
+                            }));
+                          }
+                        }}
+                        className="checkbox-input"
+                      />
+                      <span className="checkbox-text">{est.nombreCompleto} - {est.email}</span>
+                    </label>
+                    ))
+                )}
               </div>
             </div>
 
@@ -288,7 +318,7 @@ const Profesores = () => {
                         <tr key={idx}>
                           <td>{horario.lugar?.nombre || '—'}</td>
                           <td>{horario.modalidad ? horario.modalidad.charAt(0).toUpperCase() + horario.modalidad.slice(1) : '—'}</td>
-                          <td>{horario.fecha}</td>
+                          <td>{formatFecha(horario.fecha)}</td>
                           <td>{formatHora(horario.horaInicio)}</td>
                           <td>{formatHora(horario.horaFin)}</td>
                           <td>{estadoHorario(horario)}</td>

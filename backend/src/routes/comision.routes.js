@@ -5,6 +5,7 @@ import {
 	asignarProfesorAHorario,
 	createHorario,
 	eliminarHorario,
+	finalizarHorario,
 	getEstudiantesPorProfesor,
 	getHorariosPorLugar,
 	getHorariosPorProfesor,
@@ -22,6 +23,7 @@ router.post("/horarios", createHorario);
 router.get("/horarios/lugar/:id_lugar", getHorariosPorLugar);
 router.put("/horarios/:id_horario", actualizarHorario);
 router.delete("/horarios/:id_horario", eliminarHorario);
+router.post("/horarios/:id_horario/finalizar", finalizarHorario);
 
 /* Asignar profesor a horario */
 router.post("/horarios/:id_horario/asignar-profesor", asignarProfesorAHorario);
