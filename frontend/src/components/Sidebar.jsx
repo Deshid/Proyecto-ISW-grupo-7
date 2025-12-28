@@ -19,6 +19,7 @@ const Sidebar = () => {
         { path: '/comisiones/programar', label: 'Comisiones', icon: 'event', roles: ['administrador', 'profesor'] },
         { path: '/solicitud', label: 'Solicitar Revisión/Recuperación', icon: 'note_add', roles: ['usuario', 'estudiante'] },
         { path: '/solicitudes', label: 'Ver Solicitudes', icon: 'folder', roles: ['profesor'] },
+        { path: '/asignacion', label: 'Ver Comisión Asignada', icon: 'event', roles: ['usuario', 'estudiante'] },
     ];
 
     return (

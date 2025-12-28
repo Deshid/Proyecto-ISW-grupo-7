@@ -9,6 +9,7 @@ getEstudiantesPorProfesorService,
 getHorariosPorLugarService, 
 getHorariosPorProfesorService,
 getProfesoresConEstudiantesService,
+getHorariosPorEstudianteService,
 } from "../services/comision.service.js";
 import {
   actualizarHorarioValidation,
@@ -42,7 +43,6 @@ export async function getLugares(req, res) {
     return handleErrorServer(res, 500, error.message);
   }
 }
-
 
 /* Crear horario */
 export async function createHorario(req, res) {
@@ -276,6 +276,41 @@ export async function getProfesoresConEstudiantes(req, res) {
       ? handleSuccess(res, 204)
       : handleSuccess(res, 200, "Profesores encontrados", profesores);
   } catch (error) {
+    return handleErrorServer(res, 500, error.message);
+  }
+}
+
+/* Obtener comisiones del estudiante autenticado */
+export async function getMisComisiones(req, res) {
+  try {
+    // obtener id estudiante gracias atoken
+    const estudianteId = req.user?.id;
+    
+    // por si las moscas
+    if (!estudianteId) {
+      return handleErrorClient(res, 401, "Usuario no autenticado correctamente");
+    }
+
+    // llamada a servicio
+    const [comisiones, serviceError] = await getHorariosPorEstudianteService(estudianteId);
+
+    // errores exclusivos de servicio
+    if (serviceError) {
+      // para debug
+      return handleErrorClient(res, 400, serviceError);
+    }
+
+    // devolver respuesta exitosa (me costaste un mundo chinvelguencha)
+    return handleSuccess(
+      res, 
+      200, 
+      comisiones.length > 0 ? "Comisiones encontradas" : "No tienes comisiones asignadas",
+      comisiones
+    );
+
+  } catch (error) {
+    // errorses inesperados
+    console.error("Error en getMisComisiones:", error);
     return handleErrorServer(res, 500, error.message);
   }
 }

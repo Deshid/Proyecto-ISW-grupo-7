@@ -258,7 +258,7 @@ const Users = () => {
       'Content-Type': 'application/json'
     };
     
-    // 1. Obtener usuarios
+    // obtener usuarios
     console.log("3. Llamando a /api/user/ ...");
     const usersResponse = await fetch('http://localhost:3000/api/user/', { headers });
     console.log("4. Respuesta usuarios status:", usersResponse.status);
@@ -267,7 +267,7 @@ const Users = () => {
     console.log("5. Datos usuarios recibidos:", usersData);
     console.log("6. Número de usuarios:", usersData.data?.length || 0);
     
-    // 2. Para cada usuario, obtener sus temas
+    // Para cada usuario, obtener sus temas
     console.log("7. Obteniendo temas para cada usuario...");
     const usersWithSubjects = await Promise.all(
       usersData.data.map(async (user, index) => {
@@ -339,6 +339,18 @@ const Users = () => {
   }, [setDataUser]);
 
   const assignSubjectToUsers = async () => {
+
+    // 1. Filtrar usuarios no asignables
+    const usuariosAsignables = dataUser.filter(user => 
+      user.rol !== 'profesor' && user.rol !== 'administrador'
+    );
+    
+    if (usuariosAsignables.length === 0) {
+      alert('No hay usuarios asignables.\nProfesores y administradores no pueden recibir temas.');
+      return;
+    }
+
+
     // Validaciones básicas
     if (!selectedSubjectId) {
       alert('Por favor, selecciona un tema del dropdown');
@@ -356,14 +368,13 @@ const Users = () => {
       return;
     }
     
-    // Obtener el nombre del tema para mensajes
+      // 3. Actualiza los mensajes para usar usuariosAsignables
     const subjectName = subjectsList.find(s => s.id == selectedSubjectId)?.nombre || 'el tema';
     
-    // Confirmación
-    const confirmMessage = dataUser.length === 1 
-      ? `¿Asignar "${subjectName}" al usuario ${dataUser[0].nombreCompleto}?`
-      : `¿Asignar "${subjectName}" a ${dataUser.length} usuarios seleccionados?`;
-    
+    const confirmMessage = usuariosAsignables.length === 1 
+      ? `¿Asignar "${subjectName}" al usuario ${usuariosAsignables[0].nombreCompleto}?`
+      : `¿Asignar "${subjectName}" a ${usuariosAsignables.length} usuarios seleccionados?`;
+
     if (!window.confirm(confirmMessage + '\n\nNota: Se reemplazará cualquier tema previo.')) {
       return;
     }
@@ -380,7 +391,9 @@ const Users = () => {
       const results = [];
       
       // 1. Primero, remover temas previos de cada usuario
-      for (const user of dataUser) {
+      // 4. En los bucles, usa usuariosAsignables en lugar de dataUser
+    for (const user of usuariosAsignables) {
+
         try {
           // Obtener temas actuales del usuario
           const currentSubjectsRes = await fetch(
@@ -401,7 +414,7 @@ const Users = () => {
                     subjectId: relation.subject.id
                   })
                 });
-                // Quitar las relaciones entre los temas borrados y los usuarios
+                // quitar relaciones entre temas borrados y usuarios
                 await fetch('http://localhost:3000/api/temp/cleanup-orphans', {
                   method: 'POST',
                   headers,
@@ -418,8 +431,9 @@ const Users = () => {
         }
       }
       
-      // 2. Asignar el nuevo tema a todos los usuarios
-      for (const user of dataUser) {
+      // asignar el nuevo tema a todos los usuarios
+      for (const user of usuariosAsignables) {
+
         try {
           const response = await fetch('http://localhost:3000/api/subjectAssign/assign', {
             method: 'POST',
@@ -476,134 +490,225 @@ const Users = () => {
   };
 
   const assignRandomUser = async () => {
-  // 1. Validar que hay un tema seleccionado
-  if (!selectedSubjectId) {
-    alert('Por favor, selecciona un tema del dropdown');
+  // 1. Validaciones básicas (igual que antes)
+  if (!dataUser || dataUser.length === 0) {
+    alert('Por favor, selecciona al menos un usuario en la tabla');
     return;
   }
-
+  
+  if (subjectsList.length === 0) {
+    alert('No hay temas disponibles en el sistema');
+    return;
+  }
+  
   const token = sessionStorage.getItem('token');
   if (!token) {
     alert('No hay sesión activa');
     return;
   }
+  
+  // 2. Pedir el límite máximo de usuarios por tema
+  const limitInput = window.prompt(
+    `Ingresa el número MÁXIMO de usuarios que pueden tener el mismo tema:\n\n` +
+    `• Usuarios seleccionados: ${dataUser.length}\n` +
+    `• Temas disponibles: ${subjectsList.length}`,
+    "1"  // Valor por defecto
+  );
+  
+  // Si el usuario cancela
+  if (limitInput === null) {
+    return;
+  }
+  
+  // Validar que sea un número válido
+  const maxUsersPerSubject = parseInt(limitInput);
+  if (isNaN(maxUsersPerSubject) || maxUsersPerSubject < 1) {
+    alert('Por favor ingresa un número válido mayor a 0');
+    return;
+  }
 
+  // 4. Filtrar usuarios que NO sean profesor o administrador
+const usuariosParaAsignar = dataUser.filter(user => 
+  user.rol !== 'profesor' && user.rol !== 'administrador'
+);
+
+// Si no hay usuarios válidos después del filtro
+if (usuariosParaAsignar.length === 0) {
+  alert('No hay usuarios asignables.\nLos profesores y administradores son excluidos automáticamente.');
+  return;
+}
+
+// 5. Confirmación con toda la información (AHORA usando usuariosParaAsignar)
+  const confirmMessage = 
+    `¿Asignar temas aleatorios a ${usuariosParaAsignar.length} usuarios?\n\n` +
+    `• Límite: Máximo ${maxUsersPerSubject} usuario(s) por tema\n` +
+    `• Excluidos: ${dataUser.length - usuariosParaAsignar.length} profesor(es)/administrador(es)\n` +
+    `• Los temas pueden repetirse hasta alcanzar el límite\n\n` +
+    `¿Continuar?`;
+
+  if (!window.confirm(confirmMessage)) {
+    return;
+  }
+  
   const headers = {
     'Authorization': `Bearer ${token}`,
     'Content-Type': 'application/json'
   };
-
+  
   try {
-    // 2. Obtener TODOS los usuarios disponibles
-    const usersResponse = await fetch('http://localhost:3000/api/user/', { headers });
-    if (!usersResponse.ok) throw new Error('Error obteniendo usuarios');
+    const results = [];
+    // Contador para llevar registro de cuántos usuarios tiene cada tema
+    const subjectUsageCount = {};
     
-    const usersData = await usersResponse.json();
-    const allUsers = usersData.data || [];
+    // contadores
+    subjectsList.forEach(subject => {
+      subjectUsageCount[subject.id] = 0;
+    });
     
-    if (allUsers.length === 0) {
-      alert('No hay usuarios en el sistema');
-      return;
-    }
-
-    // 3. Filtrar usuarios que NO tengan ya este tema asignado
-    const usersWithoutSubject = [];
-    
-    for (const user of allUsers) {
-      const subjectsResponse = await fetch(
-        `http://localhost:3000/api/subjectAssign/user/${user.id}/subjects`,
-        { headers }
-      );
-      
-      if (subjectsResponse.ok) {
-        const subjectsData = await subjectsResponse.json();
-        const hasSubject = subjectsData.data?.some(
-          item => item.subject?.id == selectedSubjectId
+    // para cada usuario seleccionado
+    for (const user of usuariosParaAsignar) {
+      try {
+        // temas disponibles que NO, (NO), N-O, hayan alcanzado el límite
+        const availableSubjects = subjectsList.filter(subject => 
+          subjectUsageCount[subject.id] < maxUsersPerSubject
         );
         
-        if (!hasSubject) {
-          usersWithoutSubject.push(user);
-        }
-      }
-    }
-
-    if (usersWithoutSubject.length === 0) {
-      alert('Todos los usuarios ya tienen este tema asignado');
-      return;
-    }
-
-    // 4. Seleccionar usuario al azar
-    const randomIndex = Math.floor(Math.random() * usersWithoutSubject.length);
-    const randomUser = usersWithoutSubject[randomIndex];
-    
-    // 5. Remover tema previo si el usuario ya tiene uno (por tu regla "un usuario solo un tema")
-    const userCurrentSubjects = await fetch(
-      `http://localhost:3000/api/subjectAssign/user/${randomUser.id}/subjects`,
-      { headers }
-    );
-    
-    if (userCurrentSubjects.ok) {
-      const currentData = await userCurrentSubjects.json();
-      if (currentData.success && currentData.data && currentData.data.length > 0) {
-        // Remover todos los temas existentes
-        for (const relation of currentData.data) {
-          await fetch('http://localhost:3000/api/subjectAssign/remove', {
-            method: 'DELETE',
-            headers,
-            body: JSON.stringify({
-              userId: randomUser.id,
-              subjectId: relation.subject.id
-            })
+        // si no hay temas disponibles (todos alcanzaron su límite)
+        // dios no existe
+        if (availableSubjects.length === 0) {
+          results.push({
+            user: user.nombreCompleto,
+            subject: 'Ninguno (límite alcanzado)',
+            success: false,
+            message: `Todos los temas alcanzaron el límite de ${maxUsersPerSubject} usuarios`
           });
+          continue; // saltar a siguiente usuario
         }
+        
+        // elegir un tema aleatorio de los disponibles
+        const randomIndex = Math.floor(Math.random() * availableSubjects.length);
+        const selectedSubject = availableSubjects[randomIndex];
+        
+        console.log(`Asignando "${selectedSubject.nombre}" a ${user.nombreCompleto}...`);
+        
+        // limpiar temas previos (igual que tu lógica actual)
+        try {
+          const currentSubjectsRes = await fetch(
+            `http://localhost:3000/api/subjectAssign/user/${user.id}/subjects`,
+            { headers }
+          );
+          
+          if (currentSubjectsRes.ok) {
+            const currentData = await currentSubjectsRes.json();
+            if (currentData.success && currentData.data && currentData.data.length > 0) {
+              for (const relation of currentData.data) {
+                // IMPORTANTE: disminuir contador al eliminar tema previo
+                if (subjectUsageCount[relation.subject.id] > 0) {
+                  subjectUsageCount[relation.subject.id]--;
+                }
+                
+                await fetch('http://localhost:3000/api/subjectAssign/remove', {
+                  method: 'DELETE',
+                  headers,
+                  body: JSON.stringify({
+                    userId: user.id,
+                    subjectId: relation.subject.id
+                  })
+                });
+              }
+            }
+          }
+        } catch (cleanupError) {
+          console.error(`Error limpiando temas previos de ${user.nombreCompleto}:`, cleanupError);
+        }
+        
+        // asignar tema
+        const assignResponse = await fetch('http://localhost:3000/api/subjectAssign/assign', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            userId: user.id,
+            subjectId: selectedSubject.id
+          })
+        });
+        
+        const assignResult = await assignResponse.json();
+        
+        // actualizar contador con asignación exitosa
+        if (assignResponse.ok && assignResult.success) {
+          subjectUsageCount[selectedSubject.id]++;
+        }
+        
+        results.push({
+          user: user.nombreCompleto,
+          subject: selectedSubject.nombre,
+          success: assignResponse.ok && assignResult.success,
+          message: assignResult.message || (assignResponse.ok ? 'Éxito' : 'Error'),
+          currentUsage: subjectUsageCount[selectedSubject.id] // Para debug
+        });
+        
+        // pequeña pausa entre peticiones
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+      } catch (error) {
+        results.push({
+          user: user.nombreCompleto,
+          subject: 'N/A',
+          success: false,
+          message: error.message
+        });
       }
     }
-
-    // 6. Asignar el nuevo tema
-    const assignResponse = await fetch('http://localhost:3000/api/subjectAssign/assign', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        userId: randomUser.id,
-        subjectId: parseInt(selectedSubjectId)
-      })
+    
+    // mostrar resultados detallados
+    const successful = results.filter(r => r.success);
+    const failed = results.filter(r => !r.success);
+    
+    let resultMessage = `📊 Resultados de asignación aleatoria con límite:\n\n`;
+    resultMessage += `• Límite configurado: ${maxUsersPerSubject} usuario(s) por tema\n`;
+    resultMessage += `• Usuarios procesados: ${dataUser.length}\n`;
+    resultMessage += `• ✅ Éxitos: ${successful.length}\n`;
+    resultMessage += `• ❌ Fallos: ${failed.length}\n\n`;
+    
+    // mostrar y errores por límite distribución de temas
+    // este quizá debería quitarlo más adelante
+    resultMessage += `Distribución final:\n`;
+    subjectsList.forEach(subject => {
+      const count = subjectUsageCount[subject.id] || 0;
+      if (count > 0) {
+        resultMessage += `  • "${subject.nombre}": ${count} usuario(s)\n`;
+      }
     });
-
-    const assignResult = await assignResponse.json();
-
-    if (assignResponse.ok && assignResult.success) {
-      // 7. Obtener nombre del tema para el mensaje
-      const subjectName = subjectsList.find(s => s.id == selectedSubjectId)?.nombre || 'el tema';
-      
-      alert(`✅ Tema "${subjectName}" asignado aleatoriamente a:\n${randomUser.nombreCompleto}`);
-      
-      // 8. Actualizar la tabla
-      fetchUsersWithSubjects();
-      
-      // Opcional: Limpiar selección del dropdown
-      // setSelectedSubjectId('');
-      
-    } else {
-      throw new Error(assignResult.message || 'Error al asignar');
+    
+    if (failed.length > 0) {
+      resultMessage += `\nErrores:\n`;
+      failed.forEach(r => {
+        resultMessage += `  • ${r.user}: ${r.message}\n`;
+      });
     }
-
+    
+    alert(resultMessage);
+    
+    // actualiza tabla
+    fetchUsersWithSubjects();
+    
   } catch (error) {
     console.error('Error en asignación aleatoria:', error);
-    alert(`❌ Error: ${error.message}`);
+    alert(`❌ Error general: ${error.message}`);
   }
 };
 
   const columns = [
-    /*ATENCIÓN: la suma de los anchos totales de los campos debe ser igual o menor a 995.
+    /*ATENCIÓN: la suma de los anchos totales de los campos debe ser igual o menor a 828.
     De otra forma, la tabla pasa a usar dos filas por instancia, lo cual tapa algunos botones
     de la página.
     */
-    { title: "Nombre", field: "nombreCompleto", width: 250, responsive: 0 },
-    { title: "Correo electrónico", field: "email", width: 250, responsive: 3 },
-    { title: "Rut", field: "rut", width: 100, responsive: 2 },
-    { title: "Rol", field: "rol", width: 100, responsive: 2 },
-    { title: "Creado", field: "createdAt", width: 135, responsive: 2 },
-    { title: "Tema asignado", field: "assignedSubject",  width: 160, responsive: 2,
+    { title: "Nombre", field: "nombreCompleto", width: 200, responsive: 0 },
+    { title: "Correo electrónico", field: "email", width: 200, responsive: 3 },
+    { title: "Rut", field: "rut", width: 104, responsive: 2 },
+    { title: "Rol", field: "rol", width: 104, responsive: 2 },
+    { title: "Creado", field: "createdAt", width: 104, responsive: 2 },
+    { title: "Tema asignado", field: "assignedSubject",  width: 104, responsive: 2,
         render: (rowData) => {
         if (rowData.subjectsCount === 0) {
           return <span style={{ color: '#666' }}>0 temas</span>;
@@ -627,7 +732,7 @@ const Users = () => {
           <h1 className='title-table'>Usuarios</h1>
           <div className='filter-actions'>
             <Search value={filterRut} onChange={handleRutFilterChange} placeholder={'Filtrar por rut'} />
-            <select
+            <select //dropdown para seleccionar tema
               value={selectedSubjectId}
               onChange={(e) => setSelectedSubjectId(e.target.value)}
               style={{
@@ -646,25 +751,30 @@ const Users = () => {
                 </option>
               ))}
             </select>
-            <button onClick={() => setIsSubjectModalOpen(true)}>
-              Crear///Borrar temas
-            </button>
-
-            <button
+            <button //botón para abrir modal de crear/borrar temas
+              titleStyle={{
+                color: "white",
+                fontSize: 8,
+              }}
+              onClick={() => setIsSubjectModalOpen(true)}
+            >   
+              Crear/Borrar Tema
+            </button>   
+            <button //botón para asignar temas aleatoriamente
               onClick={assignRandomUser}
-              disabled={!selectedSubjectId || dataUser.length === 0}
+              //disabled={!selectedSubjectId || dataUser.length === 0}
               title="Asignar tema seleccionado a usuarios aleatoriamente">
               Sortear tema
             </button>
-
-            <button
+            <button //botón para asignar tema seleccionado
               onClick={assignSubjectToUsers}
               disabled={!selectedSubjectId || dataUser.length === 0}
               title="Asignar tema seleccionado a usuarios"
             >
               Asignar
             </button>
-            <button onClick={handleClickUpdate} disabled={dataUser.length === 0}>
+            <button //botón para editar usuario
+              onClick={handleClickUpdate} disabled={dataUser.length === 0}>
               {dataUser.length === 0 ? (
                 <img src={UpdateIconDisable} alt="edit-disabled" />
               ) : (

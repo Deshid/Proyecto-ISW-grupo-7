@@ -4,10 +4,9 @@ import { DATABASE, DB_USERNAME, HOST, PASSWORD } from "./configEnv.js";
 import UserSchema from "../entity/user.entity.js";
 import LugarSchema, { HorarioSchema } from "../entity/lugar.entity.js";
 import SolicitudSchema from "../entity/solicitud.entity.js";
-import SolicitudRevisionSchema from "../entity/solicitud_revision.entity.js"; 
+import SolicitudRevisionSchema from "../entity/solicitud_revision.entity.js";
 import SubjectSchema from "../entity/subject.entity.js";
 import UserSubjectSchema from "../entity/userSubject.entity.js";
-
 
 export const AppDataSource = new DataSource({
   type: "postgres",
