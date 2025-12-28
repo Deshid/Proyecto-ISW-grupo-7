@@ -11,13 +11,15 @@ export const createSolicitudValidation = Joi.object({
     }),
 
   notas: Joi.array().items(Joi.any()).optional(),
-  modalidad: Joi.string().valid("presencial", "online").optional(),
-  descripcion: Joi.string().max(1000).allow('').optional(),
+  modalidad: Joi.string().valid("presencial", "online"),
+  descripcion: Joi.string().max(200).allow('').messages({
+    "string.max": "La descripción no puede exceder los 200 caracteres",
+  }),
 }).unknown(true); 
 
 export const updateSolicitudValidation = Joi.object({
   estado: Joi.string().valid("pendiente", "aprobada", "rechazada").required(),
-  justificacionProfesor: Joi.string().max(1000).optional().empty(""),
+  justificacionProfesor: Joi.string().max(200).optional().empty(""),
 }).unknown(false).messages({
   "object.unknown": "No se permiten propiedades adicionales al actualizar",
 });

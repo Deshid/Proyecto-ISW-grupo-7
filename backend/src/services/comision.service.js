@@ -383,3 +383,72 @@ export async function finalizarHorariosVencidos() {
         return 0;
     }
 }
+
+/* Obtener horarios (comisiones) asignados a un estudiante */
+export async function getHorariosPorEstudianteService(id_estudiante) {
+    try {
+        const userRepository = AppDataSource.getRepository("User");
+        
+        // buscar estudiante y profesor asignado
+        const estudiante = await userRepository.findOne({
+            where: { 
+                id: id_estudiante, 
+                rol: "estudiante"
+            },
+            relations: ["estudiantes"] // IMPORTANTE: Nombre de la relación INVERSA
+        });
+
+        if (!estudiante) {
+            return [null, "Estudiante no encontrado"];
+        }
+
+        // encontrar profe del estudiante
+        const profesorRepository = AppDataSource.getRepository("User");
+        const profesor = await profesorRepository
+            .createQueryBuilder("profesor")
+            .innerJoin("profesor.estudiantes", "estudiante", "estudiante.id = :idEstudiante", { 
+                idEstudiante: id_estudiante 
+            })
+            .where("profesor.rol = :rol", { rol: "profesor" })
+            .getOne();
+
+        if (!profesor) {
+            return [null, "El estudiante no tiene un profesor asignado"];
+        }
+
+        // obtener horarios donde ese profesor esté asignado
+        const horarioRepository = AppDataSource.getRepository("Horario");
+        const horarios = await horarioRepository.find({
+            where: { 
+                profesor: { id: profesor.id },
+                estado: "activo" // Solo horarios activos
+            },
+            relations: ["lugar", "profesor"], // Traer datos del lugar y profesor
+            order: { 
+                fecha: "ASC", 
+                horaInicio: "ASC" 
+            }
+        });
+
+        // frmatear respuesta 
+        const comisionesFormateadas = horarios.map(horario => ({
+            id_horario: horario.id_horario,
+            lugar_evaluacion: horario.lugar?.nombre || "Sin lugar",
+            ubicacion: horario.lugar?.ubicacion || "Sin ubicación",
+            fecha: horario.fecha,
+            hora_inicio: horario.horaInicio,
+            hora_fin: horario.horaFin,
+            estado: horario.estado,
+            profesor_asignado: {
+                id: profesor.id,
+                nombre: profesor.nombreCompleto
+            }
+        }));
+
+        return [comisionesFormateadas, null];
+
+    } catch (error) {
+        console.error(`Error obteniendo horarios para estudiante ${id_estudiante}:`, error);
+        return [null, "Error interno del servidor al obtener comisiones"];
+    }
+}

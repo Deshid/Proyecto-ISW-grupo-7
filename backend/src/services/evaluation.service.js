@@ -1,5 +1,6 @@
 "use strict";
 import { AppDataSource } from "../config/configDb.js";
+import { calculateGrade } from "../helpers/calculateGrade.helper.js";
 
 const createEvaluation = async ({ profesorId, nombre_pauta, items }) => {
     const queryRunner = AppDataSource.createQueryRunner();
@@ -134,9 +135,90 @@ const getEvaluationById = async (id, userId, userRole) => {
     return pauta;
 };
 
+
+const evaluateStudent = async ({ profesorId, pautaId, estudianteId, puntajesItems }) => {
+    const queryRunner = AppDataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+        const pautaRepo = queryRunner.manager.getRepository("Pauta");
+        const evalRepo = queryRunner.manager.getRepository("EvaluacionEstudiante");
+
+        const pauta = await pautaRepo.findOne({
+            where: { id: pautaId },
+            relations: ["creador", "items"],
+        });
+
+        if (!pauta) throw new Error("Pauta no encontrada");
+        if (pauta.creador.id !== profesorId) throw new Error("No autorizado");
+
+            // Validar repetición: solo si existe una previa en la misma pauta
+        const previa = await evalRepo.findOne({
+        where: { estudiante: 
+                    { id: estudianteId }, 
+                pauta: 
+                    { id: pautaId } 
+                },
+        });
+        if (repeticion && !previa) throw new Error("La repetición solo se permite si existe una evaluación previa");
+
+        // Calcular puntaje total obtenido y máximo
+        let puntajeObtenido = 0;
+        let puntajeMaximo = pauta.items.reduce((acc, it) => acc + Number(it.puntaje_maximo), 0);
+
+        if (asiste) {
+            for (const item of pauta.items) {
+                const puntajeItem = puntajesItems?.find(p => p.itemId === item.id);
+                if (!puntajeItem) throw new Error(`Falta puntaje para item ${item.id}`);
+                puntajeObtenido += Number(puntajeItem.puntaje);
+            }
+            nota = calculateGrade(puntajeObtenido, puntajeMaximo, pauta.porcentaje_escala);
+        } else {
+            puntajeObtenido = 0;
+            nota = 1;
+        }
+
+        const evaluacion = evalRepo.create({
+            estudiante: { id: estudianteId },
+            pauta: { id: pautaId },
+            puntaje_obtenido: puntajeObtenido,
+            nota,
+            asiste,
+            repeticion: repeticion,
+        });
+
+        const savedEval = await evalRepo.save(evaluacion);
+        await queryRunner.commitTransaction();
+
+        return { message: "Estudiante evaluado exitosamente", evaluacion: savedEval };
+    } catch (err) {
+        await queryRunner.rollbackTransaction();
+        throw err;
+    } finally {
+        await queryRunner.release();
+    }
+};
+
+const getStudentGrades = async (estudianteId) => {
+    const evalRepo = AppDataSource.getRepository("EvaluacionEstudiante");
+    const userRepo = AppDataSource.getRepository("User");
+    
+    const estudiante = await userRepo.findOne({ where: { id: estudianteId } });
+    if (!estudiante) throw new Error("Estudiante no encontrado");
+    
+    return await evalRepo.find({
+        where: { estudiante: { id: estudianteId } },
+        relations: ["pauta", "estudiante"],
+    });
+};
+
+
 export default {
     createEvaluation,
     listEvaluations,
     updateEvaluation,
-    getEvaluationById,
+    getEvaluationById,    
+    evaluateStudent,
+    getStudentGrades,
 };

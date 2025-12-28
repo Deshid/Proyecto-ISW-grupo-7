@@ -73,9 +73,11 @@ export class SubjectController {
     // Crear una nueva materia
     static async createSubject(req, res) {
         try {
+            console.log("[DEBUG Controller] Body recibido:", req.body);
+            console.log("[DEBUG Controller] Headers:", req.headers);
+            
             const { nombre } = req.body;
             
-            // Validación básica en el controller
             if (!nombre || typeof nombre !== 'string' || nombre.trim() === '') {
                 return res.status(400).json({
                     success: false,
@@ -92,16 +94,19 @@ export class SubjectController {
                     message: result.message
                 });
             } else {
+                // Si el error es de metadata, el service lo habrá logueado
                 return res.status(400).json({
                     success: false,
-                    message: result.message
+                    message: result.message,
+                    // Solo envía error en desarrollo
+                    error: process.env.NODE_ENV === 'development' ? result.error : undefined
                 });
             }
         } catch (error) {
+            console.error("[ERROR Controller] Error inesperado:", error);
             return res.status(500).json({
                 success: false,
-                message: "Internal server error",
-                error: error.message
+                message: "Internal server error"
             });
         }
     }

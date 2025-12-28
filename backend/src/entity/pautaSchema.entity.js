@@ -20,6 +20,13 @@ const PautaSchema = new EntitySchema({
         default: () => "CURRENT_TIMESTAMP",
         nullable: false,
     },
+        porcentaje_escala: {
+        type: "decimal",
+        precision: 5,
+        scale: 2,
+        nullable: false,
+        default: 51,
+    },
     },
     relations: {
         creador: {

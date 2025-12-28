@@ -13,11 +13,22 @@ function useTable({ data, columns, filter, dataToFilter, initialSortName, onSele
             const updatedColumns = [
                 { 
                     formatter: "rowSelection", 
-                    titleFormatter: false, 
+                    titleFormatter: "rowSelection",  
                     hozAlign: "center", 
                     headerSort: false, 
                     cellClick: function (e, cell) {
                         cell.getRow().toggleSelect();
+                    },
+                    headerClick: function(e, column) {
+                        // Lógica para seleccionar/deseleccionar todas las filas
+                        const rows = table.getRows();
+                        const allSelected = rows.every(row => row.isSelected());
+                        
+                        if (allSelected) {
+                            table.deselectRow();
+                        } else {
+                            table.selectRow();
+                        }
                     } 
                 },
                 ...columns

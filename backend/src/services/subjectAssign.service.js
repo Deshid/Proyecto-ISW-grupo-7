@@ -13,38 +13,46 @@ export class SubjectAssignService {
     // Asignar usuario a tema (crear relación)
     static async assignUserToSubject(userId, subjectId) {
         try {
-            // Verificar que existen usuario y tema
+            console.log("[DEBUG] Iniciando asignación. UserId:", userId, "SubjectId:", subjectId);
+            
+            // PUNTO CRÍTICO 1: Obtener repositorios POR NOMBRE
+            console.log("[DEBUG] Obteniendo repositorios...");
+            const UserRepository = AppDataSource.getRepository("User");
+            const SubjectRepository = AppDataSource.getRepository("Subject");
+            const UserSubjectRepository = AppDataSource.getRepository("UserSubject");
+            
+            console.log("[DEBUG] Repositorios obtenidos. ¿UserRepository existe?", !!UserRepository);
+            
+            // PUNTO CRÍTICO 2: Verificar que AppDataSource está inicializado
+            if (!AppDataSource.isInitialized) {
+                console.error("[ERROR] AppDataSource NO está inicializado");
+                return {
+                    success: false,
+                    message: "Error de configuración de base de datos"
+                };
+            }
+            
+            // Resto del código original (sin cambios)...
             const user = await UserRepository.findOneBy({ id: userId });
             const subject = await SubjectRepository.findOneBy({ id: subjectId });
             
             if (!user) {
-                return {
-                    success: false,
-                    message: "Usuario no encontrado"
-                };
+                return { success: false, message: "Usuario no encontrado" };
             }
             
             if (!subject) {
-                return {
-                    success: false,
-                    message: "Tema no encontrado"
-                };
+                return { success: false, message: "Tema no encontrado" };
             }
             
-            // Verificar si ya existe la relación
             const existingRelation = await UserSubjectRepository.findOneBy({
                 userId,
                 subjectId
             });
             
             if (existingRelation) {
-                return {
-                    success: false,
-                    message: "El usuario ya está asignado a este tema"
-                };
+                return { success: false, message: "El usuario ya está asignado a este tema" };
             }
             
-            // Crear nueva relación
             const newRelation = UserSubjectRepository.create({
                 userId,
                 subjectId
@@ -66,7 +74,18 @@ export class SubjectAssignService {
             };
             
         } catch (error) {
-            console.error("Error asignando usuario a tema:", error);
+            // Captura el error de metadata específico
+            console.error("[ERROR COMPLETO] En assignUserToSubject:", error.message);
+            console.error("[STACK]", error.stack);
+            
+            if (error.message.includes("No metadata")) {
+                return {
+                    success: false,
+                    message: `Error de configuración: ${error.message}. Verifica configDb.js`,
+                    error: "ENTITY_METADATA_NOT_FOUND"
+                };
+            }
+            
             return {
                 success: false,
                 message: "Error al crear relación",

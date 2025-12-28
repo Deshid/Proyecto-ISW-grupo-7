@@ -11,7 +11,9 @@ import {
 	getHorariosPorProfesor,
 	getLugares,
 	getProfesoresConEstudiantes,
+	getMisComisiones,
 } from "../controllers/comision.controller.js";
+import { authenticateJwt } from "../middlewares/authentication.middleware.js"; //creo que solo lo usa el de getMisComisiones, o puede que no pero no me quiero arriesgar 
 
 const router = Router();
 
@@ -35,5 +37,7 @@ router.get("/horarios/profesor/:id_profesor", getHorariosPorProfesor);
 router.get("/profesor/:id_profesor/estudiantes", getEstudiantesPorProfesor);
 /* Obtener profesores con sus estudiantes */
 router.get("/profesores", getProfesoresConEstudiantes);
+/* Obtener comisiones (horarios) del estudiante autenticado */
+router.get("/mis-comisiones", authenticateJwt, getMisComisiones); // aplicar (o no) middleware aquí
 
 export default router;
