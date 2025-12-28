@@ -3,6 +3,7 @@ import Modal from '@components/Modal';
 import '@styles/comisiones.css';
 import { createHorario, getLugares, getHorariosPorLugar, asignarProfesorAHorario, asignarEstudiantesAProfesor, getProfesores, getEstudiantes, actualizarHorario, eliminarHorario } from '@services/comision.service.js';
 import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert.js';
+import { formatFecha } from '@helpers/formatData.js';
 import { useEffect, useState } from 'react';
 
 const Comisiones = () => {
@@ -167,7 +168,7 @@ const Comisiones = () => {
             <tbody>
               {horarios.map((horario) => (
                 <tr key={horario.id_horario}>
-                  <td>{horario.fecha}</td>
+                  <td>{formatFecha(horario.fecha)}</td>
                   <td>{horario.horaInicio}</td>
                   <td>{horario.horaFin}</td>
                   <td className="celda-acciones">

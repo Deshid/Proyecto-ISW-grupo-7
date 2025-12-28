@@ -4,6 +4,7 @@ import MiniHeader from '@components/MiniHeader';
 import '@styles/comisiones.css';
 import { createHorario, getLugares, getHorariosPorLugar, asignarProfesorAHorario, getProfesores, actualizarHorario, eliminarHorario } from '@services/comision.service.js';
 import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert.js';
+import { formatFecha } from '@helpers/formatData.js';
 import { useEffect, useState } from 'react';
 
 const ProgramarEvaluacion = () => {
@@ -182,7 +183,7 @@ const ProgramarEvaluacion = () => {
                 <tbody>
                   {horarios.map((horario) => (
                     <tr key={horario.id_horario}>
-                      <td>{horario.fecha}</td>
+                      <td>{formatFecha(horario.fecha)}</td>
                       <td>{formatHora(horario.horaInicio)}</td>
                       <td>{formatHora(horario.horaFin)}</td>
                       <td>{horario.modalidad ? horario.modalidad.charAt(0).toUpperCase() + horario.modalidad.slice(1) : '—'}</td>
@@ -208,6 +209,9 @@ const ProgramarEvaluacion = () => {
                                 showSuccessAlert('Horario eliminado', res.message || 'Eliminación exitosa');
                                 const data = await getHorariosPorLugar(lugarSeleccionado);
                                 setHorarios(data);
+                                // Recargar profesores para actualizar estudiantes asignados
+                                const profesoresData = await getProfesores();
+                                setProfesores(profesoresData);
                               } else {
                                 showErrorAlert('Error', res.message || 'No se pudo eliminar el horario');
                               }

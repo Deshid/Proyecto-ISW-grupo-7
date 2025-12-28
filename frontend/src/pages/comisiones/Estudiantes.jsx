@@ -130,10 +130,10 @@ const Estudiantes = () => {
                   const asignado = isEstudianteAsignado(est.id);
                   return (
                   <tr key={est.id}>
-                    <td style={{ fontWeight: '500' }}>{est.nombreCompleto}</td>
-                    <td>{est.email}</td>
-                    <td>{getProfessorNameByEstudiante(est.id)}</td>
-                    <td>
+                    <td data-label="Estudiante" style={{ fontWeight: '500' }}>{est.nombreCompleto}</td>
+                    <td data-label="Email">{est.email}</td>
+                    <td data-label="Profesor Asignado">{getProfessorNameByEstudiante(est.id)}</td>
+                    <td data-label="Estado">
                       <span 
                         className={`badge ${asignado ? 'badge-green' : 'badge-yellow'}`}
                       >
