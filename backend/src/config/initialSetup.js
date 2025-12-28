@@ -30,7 +30,7 @@ async function createUsers() {
           rol: "estudiante",
         })
       ),
-        userRepository.save(
+      userRepository.save(
           userRepository.create({
             nombreCompleto: "Estudiante 2",
             rut: "20.630.735-8",

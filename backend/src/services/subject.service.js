@@ -58,30 +58,38 @@ export class SubjectService {
     // Crear una nueva materia
     static async createSubject(subjectData) {
         try {
+            console.log("[DEBUG Service] Iniciando creación. Datos:", subjectData);
+            
             const { nombre } = subjectData;
             
-            // Validar datos requeridos
             if (!nombre || nombre.trim() === "") {
-                return {
-                    success: false,
-                    message: "Subject name is required"
-                };
+                console.log("[DEBUG Service] Nombre inválido");
+                return { success: false, message: "Subject name is required" };
             }
             
-            // Crear la nueva materia
+            // PUNTO CRÍTICO: Obtener repositorio por NOMBRE
+            console.log("[DEBUG Service] Obteniendo repositorio para 'Subject'...");
+            const SubjectRepository = AppDataSource.getRepository("Subject");
+            console.log("[DEBUG Service] Repositorio obtenido:", !!SubjectRepository);
+            
             const newSubject = SubjectRepository.create({
                 nombre: nombre.trim()
             });
             
+            console.log("[DEBUG Service] Guardando en BD...");
             const savedSubject = await SubjectRepository.save(newSubject);
+            console.log("[DEBUG Service] Guardado exitoso. ID:", savedSubject.id);
             
             return {
                 success: true,
                 data: savedSubject,
                 message: "Subject created successfully"
             };
+            
         } catch (error) {
-            console.error("Error creating subject:", error);
+            // Captura TODO el error, especialmente si es de metadata
+            console.error("[ERROR Service] Error COMPLETO en createSubject:", error);
+            console.error("[ERROR Service] Stack Trace:", error.stack);
             return {
                 success: false,
                 message: "Error creating subject",
