@@ -99,13 +99,34 @@ export async function actualizarHorarioService(id_horario, fecha, horaInicio, ho
 export async function eliminarHorarioService(id_horario) {
     try {
         const horarioRepository = AppDataSource.getRepository("Horario");
-        const horario = await horarioRepository.findOneBy({ id_horario: id_horario });
+        const userRepository = AppDataSource.getRepository(User);
+        
+        const horario = await horarioRepository.findOne({
+            where: { id_horario: id_horario },
+            relations: ["profesor"]
+        });
+        
         if (!horario) {
             return [null, "Horario no encontrado"];
         }
         if (horario.estado === "finalizado") {
             return [null, "No se puede eliminar un horario finalizado"];
         }
+        
+        // Si hay un profesor asignado, desasignar los estudiantes
+        if (horario.profesor) {
+            const profesor = await userRepository.findOne({
+                where: { id: horario.profesor.id },
+                relations: ["estudiantes"]
+            });
+            
+            if (profesor) {
+                profesor.estudiantes = [];
+                await userRepository.save(profesor);
+                console.log(`Estudiantes desasignados del profesor ${profesor.id} al eliminar horario ${id_horario}`);
+            }
+        }
+        
         await horarioRepository.remove(horario);
         return [horario, null];
     } catch (error) {
@@ -145,7 +166,7 @@ export async function getHorariosPorProfesorService(id_profesor) {
         const horarioRepository = AppDataSource.getRepository("Horario");
         const horarios = await horarioRepository.find({
             where: { profesor: { id: id_profesor } },
-            relations: ["lugar", "profesor"],
+            relations: ["lugar", "profesor", "estudiantes"],
         });
         return horarios;
     } catch (error) {
@@ -235,7 +256,56 @@ export async function getEstudiantesPorProfesorService(id_profesor) {
     }
 }
 
-/* Obtener profesores con sus estudiantes asignados */
+/* Finalizar horario manualmente y desasignar estudiantes */
+export async function finalizarHorarioService(id_horario) {
+    try {
+        const horarioRepository = AppDataSource.getRepository("Horario");
+        const horario = await horarioRepository.findOne({
+            where: { id_horario: id_horario },
+            relations: ["profesor", "estudiantes"]
+        });
+        
+        if (!horario) {
+            return [null, "Horario no encontrado"];
+        }
+        
+        if (horario.estado === "finalizado") {
+            return [null, "El horario ya está finalizado"];
+        }
+        
+        // Guardar estudiantes en el horario antes de desasignarlos del profesor
+        if (horario.profesor) {
+            const userRepository = AppDataSource.getRepository(User);
+            const profesor = await userRepository
+                .createQueryBuilder("profesor")
+                .leftJoinAndSelect("profesor.estudiantes", "estudiantes")
+                .where("profesor.id = :id", { id: horario.profesor.id })
+                .getOne();
+            
+            if (profesor && profesor.estudiantes && profesor.estudiantes.length > 0) {
+                // Copiar estudiantes al horario
+                horario.estudiantes = profesor.estudiantes;
+                await horarioRepository.save(horario);
+                
+                // Desasignar estudiantes del profesor
+                profesor.estudiantes = [];
+                await userRepository.save(profesor);
+                
+                // console.log(`Horario ${id_horario} finalizado. ${horario.estudiantes.length} estudiantes guardados en el registro.`);
+            }
+        }
+        
+        // Marcar como finalizado
+        horario.estado = "finalizado";
+        await horarioRepository.save(horario);
+        
+        return [{ horario, estudiantesLiberados: true }, null];
+    } catch (error) {
+        console.error("Error al finalizar horario:", error);
+        return [null, error.message || "Error interno del servidor"];
+    }
+}
+
 export async function getProfesoresConEstudiantesService() {
     try {
         const userRepository = AppDataSource.getRepository(User);
@@ -267,9 +337,11 @@ export async function finalizarHorariosVencidos() {
         const fechaHoy = ahora.toISOString().split("T")[0];
         const horaActual = ahora.toTimeString().split(" ")[0].substring(0, 5);
 
-        // Buscar todos los horarios activos que ya pasaron
+        // Buscar todos los horarios activos que ya pasaron, con relación profesor y estudiantes
         const horariosVencidos = await horarioRepository
             .createQueryBuilder("horario")
+            .leftJoinAndSelect("horario.profesor", "profesor")
+            .leftJoinAndSelect("horario.estudiantes", "estudiantes")
             .where("horario.estado = :estado", { estado: "activo" })
             .andWhere(
                 "(horario.fecha < :fechaHoy OR (horario.fecha = :fechaHoy AND horario.horaFin <= :horaActual))",
@@ -277,8 +349,29 @@ export async function finalizarHorariosVencidos() {
             )
             .getMany();
 
-        // Actualizar estado a finalizado
+        // Actualizar estado a finalizado y desasignar estudiantes
         for (const horario of horariosVencidos) {
+            // Desasignar estudiantes del profesor asignado a este horario
+            if (horario.profesor) {
+                const userRepository = AppDataSource.getRepository(User);
+                const profesor = await userRepository
+                    .createQueryBuilder("profesor")
+                    .leftJoinAndSelect("profesor.estudiantes", "estudiantes")
+                    .where("profesor.id = :id", { id: horario.profesor.id })
+                    .getOne();
+                
+                if (profesor && profesor.estudiantes && profesor.estudiantes.length > 0) {
+                    // Copiar estudiantes al horario
+                    horario.estudiantes = profesor.estudiantes;
+                    
+                    // Desasignar estudiantes del profesor
+                    profesor.estudiantes = [];
+                    await userRepository.save(profesor);
+                    // console.log(`  -> Estudiantes liberados del profesor ${profesor.nombreCompleto} y guardados en horario ${horario.id_horario}`);
+                }
+            }
+            
+            // Marcar como finalizado
             horario.estado = "finalizado";
             await horarioRepository.save(horario);
         }

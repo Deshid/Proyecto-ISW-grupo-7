@@ -9,12 +9,15 @@ import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
+import '@styles/home.css';
+import '@styles/home-sections.css';
 import SolicitudPage from "@pages/SolicitudPage";
 import SolicitudesProfesor from '@pages/SolicitudesProfesor';
 import ComisionesLayout from '@pages/comisiones/ComisionesLayout';
 import ProgramarEvaluacion from '@pages/comisiones/ProgramarEvaluacion';
 import Profesores from '@pages/comisiones/Profesores';
 import Estudiantes from '@pages/comisiones/Estudiantes';
+import Registros from '@pages/comisiones/Registros';
 import Asignacion from './pages/Asignacion';
 
 const router = createBrowserRouter([
@@ -82,6 +85,10 @@ const router = createBrowserRouter([
         {
           path: 'estudiantes',
           element: <Estudiantes />
+        },
+        {
+          path: 'registros',
+          element: <Registros />
         }
       ]
     },

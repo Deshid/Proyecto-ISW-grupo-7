@@ -5,6 +5,7 @@ asignarEstudiantesAProfesorService,
 asignarProfesorAHorarioService,
 createHorarioService,
 eliminarHorarioService,
+finalizarHorarioService,
 getEstudiantesPorProfesorService,
 getHorariosPorLugarService, 
 getHorariosPorProfesorService,
@@ -157,6 +158,30 @@ export async function eliminarHorario(req, res) {
     const [exito, serviceError] = await eliminarHorarioService(id_horario);
     if (serviceError) return handleErrorClient(res, 400, serviceError);
     return handleSuccess(res, 200, "Horario eliminado correctamente", exito);
+  } catch (error) {
+    return handleErrorServer(res, 500, error.message);
+  }
+}
+
+/* Finalizar horario y desasignar estudiantes */
+export async function finalizarHorario(req, res) {
+  try {
+    // Validar parámetro
+    const { error: paramError, value } = idHorarioParamValidation.validate(req.params, {
+      abortEarly: false,
+    });
+    if (paramError) {
+      const messages = paramError.details.map((e) => e.message).join(", ");
+      return handleErrorClient(res, 400, messages);
+    }
+
+    const [resultado, serviceError] = await finalizarHorarioService(value.id_horario);
+
+    if (serviceError) {
+      return handleErrorClient(res, 400, serviceError);
+    }
+
+    return handleSuccess(res, 200, "Horario finalizado y estudiantes desasignados correctamente", resultado);
   } catch (error) {
     return handleErrorServer(res, 500, error.message);
   }
