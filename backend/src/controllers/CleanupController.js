@@ -83,9 +83,9 @@ export class CleanupController {
             const existingSubjectIds = existingSubjects.map(s => s.id);
             
             const orphanRelations = await UserSubjectRepository
-                .createQueryBuilder('userSubject')
-                .select(['userSubject.id', 'userSubject.userId', 'userSubject.subjectId', 'userSubject.assignedAt'])
-                .where('userSubject.subjectId NOT IN (:...ids)', { 
+                .createQueryBuilder("userSubject")
+                .select(["userSubject.id", "userSubject.userId", "userSubject.subjectId", "userSubject.assignedAt"])
+                .where("userSubject.subjectId NOT IN (:...ids)", { 
                     ids: existingSubjectIds.length > 0 ? existingSubjectIds : [0] 
                 })
                 .getMany();
