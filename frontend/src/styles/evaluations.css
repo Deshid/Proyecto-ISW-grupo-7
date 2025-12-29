@@ -49,28 +49,42 @@
 
 /* Header con degradado */
 .evaluations-header {
-  background: linear-gradient(to right, var(--amber-800), var(--stone-800));
+  background: linear-gradient(90deg, var(--amber-800), var(--stone-800));
   color: #fff;
-  padding: 24px 32px;
-  border-radius: 0 0 24px 24px;
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
-  margin-bottom: 32px;
+  padding: 20px 24px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
 .evaluations-header h1 {
-  font-size: 32px;
-  font-weight: 700;
-  margin: 0 0 8px 0;
+  font-size: 30px;
+  font-weight: 800;
+  font-family: inherit;
+  margin: 0;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 8px;
 }
 
 .evaluations-header p {
-  font-size: 15px;
+  font-size: 14px;
   color: var(--amber-100);
-  margin: 0;
-  opacity: 0.95;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+.evaluations-header .material-symbols-outlined {
+  vertical-align: -6px;
+  margin-right: 0;
+  font-size: 30px;
+  color: var(--amber-100);
 }
 
 /* Navegación con tabs estilo botones */
