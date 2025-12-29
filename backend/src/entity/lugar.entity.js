@@ -50,18 +50,49 @@ export const HorarioSchema = new EntitySchema({
         horaFin: {
             type: "time",
         },
+        modalidad: {
+            type: "varchar",
+            length: 50,
+            nullable: true,
+        },
+        estado: {
+            type: "varchar",
+            length: 20,
+            default: "activo",
+        },
     },
     relations: {
         lugar: {
             type: "many-to-one",
             target: "Lugar",
-            joinColumn: true,
+            joinColumn: {
+                name: "lugar_id",
+            },
             cascade: true,
         },
-        usuario: {
+        profesor: {
             type: "many-to-one",
             target: "User",
-            joinColumn: true,
+            joinColumn: {
+                name: "profesor_id",
+            },
+            cascade: true,
+            nullable: true,
+        },
+        estudiantes: {
+            type: "many-to-many",
+            target: "User",
+            joinTable: {
+                name: "horario_estudiantes",
+                joinColumn: {
+                    name: "horario_id",
+                    referencedColumnName: "id_horario",
+                },
+                inverseJoinColumn: {
+                    name: "estudiante_id",
+                    referencedColumnName: "id",
+                },
+            },
             cascade: true,
         },
     },

@@ -48,6 +48,23 @@ const UserSchema = new EntitySchema({
       nullable: false,
     },
   },
+  relations: {
+    estudiantes: {
+      type: "many-to-many",
+      target: "User",
+      joinTable: {
+        name: "profesor_estudiantes",
+        joinColumn: {
+          name: "profesor_id",
+          referencedColumnName: "id",
+        },
+        inverseJoinColumn: {
+          name: "estudiante_id",
+          referencedColumnName: "id",
+        },
+      },
+    },
+  },
   indices: [
     {
       name: "IDX_USER",

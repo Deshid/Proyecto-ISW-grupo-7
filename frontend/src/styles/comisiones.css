@@ -1,0 +1,1325 @@
+:root {
+  /* Paleta base */
+  --amber-50: #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-200: #f1e7d4;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+  --amber-800: #92400e;
+
+  --stone-50: #fafaf9;
+  --stone-100: #f5f5f4;
+  --stone-200: #e7e5e4;
+  --stone-300: #d6d3d1;
+  --stone-600: #57534e;
+  --stone-700: #44403c;
+  --stone-800: #3f3836;
+
+  --emerald-100: #d1fae5;
+  --emerald-300: #a7f3d0;
+  --emerald-800: #065f46;
+
+  --danger-50: #ffe5e5;
+  --danger-700: #b91c1c;
+  --danger-900: #7f1d1d;
+
+  --link: #0066cc;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 6px 16px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 24px rgba(0,0,0,0.12);
+}
+
+/* Contenedor principal de comisiones */
+.comisiones {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* Header de página */
+.page-header {
+  background: linear-gradient(90deg, var(--amber-800), var(--stone-800));
+  color: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 20px 24px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+.page-header .titulo { font-size: 30px; font-weight: 800; font-family: inherit; margin: 0; }
+.page-header .subtitulo { font-size: 14px; color: var(--amber-100); margin-top: 4px; }
+/* Icono del título */
+.page-header .page-icon { vertical-align: -6px; margin-right: 8px; font-size: 30px; color: var(--amber-100); }
+
+/* Mini header de las subpáginas */
+.mini-header {
+  margin: 16px 0 20px 0;
+  padding: 14px 18px;
+  background: linear-gradient(180deg, var(--amber-50), var(--stone-50));
+  border: 1px solid var(--stone-200);
+  border-left: 3px solid var(--amber-600);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+.mini-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--stone-800);
+  margin: 0;
+}
+.mini-icon {
+  font-size: 20px;
+  color: var(--amber-700);
+}
+.mini-subtitle {
+  margin: 4px 0 0 28px;
+  font-size: 13px;
+  color: var(--stone-600);
+}
+
+/* Layout */
+.grid { display: grid; gap: 24px; }
+.grid-1-3 { grid-template-columns: 1fr; }
+@media (min-width: 1024px) { .grid-1-3 { grid-template-columns: 1fr 2fr; } }
+
+/* Cards */
+.card { background: #fff; border-radius: var(--radius-md); box-shadow: var(--shadow-md); padding: 20px; }
+.card-amber { border-left: 4px solid var(--amber-600); }
+.card-stone { border-left: 4px solid var(--stone-600); }
+.edit-card { margin-top: 24px; background: #fffbe6; }
+.assign-card { margin-top: 24px; }
+
+.titulo-seccion { 
+  margin: 0 0 10px 0; 
+  font-size: 18px; 
+  color: var(--stone-800);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.titulo-seccion .material-symbols-outlined {
+  font-size: 20px;
+  color: var(--amber-700);
+}
+.info-seleccion { margin-bottom: 10px; font-weight: 700; color: var(--stone-700); }
+.info-seleccion .lugar { color: var(--link); }
+.formulario-estrecho { max-width: 500px; }
+
+/* Tabla */
+.tabla { width: 100%; border-collapse: collapse; min-width: 640px; }
+.tabla thead tr { background: var(--stone-50); border-bottom: 2px solid var(--stone-200); }
+.tabla th { text-align: left; padding: 14px 12px; color: var(--stone-700); font-weight: 700; }
+.tabla td { padding: 12px; color: var(--stone-800); }
+.tabla tbody tr { border-bottom: 1px solid var(--stone-200); }
+.tabla tbody tr:hover { background: var(--amber-50); }
+.tabla-comisiones { margin-top: 12px; }
+.celda-acciones { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.celda-acciones .btn { margin-right: 0; flex-shrink: 0; padding: 8px 12px; font-size: 14px; }
+.celda-acciones .btn:last-child { margin-right: 0; }
+
+/* Acciones compactas */
+.tabla-comisiones .celda-acciones { gap: 4px; flex-wrap: nowrap; line-height: 1; }
+.tabla-comisiones .celda-acciones .btn { padding: 6px 8px; font-size: 12px; min-width: auto; }
+.tabla-comisiones .celda-acciones .material-symbols-outlined { font-size: 18px; }
+
+/* Botones */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; border-radius: 8px; font-weight: 700; font-family: inherit; border: none; cursor: pointer; transition: background .2s ease, color .2s ease; }
+.btn-primary { color: var(--amber-800); background: transparent; }
+.btn-primary:hover { background: linear-gradient(90deg, var(--amber-200)); }
+.btn-outline-amber { color: var(--amber-800); background: transparent; border: 2px solid var(--amber-600); }
+.btn-outline-amber:hover { background: var(--amber-200); color: var(--amber-800); border-color: var(--amber-700); }
+.btn-danger-icon { color: var(--danger-700); background: transparent; }
+.btn-danger-icon:hover { background: var(--danger-50); color: var(--danger-900); }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.btn-spacing { margin-top: 10px; }
+
+/* Etiquetas */
+.etiqueta { display: inline-flex; align-items: center; padding: 6px 10px; border-radius: 999px; font-weight: 700; font-size: 0.875rem; border: 1px solid transparent; }
+.etiqueta-esmeralda { background: var(--emerald-100); color: var(--emerald-800); border-color: var(--emerald-300); }
+.etiqueta-piedra { background: var(--stone-100); color: var(--stone-700); border-color: var(--stone-300); }
+
+/* Inputs */
+.ds-input { width: 100%; padding: 8px 10px; border: 2px solid var(--stone-300); border-radius: 8px; background: #fff; color: var(--stone-800); }
+.ds-input:focus { outline: none; border-color: var(--amber-600); box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15); }
+
+/* Contenedor scroll */
+.scroll-box { max-height: 260px; overflow-y: auto; border: 1px solid var(--stone-200); border-radius: 8px; background: #fff; padding: 10px; }
+
+/* Utilidades */
+.mb-20 { margin-bottom: 20px; }
+
+/* Contenedor para scroll horizontal en tablas */
+.overflow-x-auto { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* Ajustes de tabla en pantallas pequeñas */
+@media (max-width: 768px) {
+  .tabla th { padding: 10px 8px; font-size: 13px; }
+  .tabla td { padding: 10px 8px; font-size: 13px; }
+}
+
+/* Transformar tabla a tarjetas en celulares pequeños */
+@media (max-width: 600px) {
+  .tabla { min-width: 100%; }
+  .tabla thead { display: none; }
+  .tabla,
+  .tabla tbody,
+  .tabla tr,
+  .tabla td { display: block; width: 100%; }
+
+  .tabla tbody tr {
+    margin-bottom: 12px;
+    background: #fff;
+    border: 1px solid var(--stone-200);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .tabla td {
+    padding: 8px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .tabla td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: var(--stone-600);
+    margin-right: 12px;
+  }
+
+  .tabla td .badge { margin-left: auto; }
+}
+.mt-24 { margin-top: 24px; }
+
+/* Tabs */
+.tabs-container { background: #fff; border-radius: var(--radius-md); box-shadow: var(--shadow-md); margin-bottom: 24px; border-top: 4px solid var(--amber-600); }
+.tabs-nav { display: flex; border-bottom: 1px solid var(--stone-200); }
+.tab-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 24px; border: none; background: transparent; color: var(--stone-600); font-weight: 600; cursor: pointer; transition: all .2s ease; border-bottom: 2px solid transparent; }
+.tab-btn:hover { color: var(--amber-800); background: var(--stone-50); }
+.tab-btn.activa { color: var(--amber-800); background: var(--amber-50); border-bottom-color: var(--amber-600); }
+.tab-btn .tab-icon { font-size: 20px; }
+
+/* Form en Comisiones */
+.card .form {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+}
+
+.card .form h1 {
+  margin-bottom: 16px;
+}
+
+/* Form en Modales - contenedor de form invisible */
+.modal-form-wrapper .form {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+}
+
+.modal-form-wrapper .form h1 {
+  display: none;
+}
+
+/* Estilos para comisiones layout */
+.comisiones-layout {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.comisiones-header {
+  margin-bottom: 32px;
+}
+
+.comisiones-nav {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-btn {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--stone-50);
+  border: 2px solid var(--stone-200);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--stone-600);
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.nav-btn:hover {
+  background: var(--amber-50);
+  border-color: var(--amber-600);
+  color: var(--amber-800);
+}
+
+.nav-btn.active {
+  background: linear-gradient(135deg, var(--amber-700), var(--amber-800));
+  color: white;
+  border-color: var(--amber-800);
+  box-shadow: var(--shadow-md);
+}
+
+.nav-btn .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.comisiones-content {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 3 columnas para estadísticas */
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* Estilos para badges */
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid;
+}
+
+.badge-amber {
+  background-color: var(--amber-100);
+  color: var(--amber-800);
+  border-color: var(--amber-300);
+}
+
+.badge-green {
+  background-color: var(--emerald-100);
+  color: var(--emerald-800);
+  border-color: var(--emerald-300);
+}
+
+.badge-yellow {
+  background-color: #fef3c7;
+  color: #854d0e;
+  border-color: #fde68a;
+}
+
+/* Card para estadísticas */
+.card-green {
+  background: linear-gradient(135deg, var(--emerald-100), #d1fae5);
+  border-left: 4px solid var(--emerald-800);
+}
+
+.card-yellow {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border-left: 4px solid #b45309;
+}
+
+/* Interlineado form comisiones */
+.comisiones .form label { margin-bottom: 4px; line-height: 1.2; }
+.comisiones .form .container_inputs { margin-bottom: 2px; }
+
+/* Interlineado form comisiones con modales */
+.modal-form-wrapper .form label { margin-bottom: 4px; line-height: 1.2; }
+.modal-form-wrapper .form .container_inputs { margin-bottom: 2px; }
+
+/* Estilos para Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal-content {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-top: 4px solid var(--amber-600);
+  animation: slideUp 0.3s ease-in-out;
+  box-sizing: border-box;
+}
+
+/* Modal para horarios asignados del profesor */
+.modal-content.horarios-modal {
+  max-width: 800px;
+  max-height: 300px;
+  width: min(100vw, 800px);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-content{
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.modal-mb20{
+  margin-bottom: 20px;
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 20px;
+  border-bottom: 1px solid var(--stone-200);
+  background: linear-gradient(135deg, var(--amber-50), var(--stone-50));
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-sizing: border-box;
+}
+
+.modal-header .page-icon {
+  position: absolute;
+  left: 20px;
+  font-size: 20px;
+  color: var(--amber-700);
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--stone-800);
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--stone-600);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  position: absolute;
+  right: 20px;
+}
+
+.modal-close:hover {
+  background: var(--amber-100);
+  color: var(--amber-800);
+}
+
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-subtitle {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  color: var(--stone-600);
+  line-height: 1.5;
+}
+
+.profesor-name {
+  font-weight: 700;
+  color: var(--amber-800);
+}
+
+.modal-scroll {
+  max-height: 250px;
+  margin-bottom: 16px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 8px;
+  border: 2px solid var(--stone-200);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.checkbox-label:hover {
+  background: var(--amber-50);
+  border-color: var(--amber-400);
+}
+
+.checkbox-label input:checked ~ .checkbox-text {
+  color: var(--amber-800);
+  font-weight: 600;
+}
+
+.checkbox-input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  margin-right: 12px;
+  accent-color: var(--amber-700);
+}
+
+.checkbox-text {
+  font-size: 14px;
+  color: var(--stone-700);
+  transition: all 0.2s ease;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--stone-200);
+  background: var(--stone-50);
+}
+
+.btn-cancel {
+  flex: 1;
+  background: var(--stone-200);
+  color: var(--stone-800);
+  border: none;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+  background: var(--stone-300);
+  color: var(--stone-900);
+}
+
+/* Estilos para página de Registros */
+.registros-toggle {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: 2px solid var(--stone-300);
+  background: white;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--stone-700);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn:hover {
+  border-color: var(--amber-400);
+  background: var(--amber-50);
+  color: var(--amber-800);
+}
+
+.toggle-btn.active {
+  border-color: var(--amber-600);
+  background: var(--amber-600);
+  color: white;
+}
+
+.toggle-btn .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.registros-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.registros-subtitle {
+  font-size: 16px;
+  color: var(--stone-600);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.registros-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.registro-card {
+  background: white;
+  border: 2px solid var(--stone-200);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  transition: all 0.2s ease;
+}
+
+.registro-card:hover {
+  border-color: var(--stone-300);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.1);
+}
+
+.registro-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.registro-icon {
+  font-size: 40px;
+  color: var(--amber-600);
+  background: var(--amber-50);
+  padding: 12px;
+  border-radius: 50%;
+}
+
+.registro-icon.student {
+  color: var(--stone-600);
+  background: var(--stone-100);
+}
+
+.registro-info {
+  flex: 1;
+}
+
+.registro-info h4 {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--stone-800);
+}
+
+.registro-email,
+.registro-rut {
+  margin: 2px 0;
+  font-size: 13px;
+  color: var(--stone-600);
+}
+
+.registro-badge {
+  background: var(--amber-100);
+  color: var(--amber-800);
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.registro-estudiantes {
+  padding-top: 16px;
+  border-top: 1px solid var(--stone-200);
+}
+
+.estudiantes-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--stone-600);
+  margin: 0 0 12px 0;
+}
+
+.estudiantes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 8px;
+}
+
+.estudiante-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--stone-50);
+  border: 1px solid var(--stone-200);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.estudiante-chip:hover {
+  background: var(--amber-50);
+  border-color: var(--amber-300);
+}
+
+.chip-icon {
+  font-size: 18px;
+  color: var(--stone-600);
+}
+
+.chip-text {
+  font-size: 13px;
+  color: var(--stone-700);
+  font-weight: 500;
+}
+
+.registro-horarios {
+  padding-top: 16px;
+  border-top: 1px solid var(--stone-200);
+  margin-top: 16px;
+}
+
+.horarios-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--stone-600);
+  margin: 0 0 12px 0;
+}
+
+.horarios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px;
+}
+
+.horario-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--amber-50);
+  border: 1px solid var(--amber-200);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.horario-chip:hover {
+  background: var(--amber-100);
+  border-color: var(--amber-300);
+}
+
+.horario-chip.horario-finalizado {
+  background: var(--stone-100);
+  border-color: var(--stone-300);
+  opacity: 0.7;
+}
+
+.horario-chip.horario-finalizado:hover {
+  background: var(--stone-200);
+  border-color: var(--stone-400);
+}
+
+.horario-estado {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--stone-700);
+  background: var(--stone-200);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+.horario-chip .chip-icon {
+  color: var(--amber-600);
+  flex-shrink: 0;
+}
+
+.horario-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.horario-fecha {
+  font-size: 12px;
+  color: var(--stone-600);
+  font-weight: 500;
+}
+
+.horario-hora {
+  font-size: 13px;
+  color: var(--stone-700);
+  font-weight: 600;
+}
+
+.horario-modalidad {
+  font-size: 11px;
+  color: var(--amber-700);
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+
+.registro-profesor {
+  padding-top: 16px;
+  border-top: 1px solid var(--stone-200);
+}
+
+.profesor-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--stone-600);
+  margin: 0 0 12px 0;
+}
+
+.profesor-info-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--amber-50);
+  border: 1px solid var(--amber-200);
+  border-radius: 8px;
+}
+
+.profesor-info-box .material-symbols-outlined {
+  font-size: 32px;
+  color: var(--amber-600);
+}
+
+.profesor-nombre {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--stone-800);
+}
+
+.profesor-email {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: var(--stone-600);
+}
+
+.no-asignaciones {
+  padding: 16px;
+  text-align: center;
+  color: var(--stone-500);
+  font-style: italic;
+  font-size: 14px;
+  background: var(--stone-50);
+  border-radius: 8px;
+  margin: 0;
+}
+
+.empty-message {
+  text-align: center;
+  color: var(--stone-500);
+  padding: 40px;
+  font-size: 16px;
+}
+
+/* RESPONSIVE MEJORADO PARA TODAS LAS PÁGINAS DE COMISIONES */
+
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) {
+  .comisiones {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .page-header {
+    padding: 16px 20px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    font-size: 24px;
+  }
+
+  .page-header .titulo {
+    font-size: 24px;
+  }
+
+  .grid {
+    gap: 16px;
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .modal-content {
+    width: 90vw;
+    max-width: 600px;
+  }
+
+  .table-responsive {
+    font-size: 14px;
+  }
+
+  .registro-card {
+    padding: 16px;
+  }
+
+  .registro-icon {
+    font-size: 36px;
+    padding: 10px;
+  }
+
+  .registro-info h4 {
+    font-size: 16px;
+  }
+
+  .estudiantes-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  .horarios-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+}
+
+/* Mobile (480px - 768px) */
+@media (max-width: 768px) {
+  .comisiones {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .page-header {
+    padding: 14px 16px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    font-size: 20px;
+  }
+
+  .page-header .titulo {
+    font-size: 20px;
+  }
+
+  .page-header .subtitulo {
+    font-size: 12px;
+  }
+
+  .page-header .page-icon {
+    font-size: 24px;
+    margin-right: 6px;
+  }
+
+  .mini-header {
+    margin: 12px 0 16px 0;
+    padding: 12px 14px;
+  }
+
+  .mini-title {
+    font-size: 16px;
+  }
+
+  .mini-icon {
+    font-size: 18px;
+  }
+
+  .mini-subtitle {
+    font-size: 12px;
+    margin-left: 26px;
+  }
+
+  .grid {
+    gap: 12px;
+  }
+
+  .grid-3 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .grid-1-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-1-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .card-amber {
+    border-left: 3px solid var(--amber-600);
+  }
+
+  .card-stone {
+    border-left: 3px solid var(--stone-600);
+  }
+
+  .titulo-seccion {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  /* Modal en mobile */
+  .modal-overlay {
+    z-index: 1000;
+  }
+
+  .modal-content {
+    width: 95vw;
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 12px;
+    margin: auto;
+  }
+
+  .modal-header {
+    padding: 12px 16px;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .modal-header h2 {
+    font-size: 18px;
+  }
+
+  .modal-body {
+    padding: 12px 16px;
+    max-height: calc(90vh - 120px);
+  }
+
+  .modal-footer {
+    padding: 12px 16px;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .modal-footer button {
+    width: 100%;
+  }
+
+  /* Form en mobile */
+  .form {
+    gap: 10px;
+  }
+
+  .form label {
+    font-size: 14px;
+  }
+
+  .form input,
+  .form select,
+  .form textarea {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .form button {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  /* Tabla responsive */
+  .table-responsive {
+    font-size: 12px;
+  }
+
+  .table-responsive table {
+    width: 100%;
+  }
+
+  .table-responsive th,
+  .table-responsive td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+
+  /* Registros */
+  .registros-container {
+    max-width: 100%;
+  }
+
+  .registros-subtitle {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .registros-list {
+    gap: 12px;
+  }
+
+  .registro-card {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .registro-header {
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .registro-icon {
+    font-size: 32px;
+    padding: 8px;
+  }
+
+  .registro-info h4 {
+    font-size: 16px;
+  }
+
+  .registro-email,
+  .registro-rut {
+    font-size: 12px;
+  }
+
+  .registro-badge {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  /* Estudiantes y horarios en registro */
+  .registro-estudiantes,
+  .registro-horarios {
+    padding-top: 12px;
+    margin-top: 12px;
+  }
+
+  .estudiantes-title,
+  .horarios-title {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .estudiantes-grid {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .horarios-grid {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .estudiante-chip,
+  .horario-chip {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .chip-icon {
+    font-size: 16px;
+  }
+
+  .chip-text {
+    font-size: 12px;
+  }
+
+  /* Toggle buttons */
+  .toggle-container {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .toggle-btn {
+    padding: 10px 12px;
+    font-size: 13px;
+    flex: 1;
+  }
+
+  /* Navbar */
+  .comisiones-nav {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .nav-btn {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .nav-btn .material-symbols-outlined {
+    font-size: 18px;
+  }
+
+  /* Badge styling en mobile */
+  .badge {
+    padding: 3px 8px;
+    font-size: 11px;
+  }
+
+  /* Search input */
+  .search-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  /* Select dropdowns */
+  select,
+  input[type="select"] {
+    font-size: 16px;
+  }
+
+  /* Info sections */
+  .info-seccion {
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+
+  .info-seleccion {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+}
+
+/* Muy pequeño (menor a 480px) */
+@media (max-width: 480px) {
+  .comisiones {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .page-header {
+    padding: 12px 12px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+
+  .page-header .titulo {
+    font-size: 18px;
+  }
+
+  .page-header .subtitulo {
+    font-size: 11px;
+  }
+
+  .page-header .page-icon {
+    font-size: 20px;
+    margin-right: 4px;
+  }
+
+  .mini-header {
+    margin: 8px 0 12px 0;
+    padding: 10px 12px;
+  }
+
+  .mini-title {
+    font-size: 14px;
+  }
+
+  .mini-icon {
+    font-size: 16px;
+  }
+
+  .mini-subtitle {
+    font-size: 11px;
+  }
+
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  .titulo-seccion {
+    font-size: 14px;
+  }
+
+  .modal-content {
+    width: 98vw;
+    border-radius: 8px;
+  }
+
+  .modal-body {
+    padding: 10px 12px;
+    max-height: calc(90vh - 100px);
+  }
+
+  .form input,
+  .form select,
+  .form textarea {
+    font-size: 16px;
+    padding: 8px;
+  }
+
+  .registro-card {
+    padding: 12px;
+  }
+
+  .registro-header {
+    gap: 10px;
+  }
+
+  .registro-icon {
+    font-size: 28px;
+    padding: 6px;
+  }
+
+  .registro-info h4 {
+    font-size: 14px;
+  }
+
+  .estudiantes-grid,
+  .horarios-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-btn {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .badge {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+}
+
