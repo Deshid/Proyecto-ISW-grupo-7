@@ -6,7 +6,8 @@ import LugarSchema, { HorarioSchema } from "../entity/lugar.entity.js";
 import SolicitudSchema from "../entity/solicitud.entity.js";
 import PautaSchema from "../entity/pautaSchema.entity.js";
 import ItemPautaSchema from "../entity/itemPautaSchema.entity.js";
-import EvaluacionEstudianteSchema from "../entity/evaluationSchema.entity.js"; 
+import EvaluacionEstudianteSchema from "../entity/evaluationSchema.entity.js";
+import DetalleEvaluacionSchema from "../entity/DetalleEvaluacionSchema.entity.js";
 
 
 export const AppDataSource = new DataSource({
@@ -24,6 +25,7 @@ export const AppDataSource = new DataSource({
     PautaSchema,
     ItemPautaSchema,
     EvaluacionEstudianteSchema,
+    DetalleEvaluacionSchema,
   ],
   synchronize: true,
   logging: false,

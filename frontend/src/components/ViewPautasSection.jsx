@@ -122,10 +122,6 @@ const ViewPautasSection = () => {
     return <div className="loading">Cargando pautas...</div>;
   }
 
-  if (pautas.length === 0) {
-    return <div className="empty-state">No hay pautas creadas. ¡Crea una nueva!</div>;
-  }
-
   // Backend already filters by hasEvaluations and search; show list directly
   const pautasParaMostrar = pautas;
 
@@ -164,8 +160,6 @@ const ViewPautasSection = () => {
             ? "No hay pautas sin evaluaciones. ¡Crea una nueva!"
             : "No hay pautas con evaluaciones aún."}
         </div>
-      ) : pautasParaMostrar.length === 0 ? (
-        <div className="empty-state">No hay pautas que coincidan con tu búsqueda.</div>
       ) : (
         <div className="pautas-list">
           {pautasParaMostrar.map((pauta) => (
