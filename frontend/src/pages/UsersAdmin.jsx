@@ -1,7 +1,7 @@
 import Table from '@components/Table';
 import useUsers from '@hooks/users/useGetUsers.jsx';
-import Search from '../components/Search';
-import Popup from '../components/Popup';
+import Search from '../components/Search.jsx';
+import Popup from '../components/Popup.jsx';
 import SubjectModal from './SubjectModal.jsx';
 import DeleteIcon from '../assets/deleteIcon.svg';
 import UpdateIcon from '../assets/updateIcon.svg';
@@ -728,8 +728,8 @@ if (usuariosParaAsignar.length === 0) {
   return (
     <div className='main-container'>    
       <div className='table-container'>       
-        <div className='top-table'>
-          <h1 className='title-table'>Usuarios</h1>
+        <div className='top-table page-header'>
+          <h1 className='title-table titulo'>Usuarios</h1>
           <div className='filter-actions'>
             <Search value={filterRut} onChange={handleRutFilterChange} placeholder={'Filtrar por rut'} />
             <select //dropdown para seleccionar tema
@@ -751,37 +751,17 @@ if (usuariosParaAsignar.length === 0) {
                 </option>
               ))}
             </select>
-            <button //botón para abrir modal de crear/borrar temas
-              titleStyle={{
-                color: "white",
-                fontSize: 8,
-              }}
-              onClick={() => setIsSubjectModalOpen(true)}
-            >   
-              Crear/Borrar Tema
-            </button>   
-            <button //botón para asignar temas aleatoriamente
-              onClick={assignRandomUser}
-              //disabled={!selectedSubjectId || dataUser.length === 0}
-              title="Asignar tema seleccionado a usuarios aleatoriamente">
-              Sortear tema
-            </button>
-            <button //botón para asignar tema seleccionado
-              onClick={assignSubjectToUsers}
-              disabled={!selectedSubjectId || dataUser.length === 0}
-              title="Asignar tema seleccionado a usuarios"
-            >
-              Asignar
-            </button>
-            <button //botón para editar usuario
-              onClick={handleClickUpdate} disabled={dataUser.length === 0}>
+            <button className="btn btn-outline-amber" onClick={() => setIsSubjectModalOpen(true)}>Crear/Borrar Tema</button>
+            <button className="btn btn-primary" onClick={assignRandomUser} title="Asignar tema seleccionado a usuarios aleatoriamente">Sortear tema</button>
+            <button className="btn btn-primary" onClick={assignSubjectToUsers} disabled={!selectedSubjectId || dataUser.length === 0} title="Asignar tema seleccionado a usuarios">Asignar</button>
+            <button className="btn" onClick={handleClickUpdate} disabled={dataUser.length === 0} style={{ marginLeft: '6px' }}>
               {dataUser.length === 0 ? (
                 <img src={UpdateIconDisable} alt="edit-disabled" />
               ) : (
                 <img src={UpdateIcon} alt="edit" />
               )}
             </button>
-            <button className='delete-user-button' disabled={dataUser.length === 0} onClick={() => handleDelete(dataUser)}>
+            <button className='btn btn-danger-icon' disabled={dataUser.length === 0} onClick={() => handleDelete(dataUser)}>
               {dataUser.length === 0 ? (
                 <img src={DeleteIconDisable} alt="delete-disabled" />
               ) : (
