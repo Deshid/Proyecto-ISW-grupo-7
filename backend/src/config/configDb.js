@@ -6,18 +6,17 @@ import LugarSchema, { HorarioSchema } from "../entity/lugar.entity.js";
 import SolicitudSchema from "../entity/solicitud.entity.js";
 import PautaSchema from "../entity/pautaSchema.entity.js";
 import ItemPautaSchema from "../entity/itemPautaSchema.entity.js";
-import EvaluacionEstudianteSchema from "../entity/evaluationSchema.entity.js";
-import DetalleEvaluacionSchema from "../entity/DetalleEvaluacionSchema.entity.js";
+import EvaluacionEstudianteSchema from "../entity/evaluationSchema.entity.js"; 
 import SubjectSchema from "../entity/subject.entity.js";
 import UserSubjectSchema from "../entity/userSubject.entity.js";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
-  host: "localhost",//`${HOST}`,
+  host: `${HOST}`,
   port: 5432,
   username: `${DB_USERNAME}`,
   password: `${PASSWORD}`,
-  database: "proyecto_isw_nuevo",//`${DATABASE}`,
+  database: `${DATABASE}`,
 
   entities: [
     SubjectSchema,
@@ -29,7 +28,6 @@ export const AppDataSource = new DataSource({
     PautaSchema,
     ItemPautaSchema,
     EvaluacionEstudianteSchema,
-    DetalleEvaluacionSchema,
   ],
   synchronize: true,
   logging: false,

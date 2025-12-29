@@ -147,7 +147,7 @@ const SolicitudPage = () => {
                   disabled={isEvaluacionEnSolicitud(evaluacion.id)}
                 />
                 <label htmlFor={`eval-${evaluacion.id}`}>
-                  {evaluacion.pauta?.nombre_pauta} - Nota: {evaluacion.nota} - Asistió: {evaluacion.asiste ? 'Sí' : 'No'}
+                  {evaluacion.pauta?.nombre_pauta} - Nota: {evaluacion.nota}
                   {isEvaluacionEnSolicitud(evaluacion.id) && ' (Ya tiene solicitud)'}
                 </label>
               </div>

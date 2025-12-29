@@ -13,8 +13,9 @@ export async function login(dataUser) {
         const { status, data } = response;
         if (status === 200) {
             const token = data?.data?.token;
-            const { id, nombreCompleto, email, rut, rol } = jwtDecode(data.data.token);
-            const userData = { id, nombreCompleto, email, rut, rol };
+            const { nombreCompleto, email, rut, rol } = jwtDecode(data.data.token);
+            const userData = { nombreCompleto, email, rut, rol };
+
             sessionStorage.setItem('usuario', JSON.stringify(userData));
             sessionStorage.setItem('token', token);
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;

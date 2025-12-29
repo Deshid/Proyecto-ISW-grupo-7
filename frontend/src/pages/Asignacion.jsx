@@ -56,56 +56,26 @@ const Asignacion = () => {
 
 
 
-    // Mostrar la comisión asignada y el/los temas asignados por el profesor
+    // Por ahora solo muestra estados (después aquí renderizarás los datos)
     return (
-        <div className="comisiones">
-            <div className="page-header">
-                <h1 className="titulo"><span className="material-symbols-outlined page-icon">event_available</span> Mi Comisión Asignada</h1>
-                <p className="subtitulo">Información de la comisión y tema asignado por tu profesor</p>
-            </div>
-
-            {cargando && <p style={{ padding: '1rem' }}>Cargando comisiones...</p>}
-
+        <div>
+            <h1>Mi Comisión Asignada</h1>
+            
+            {cargando && <p>Cargando comisiones...</p>}
+            
             {error && (
                 <div style={{ color: 'red', padding: '1rem', background: '#fee' }}>
                     <strong>Error:</strong> {error}
                 </div>
             )}
-
+            
             {!cargando && !error && (
-                <div style={{ padding: '16px' }}>
-                    {comisiones.length === 0 ? (
-                        <div className="card card-stone">
-                            <p>No tienes ninguna comisión asignada.</p>
-                        </div>
-                    ) : (
-                        comisiones.map((com, idx) => {
-                            // Extraer campos comunes con fallback
-                            const lugar = com.lugar?.nombre || com.nombreLugar || com.lugar || com.lugarName || '-';
-                            const fecha = com.fecha || com.fecha_programada || com.fechaHora || '-';
-                            const horaInicio = com.horaInicio || com.hora_inicio || com.hora || '-';
-                            const horaFin = com.horaFin || com.hora_fin || '-';
-                            const profesor = com.profesor?.nombreCompleto || com.profesor?.nombre || com.nombreProfesor || com.profesor || '-';
-                            const temas = com.subjects || com.temas || com.subject || com.tema || [];
-
-                            const temasTexto = Array.isArray(temas)
-                                ? temas.map(t => t.nombre || t.subject?.nombre || t).join(', ')
-                                : (typeof temas === 'string' ? temas : (temas?.nombre || 'Sin tema'));
-
-                            return (
-                                <section className="card card-amber" key={idx} style={{ marginBottom: '12px' }}>
-                                    <h2 className="titulo-seccion">Comisión asignada</h2>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                                        <div><strong>Lugar:</strong> {lugar}</div>
-                                        <div><strong>Profesor:</strong> {profesor}</div>
-                                        <div><strong>Fecha:</strong> {fecha}</div>
-                                        <div><strong>Hora:</strong> {horaInicio} - {horaFin}</div>
-                                        <div style={{ gridColumn: '1 / -1' }}><strong>Tema(s) asignado(s):</strong> {temasTexto || 'Sin tema asignado'}</div>
-                                    </div>
-                                </section>
-                            );
-                        })
-                    )}
+                <div>
+                    <p>✅ Datos cargados correctamente en el estado.</p>
+                    <p>Número de comisiones encontradas: {comisiones.length}</p>
+                    
+                    {/* Por ahora solo console.log para ver la estructura */}
+                    {console.log('Datos de comisiones recibidos:', comisiones)}
                 </div>
             )}
         </div>
