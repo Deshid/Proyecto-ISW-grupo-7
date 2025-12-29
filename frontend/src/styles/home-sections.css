@@ -80,6 +80,57 @@
   text-align: center;
 }
 
+.pautas-view-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.view-tab-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 2px solid #ddd;
+  background-color: #f5f5f5;
+  color: #333;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.view-tab-btn:hover {
+  border-color: #2196F3;
+  background-color: #f0f8ff;
+  transform: translateY(-2px);
+}
+
+.view-tab-btn.active {
+  background-color: #2196F3;
+  color: white;
+  border-color: #2196F3;
+  box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+}
+
+.pauta-search-input {
+  width: 100%;
+  max-width: 400px;
+  display: block;
+  margin: 0 auto 1.5rem;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.pauta-search-input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
 .pautas-list {
   display: flex;
   flex-direction: column;
@@ -125,6 +176,11 @@
 .pauta-meta {
   font-size: 0.9rem;
   color: #666;
+}
+
+.pauta-eval-badge {
+  color: #4CAF50;
+  font-weight: 600;
 }
 
 .toggle-icon {
@@ -510,7 +566,51 @@
   color: #4CAF50;
 }
 
-/* Accordion for evaluations */
+/* View Evaluations Section */
+.evaluations-list-section h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.evaluations-search {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.student-search-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px 6px 0 0;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.student-search-input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
 .evaluations-accordion {
   display: flex;
   flex-direction: column;

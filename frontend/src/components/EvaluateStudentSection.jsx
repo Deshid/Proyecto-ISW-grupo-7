@@ -117,6 +117,8 @@ const EvaluateStudentSection = () => {
 
   const selectedPauta = pautas.find((p) => p.id == selectedPautaId);
 
+  // Show all students directly in the dropdown (no search)
+
   return (
     <div className="evaluate-student-section">
       <h2>Evaluar Estudiante</h2>
@@ -146,7 +148,9 @@ const EvaluateStudentSection = () => {
             <select
               id="student"
               value={selectedStudentId}
-              onChange={(e) => setSelectedStudentId(e.target.value)}
+              onChange={(e) => {
+                setSelectedStudentId(e.target.value);
+              }}
               disabled={loading}
             >
               <option value="">-- Selecciona un estudiante --</option>

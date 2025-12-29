@@ -12,6 +12,8 @@ export default function ViewEvaluationsSection() {
   const [isEditing, setIsEditing] = useState(false);
   const [editValues, setEditValues] = useState({});
   const [editLoading, setEditLoading] = useState(false);
+  const [searchStudent, setSearchStudent] = useState("");
+  const [searchPauta, setSearchPauta] = useState("");
 
   useEffect(() => {
     const load = async () => {
@@ -30,14 +32,26 @@ export default function ViewEvaluationsSection() {
   }, [token]);
 
   const groupedByPauta = useMemo(() => {
+    const filtered = evaluations.filter((ev) => {
+      const matchesStudent = ev.estudiante?.nombreCompleto
+        ?.toLowerCase()
+        .includes(searchStudent.toLowerCase());
+      const matchesPauta = ev.pauta?.nombre_pauta
+        ?.toLowerCase()
+        .includes(searchPauta.toLowerCase());
+      return matchesStudent && matchesPauta;
+    });
+
     const groups = {};
-    evaluations.forEach((ev) => {
+    filtered.forEach((ev) => {
       const key = ev.pauta?.nombre_pauta || "Sin nombre";
       if (!groups[key]) groups[key] = [];
       groups[key].push(ev);
     });
     return Object.entries(groups).map(([pautaNombre, evals]) => ({ pautaNombre, evals }));
-  }, [evaluations]);
+  }, [evaluations, searchStudent, searchPauta]);
+
+  
 
   const togglePauta = (name) => {
     setExpandedPautas((prev) => ({ ...prev, [name]: !prev[name] }));
@@ -117,10 +131,34 @@ export default function ViewEvaluationsSection() {
   return (
     <div className="evaluations-list-section">
       <h2>Evaluaciones Realizadas</h2>
+
+      {!loading && evaluations.length > 0 && (
+        <div className="evaluations-search">
+          <input
+            type="text"
+            placeholder="Busca por estudiante..."
+            value={searchStudent}
+            onChange={(e) => setSearchStudent(e.target.value)}
+            className="search-input"
+          />
+          <input
+            type="text"
+            placeholder="Busca por pauta..."
+            value={searchPauta}
+            onChange={(e) => setSearchPauta(e.target.value)}
+            className="search-input"
+          />
+        </div>
+      )}
+
       {loading && <p>Cargando evaluaciones...</p>}
       {!loading && evaluations.length === 0 && <p>No hay evaluaciones registradas.</p>}
 
-      {!loading && evaluations.length > 0 && (
+      {!loading && evaluations.length > 0 && groupedByPauta.length === 0 && (
+        <p>No hay evaluaciones que coincidan con tu búsqueda.</p>
+      )}
+
+      {!loading && evaluations.length > 0 && groupedByPauta.length > 0 && (
         <div className="evaluations-accordion">
           {groupedByPauta.map(({ pautaNombre, evals }) => (
             <div key={pautaNombre} className="accordion-item">

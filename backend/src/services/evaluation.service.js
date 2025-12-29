@@ -51,12 +51,28 @@ const createEvaluation = async ({ profesorId, nombre_pauta, items }) => {
 
 const listEvaluations = async (profesorId) => {
     const pautaRepo = AppDataSource.getRepository("Pauta");
+    const evalRepo = AppDataSource.getRepository("EvaluacionEstudiante");
     const where = profesorId ? { creador: { id: profesorId } } : {};
     const pautas = await pautaRepo.find({
         where,
         relations: ["items"],
     });
-    return pautas;
+    
+    // Contar evaluaciones por pauta
+    const pautasConEvals = await Promise.all(
+        pautas.map(async (pauta) => {
+            const evalCount = await evalRepo.count({
+                where: { pauta: { id: pauta.id } }
+            });
+            return {
+                ...pauta,
+                evaluacionesCount: evalCount,
+                tieneEvaluaciones: evalCount > 0
+            };
+        })
+    );
+    
+    return pautasConEvals;
 }
 
 
@@ -352,7 +368,7 @@ const deleteEvaluation = async (pautaId, profesorId) => {
 
         if (evaluacionesCount > 0) {
             const error = new Error(`No se puede eliminar una pauta que tiene ${evaluacionesCount}`
-                 + " evaluación(es) asociada(s)");
+                + " evaluación(es) asociada(s)");
             error.status = 400;
             throw error;
         }
