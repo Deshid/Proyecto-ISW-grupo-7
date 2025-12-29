@@ -1,0 +1,866 @@
+/* Create Pauta Section */
+.create-pauta-section {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.create-pauta-section h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.create-pauta-section form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.items-section {
+  background-color: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #4CAF50;
+}
+
+.items-section h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.item-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr auto;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: flex-end;
+}
+
+.btn-remove {
+  padding: 0.5rem 1rem;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.btn-remove:hover:not(:disabled) {
+  background-color: #d32f2f;
+}
+
+.btn-add-item {
+  padding: 0.75rem 1.5rem;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s;
+  align-self: flex-start;
+}
+
+.btn-add-item:hover:not(:disabled) {
+  background-color: #1976D2;
+}
+
+/* View Pautas Section */
+.view-pautas-section {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.view-pautas-section h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.pautas-view-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.view-tab-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 2px solid #ddd;
+  background-color: #f5f5f5;
+  color: #333;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.view-tab-btn:hover {
+  border-color: #2196F3;
+  background-color: #f0f8ff;
+  transform: translateY(-2px);
+}
+
+.view-tab-btn.active {
+  background-color: #2196F3;
+  color: white;
+  border-color: #2196F3;
+  box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+}
+
+.pauta-search-input {
+  width: 100%;
+  max-width: 400px;
+  display: block;
+  margin: 0 auto 1.5rem;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.pauta-search-input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.pautas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.5rem 0 0.5rem;
+}
+
+.page-btn {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #f7f7f7;
+  cursor: pointer;
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-info {
+  color: #444;
+  font-weight: 600;
+}
+
+.pauta-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white;
+  transition: box-shadow 0.3s;
+}
+
+.pauta-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.pauta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background-color: #f5f5f5;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s;
+}
+
+.pauta-header:hover {
+  background-color: #ebebeb;
+}
+
+.pauta-info {
+  flex: 1;
+}
+
+.pauta-info h3 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+.pauta-meta {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.pauta-eval-badge {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+.toggle-icon {
+  transition: transform 0.3s;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.toggle-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.pauta-content {
+  padding: 1.5rem;
+  border-top: 1px solid #ddd;
+}
+
+.items-list h4 {
+  margin-top: 0;
+  color: #333;
+}
+
+.items-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+}
+
+.items-list li {
+  padding: 0.5rem 0;
+  color: #555;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.pauta-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn-edit,
+.btn-delete {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.3s;
+}
+
+.btn-edit {
+  background-color: #2196F3;
+  color: white;
+}
+
+.btn-edit:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.btn-delete {
+  background-color: #f44336;
+  color: white;
+}
+
+.btn-delete:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+/* Formulario de edición */
+.pauta-edit-form {
+  padding: 1.5rem;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.pauta-edit-form h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+}
+
+.pauta-edit-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.pauta-edit-form .items-section {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.pauta-edit-form .items-section h4 {
+  margin: 0 0 1rem 0;
+  color: #333;
+}
+
+.pauta-edit-form .item-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.pauta-edit-form .item-input,
+.pauta-edit-form .score-input {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-save,
+.btn-cancel {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.3s;
+}
+
+.btn-save {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.btn-save:hover {
+  opacity: 0.9;
+}
+
+.btn-cancel {
+  background-color: #757575;
+  color: white;
+}
+
+.btn-cancel:hover {
+  opacity: 0.9;
+}
+
+.loading,
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.empty-state {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+/* Evaluate Student Section */
+.evaluate-student-section {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.evaluate-student-section h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.evaluation-options {
+  background-color: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.radio-group {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.75rem;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+.radio-group input[type="radio"],
+.evaluation-options input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.evaluation-options label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+
+.puntajes-section {
+  background-color: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #FF9800;
+  margin-bottom: 1.5rem;
+}
+
+.puntajes-section h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+}
+
+/* Form Elements */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input,
+.form-group select {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.form-group input:disabled,
+.form-group select:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+/* Buttons */
+.btn-submit {
+  padding: 0.75rem 1.5rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  align-self: flex-start;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background-color: #45a049;
+}
+
+.btn-submit:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .item-row {
+    grid-template-columns: 1fr;
+  }
+
+  .pauta-header {
+    padding: 1rem;
+  }
+
+  .pauta-content {
+    padding: 1rem;
+  }
+
+  .radio-group {
+    flex-direction: column;
+  }
+}
+
+/* View Evaluations Section */
+.evaluations-list-section h2 {
+  color: #333;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.evaluations-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.evaluation-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.evaluation-header {
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+  margin-bottom: 1rem;
+}
+
+.evaluation-header p {
+  margin: 0.5rem 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.evaluation-details h4 {
+  margin: 1rem 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.detail-item {
+  background-color: #f9f9f9;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  border-left: 3px solid #4CAF50;
+  border-radius: 4px;
+}
+
+.detail-item p {
+  margin: 0.25rem 0;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.no-details {
+  color: #999;
+  font-style: italic;
+  padding: 1rem;
+  text-align: center;
+}
+
+.evaluation-footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.evaluation-footer p {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.evaluation-footer p strong {
+  color: #4CAF50;
+}
+
+/* View Evaluations Section */
+.evaluations-list-section h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.evaluations-search {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.student-search-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px 6px 0 0;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.student-search-input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.evaluations-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.accordion-item {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.accordion-header {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f7f7f7;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  gap: 0.75rem;
+}
+
+.accordion-title {
+  font-weight: 700;
+  color: #333;
+}
+
+.accordion-count {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.accordion-icon {
+  transition: transform 0.2s ease;
+}
+
+.accordion-icon.open {
+  transform: rotate(180deg);
+}
+
+.accordion-body {
+  padding: 0.75rem 0.75rem 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.evaluation-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+.evaluation-row:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.row-left p {
+  margin: 0;
+  color: #444;
+}
+
+.row-student {
+  font-weight: 700;
+}
+
+.row-date {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.row-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.badge {
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.badge.score {
+  background-color: #4CAF50;
+}
+
+.badge.grade {
+  background-color: #2196F3;
+}
+
+.badge.repeat {
+  background-color: #FF9800;
+}
+
+.badge.edit {
+  background-color: #9C27B0;
+}
+
+/* Modal for evaluation details */
+.evaluation-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.evaluation-modal {
+  background: #fff;
+  border-radius: 10px;
+  width: min(700px, 90vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  padding: 1.5rem;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.modal-meta p {
+  margin: 0.25rem 0;
+  color: #555;
+}
+
+.modal-details h4 {
+  margin: 1rem 0 0.5rem 0;
+}
+
+.modal-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.edit-toggle-btn {
+  padding: 0.4rem 0.8rem;
+  background-color: #2196F3;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.edit-form .detail-item label {
+  display: block;
+  font-weight: 600;
+  margin: 0.5rem 0 0.25rem 0;
+  color: #444;
+}
+
+.edit-form input[type="number"],
+.edit-form textarea {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.75rem;
+}
+
+.save-btn {
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  padding: 0.7rem 1.1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  border-top: 1px solid #eee;
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.modal-footer p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  line-height: 1;
+}

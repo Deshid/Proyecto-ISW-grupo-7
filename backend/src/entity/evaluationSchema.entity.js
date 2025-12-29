@@ -10,14 +10,14 @@ const EvaluacionEstudianteSchema = new EntitySchema({
             primary: true,
             generated: true,
         },
-        asiste: {
-            type: "boolean",
-            default: true,
-        },
-        repiticion: {
-            type: "boolean",
-            default: false,
-        },
+            asiste: {
+                type: "boolean",
+                default: true,
+            },
+            repeticion: {
+                type: "boolean",
+                default: false,
+            },
         puntaje_obtenido: {
             type: "int",
             nullable: false,
@@ -32,6 +32,10 @@ const EvaluacionEstudianteSchema = new EntitySchema({
             type: "timestamp",
             default: () => "CURRENT_TIMESTAMP",
         },
+        fecha_edicion: {
+            type: "timestamp",
+            nullable: true,
+        },
     },
     relations: {
         estudiante: {
@@ -43,6 +47,11 @@ const EvaluacionEstudianteSchema = new EntitySchema({
             type: "many-to-one",
             target: "Pauta",
             joinColumn: { name: "id_pauta" },
+        },
+        detalles: {
+            type: "one-to-many",
+            target: "DetalleEvaluacion",
+            inverseSide: "evaluacion",
         },
     },
 });
