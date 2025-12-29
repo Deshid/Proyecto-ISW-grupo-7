@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
+//import { useAuth } from "../context/AuthContext";
 import CreatePautaSection from "../components/CreatePautaSection";
 import ViewPautasSection from "../components/ViewPautasSection";
 import ViewEvaluationsSection from "../components/ViewEvaluationsSection";
@@ -7,7 +7,7 @@ import EvaluateStudentSection from "../components/EvaluateStudentSection";
 import "@styles/evaluations.css";
 
 export default function Evaluations() {
-  const { user } = useAuth();
+  //const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("create"); // Por defecto: crear pauta
 
   const renderContent = () => {
@@ -28,8 +28,7 @@ export default function Evaluations() {
   return (
     <div className="evaluations-container">
       <div className="evaluations-header">
-        <h1>Dashboard de Evaluación</h1>
-        <p>Bienvenido, {user?.nombre || "Profesor"}</p>
+
       </div>
 
       <div className="evaluations-tabs">

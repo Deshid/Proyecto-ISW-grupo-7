@@ -137,6 +137,32 @@
   gap: 1rem;
 }
 
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.5rem 0 0.5rem;
+}
+
+.page-btn {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #f7f7f7;
+  cursor: pointer;
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-info {
+  color: #444;
+  font-weight: 600;
+}
+
 .pauta-card {
   border: 1px solid #ddd;
   border-radius: 8px;

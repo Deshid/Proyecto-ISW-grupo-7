@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import evaluationService from "../services/evaluation.service";
 import { showAlert } from "../helpers/sweetAlert";
@@ -17,30 +17,32 @@ const EvaluateStudentSection = () => {
     repeticion: false,
   });
 
-  useEffect(() => {
-    fetchPautas();
-    fetchStudents();
-  }, []);
-
-  const fetchPautas = async () => {
+  const fetchPautas = useCallback(async () => {
     try {
       const data = await evaluationService.getEvaluations(token);
       setPautas(data);
-    } catch (error) {
+    } catch {
       showAlert("error", "Error", "No se pudieron cargar las pautas");
     }
-  };
+  }, [token]);
 
-  const fetchStudents = async () => {
+  const fetchStudents = useCallback(async () => {
     try {
       const response = await evaluationService.getStudents(token);
 
       const studentsList = Array.isArray(response) ? response : response.data || [];
       setStudents(studentsList);
-    } catch (error) {
+    } catch {
       showAlert("error", "Error", "No se pudieron cargar los estudiantes");
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    fetchPautas();
+    fetchStudents();
+  }, [fetchPautas, fetchStudents]);
+
+  
 
   const handlePuntajeChange = (itemId, value) => {
     setPuntajes({ ...puntajes, [itemId]: value });
@@ -192,21 +194,7 @@ const EvaluateStudentSection = () => {
             </div>
           </div>
 
-          {!evaluationData.asiste && (
-            <div className="form-group">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={evaluationData.repeticion}
-                  onChange={(e) =>
-                    setEvaluationData({ ...evaluationData, repeticion: e.target.checked })
-                  }
-                  disabled={loading}
-                />
-                Marcar como Repetición
-              </label>
-            </div>
-          )}
+
         </div>
 
         {selectedPauta && evaluationData.asiste && (

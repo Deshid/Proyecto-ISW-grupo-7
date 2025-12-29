@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import evaluationService from "../services/evaluation.service";
 import { showAlert } from "../helpers/sweetAlert";
@@ -14,42 +14,40 @@ export default function ViewEvaluationsSection() {
   const [editLoading, setEditLoading] = useState(false);
   const [searchStudent, setSearchStudent] = useState("");
   const [searchPauta, setSearchPauta] = useState("");
+  const [groups, setGroups] = useState([]);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(3);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const fetchEvaluations = useCallback(async () => {
+    setLoading(true);
+    try {
+      const resp = await evaluationService.getProfessorReviewsGrouped({
+        searchPauta,
+        searchStudent,
+        page,
+        limit,
+        order: "desc",
+      }, token);
+      const payload = resp?.data || {};
+      const g = Array.isArray(payload.groups) ? payload.groups : [];
+      setGroups(g);
+      // Flatten evaluations for modal routines if needed
+      setEvaluations(g.flatMap((gr) => gr.evals || []));
+      setTotalPages(Number(payload.totalPages || 1));
+      setPage(Number(payload.page || 1));
+    } catch (error) {
+      showAlert("error", "Error", error.message || "No se pudieron cargar las evaluaciones");
+    } finally {
+      setLoading(false);
+    }
+  }, [token, searchPauta, searchStudent, page, limit]);
 
   useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      try {
-        const response = await evaluationService.getProfessorReviews(token);
-        // Extract data from the wrapped response structure
-        setEvaluations(Array.isArray(response) ? response : response.data || []);
-      } catch (error) {
-        showAlert("error", "Error", error.message || "No se pudieron cargar las evaluaciones");
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, [token]);
+    fetchEvaluations();
+  }, [fetchEvaluations]);
 
-  const groupedByPauta = useMemo(() => {
-    const filtered = evaluations.filter((ev) => {
-      const matchesStudent = ev.estudiante?.nombreCompleto
-        ?.toLowerCase()
-        .includes(searchStudent.toLowerCase());
-      const matchesPauta = ev.pauta?.nombre_pauta
-        ?.toLowerCase()
-        .includes(searchPauta.toLowerCase());
-      return matchesStudent && matchesPauta;
-    });
-
-    const groups = {};
-    filtered.forEach((ev) => {
-      const key = ev.pauta?.nombre_pauta || "Sin nombre";
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(ev);
-    });
-    return Object.entries(groups).map(([pautaNombre, evals]) => ({ pautaNombre, evals }));
-  }, [evaluations, searchStudent, searchPauta]);
+  // Backend already groups; use groups state directly
 
   
 
@@ -111,16 +109,27 @@ export default function ViewEvaluationsSection() {
         token
       );
 
-      const updatedEval = resp?.data || resp?.evaluacion || resp;
+      // La respuesta tiene estructura: { status, message, data: { evaluacion: {...} } }
+      const updatedEval = resp?.data?.evaluacion || resp?.evaluacion || resp?.data || resp;
       if (!updatedEval?.id) {
         throw new Error(resp?.message || "Respuesta inesperada del servidor");
       }
 
       showAlert("success", "Éxito", resp?.message || "Evaluación actualizada");
 
+      // Si era una ausencia, ahora es asiste=true + repeticion=true
+      const wasAbsent = !selectedEval.asiste;
+      if (wasAbsent) {
+        updatedEval.asiste = true;
+        updatedEval.repeticion = true;
+      }
+
       setEvaluations((prev) => prev.map((ev) => (ev.id === updatedEval.id ? updatedEval : ev)));
       setSelectedEval(updatedEval);
       setIsEditing(false);
+      
+      // Actualizar lista completa desde el servidor
+      await fetchEvaluations();
     } catch (error) {
       showAlert("error", "Error", error.message || "No se pudo actualizar la evaluación");
     } finally {
@@ -154,13 +163,13 @@ export default function ViewEvaluationsSection() {
       {loading && <p>Cargando evaluaciones...</p>}
       {!loading && evaluations.length === 0 && <p>No hay evaluaciones registradas.</p>}
 
-      {!loading && evaluations.length > 0 && groupedByPauta.length === 0 && (
+      {!loading && groups.length === 0 && (
         <p>No hay evaluaciones que coincidan con tu búsqueda.</p>
       )}
 
-      {!loading && evaluations.length > 0 && groupedByPauta.length > 0 && (
+      {!loading && groups.length > 0 && (
         <div className="evaluations-accordion">
-          {groupedByPauta.map(({ pautaNombre, evals }) => (
+          {groups.map(({ pautaNombre, evals }) => (
             <div key={pautaNombre} className="accordion-item">
               <button
                 className="accordion-header"
@@ -196,6 +205,25 @@ export default function ViewEvaluationsSection() {
               )}
             </div>
           ))}
+          <div className="pagination">
+            <div className="pagination-right">
+              <button
+                className="page-btn"
+                disabled={page <= 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              >
+                ◀
+              </button>
+              <span className="page-info">Página {page} de {totalPages}</span>
+              <button
+                className="page-btn"
+                disabled={page >= totalPages}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              >
+                ▶
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -221,12 +249,12 @@ export default function ViewEvaluationsSection() {
             <div className="modal-details">
               <div className="modal-details-header">
                 <h4>Detalles</h4>
-                {selectedEval.asiste && selectedEval.detalles?.length > 0 && (
+                {selectedEval.detalles?.length > 0 && (
                   <button
                     className="edit-toggle-btn"
                     onClick={() => setIsEditing((v) => !v)}
                   >
-                    {isEditing ? "Cancelar" : "Editar"}
+                    {isEditing ? "Cancelar" : (selectedEval.asiste ? "Editar" : "Repetir")}
                   </button>
                 )}
               </div>
@@ -238,11 +266,11 @@ export default function ViewEvaluationsSection() {
                       <div key={det.id} className="detail-item">
                         <p><strong>Ítem:</strong> {det.item?.descripcion} (Máx: {det.item?.puntaje_maximo})</p>
                         <p><strong>Puntaje:</strong> {det.puntaje_obtenido}</p>
-                        {det.comentario && <p><strong>Comentario:</strong> {det.comentario}</p>}
+                        <p><strong>Comentario:</strong> {det.comentario || ""}</p>
                       </div>
                     ))
                   ) : (
-                    <p className="no-details">Sin detalles (ausencia o datos no registrados).</p>
+                    <p className="no-details">Sin detalles registrados.</p>
                   )}
                 </>
               )}

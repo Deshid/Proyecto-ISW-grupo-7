@@ -58,7 +58,6 @@ const listEvaluations = async (profesorId) => {
         relations: ["items"],
     });
     
-    // Contar evaluaciones por pauta
     const pautasConEvals = await Promise.all(
         pautas.map(async (pauta) => {
             const evalCount = await evalRepo.count({
@@ -74,6 +73,125 @@ const listEvaluations = async (profesorId) => {
     
     return pautasConEvals;
 }
+
+const listPautasPaginated = async (profesorId, {
+    hasEvaluations,
+    search = "",
+    page = 1,
+    limit = 10,
+    sortBy = "fecha_modificacion",
+    order = "DESC",
+} = {}) => {
+    const pautaRepo = AppDataSource.getRepository("Pauta");
+    const evalRepo = AppDataSource.getRepository("EvaluacionEstudiante");
+
+    const where = profesorId ? { creador: { id: profesorId } } : {};
+    const pautas = await pautaRepo.find({
+        where,
+        relations: ["items"],
+        order: { [sortBy]: order },
+    });
+
+    const searched = (search || "").toLowerCase();
+    const filteredBySearch = pautas.filter((p) =>
+        (p.nombre_pauta || "").toLowerCase().includes(searched)
+    );
+
+    const withCounts = await Promise.all(
+        filteredBySearch.map(async (pauta) => {
+            const evalCount = await evalRepo.count({ where: { pauta: { id: pauta.id } } });
+            return {
+                ...pauta,
+                evaluacionesCount: evalCount,
+                tieneEvaluaciones: evalCount > 0,
+            };
+        })
+    );
+
+    let finalList = withCounts;
+    if (hasEvaluations === true) {
+        finalList = withCounts.filter((p) => p.tieneEvaluaciones);
+    } else if (hasEvaluations === false) {
+        finalList = withCounts.filter((p) => !p.tieneEvaluaciones);
+    }
+
+    const total = finalList.length;
+    const totalPages = Math.max(1, Math.ceil(total / Math.max(1, Number(limit))));
+    const currentPage = Math.min(Math.max(1, Number(page)), totalPages);
+    const startIndex = (currentPage - 1) * Number(limit);
+    const endIndex = startIndex + Number(limit);
+    const pageItems = finalList.slice(startIndex, endIndex);
+
+    return {
+        status: "success",
+        message: "Pautas paginadas",
+        data: pageItems,
+        page: currentPage,
+        limit: Number(limit),
+        total,
+        totalPages,
+    };
+};
+
+const listProfessorReviewsGrouped = async (profesorId, {
+    searchPauta = "",
+    searchStudent = "",
+    page = 1,
+    limit = 5,
+    order = "DESC",
+} = {}) => {
+    const evalRepo = AppDataSource.getRepository("EvaluacionEstudiante");
+
+    const allEvals = await evalRepo.find({
+        where: { pauta: { creador: { id: profesorId } } },
+        relations: ["pauta", "pauta.creador", "estudiante", "detalles", "detalles.item"],
+        order: { fecha_evaluacion: order },
+    });
+
+    const sPauta = (searchPauta || "").toLowerCase();
+    const sStud = (searchStudent || "").toLowerCase();
+
+    const filtered = allEvals.filter((ev) => {
+        const matchPauta = (ev.pauta?.nombre_pauta || "").toLowerCase().includes(sPauta);
+        const matchStud = (ev.estudiante?.nombreCompleto || "").toLowerCase().includes(sStud);
+        return matchPauta && matchStud;
+    });
+
+    const groupMap = new Map(); // key: pautaId, value: { pautaId, pautaNombre, evals: [] }
+    for (const ev of filtered) {
+        const pid = ev.pauta?.id;
+        const pname = ev.pauta?.nombre_pauta || "Sin nombre";
+        if (!pid) continue;
+        if (!groupMap.has(pid)) {
+            groupMap.set(pid, { pautaId: pid, pautaNombre: pname, evals: [] });
+        }
+        groupMap.get(pid).evals.push(ev);
+    }
+
+    // Sort groups by pauta's recent evaluation date or by name
+    const groups = Array.from(groupMap.values()).sort((a, b) => a.pautaNombre.localeCompare(b.pautaNombre));
+    const totalGroups = groups.length;
+    const totalPages = Math.max(1, Math.ceil(totalGroups / Math.max(1, Number(limit))));
+    const currentPage = Math.min(Math.max(1, Number(page)), totalPages);
+    const startIndex = (currentPage - 1) * Number(limit);
+    const endIndex = startIndex + Number(limit);
+    const pageGroups = groups.slice(startIndex, endIndex).map((g) => ({
+        pautaId: g.pautaId,
+        pautaNombre: g.pautaNombre,
+        totalEvals: g.evals.length,
+        evals: g.evals,
+    }));
+
+    return {
+        status: "success",
+        message: "Evaluaciones agrupadas",
+        data: pageGroups,
+        page: currentPage,
+        limit: Number(limit),
+        totalGroups,
+        totalPages,
+    };
+};
 
 
 const updateEvaluation = async ({ profesorId, pautaId, nombre_pauta, items }) => {
@@ -154,14 +272,11 @@ const updateStudentEvaluation = async ({ profesorId, evaluacionId, puntajesItems
 
         if (!evaluacion) throw new Error("Evaluación no encontrada");
         if (evaluacion.pauta.creador.id !== profesorId) throw new Error("No autorizado");
-        if (!evaluacion.asiste) throw new Error("No se puede modificar una evaluación de ausencia");
 
-        // Validar que se incluyan todos los items
         if (!Array.isArray(puntajesItems) || puntajesItems.length !== evaluacion.pauta.items.length) {
             throw new Error("Debe incluir puntajes para todos los items de la pauta");
         }
 
-        // Recalcular puntaje total y nota
         let puntajeObtenido = 0;
         const puntajeMaximo = evaluacion.pauta.items.reduce((acc, it) => acc + Number(it.puntaje_maximo), 0);
 
@@ -176,20 +291,26 @@ const updateStudentEvaluation = async ({ profesorId, evaluacionId, puntajesItems
 
         const nuevaNota = calculateGrade(puntajeObtenido, puntajeMaximo, evaluacion.pauta.porcentaje_escala);
 
-        // Actualizar evaluación
+        // Si era una ausencia, al editarla se convierte en repetición (sin marcar fecha_edicion)
+        const wasAbsent = !evaluacion.asiste;
+        if (wasAbsent) {
+            evaluacion.asiste = true;
+            evaluacion.repeticion = true;
+        } else {
+            // Solo marcar fecha_edicion si ya asistía (es una edición real)
+            evaluacion.fecha_edicion = new Date();
+        }
+
         evaluacion.puntaje_obtenido = puntajeObtenido;
         evaluacion.nota = nuevaNota;
-        evaluacion.fecha_edicion = new Date();
         await evalRepo.save(evaluacion);
 
-        // Eliminar detalles antiguos con query builder (evita problemas de criterio en relaciones)
         await detalleRepo.createQueryBuilder()
         .delete()
         .from("DetalleEvaluacion")
         .where("id_evaluacion = :id", { id: evaluacionId })
         .execute();
 
-        // Crear nuevos detalles
         const nuevosDetalles = puntajesItems.map((pi) =>
         detalleRepo.create({
             evaluacion: { id: evaluacionId },
@@ -201,7 +322,6 @@ const updateStudentEvaluation = async ({ profesorId, evaluacionId, puntajesItems
 
         await detalleRepo.save(nuevosDetalles);
 
-        // Recargar evaluación con relaciones para devolver “detalles” actualizados
         const evaluacionActualizada = await evalRepo.findOne({
         where: { id: evaluacionId },
         relations: ["pauta", "pauta.creador", "pauta.items", "estudiante", "detalles", "detalles.item"],
@@ -250,7 +370,6 @@ const evaluateStudent = async ({ profesorId,
         });
         if (_repeticion && !previa) throw new Error("La repetición solo se permite si existe una evaluación previa");
 
-        // Coercer a booleanos para evitar referencias inesperadas
         console.log("[evaluateStudent] raw flags:", { _asiste, _repeticion });
         const attended = Boolean(_asiste);
         const repeated = Boolean(_repeticion);
@@ -298,6 +417,18 @@ const evaluateStudent = async ({ profesorId,
             );
 
             await detalleRepo.save(detalles);
+        } else if (!attended) {
+            // Crear detalles con puntaje 0 y sin comentarios para ausencias
+            const detalles = pauta.items.map(item =>
+                detalleRepo.create({
+                    evaluacion: { id: savedEval.id },
+                    item: { id: item.id },
+                    puntaje_obtenido: 0,
+                    comentario: null,
+                })
+            );
+
+            await detalleRepo.save(detalles);
         }
 
         await queryRunner.commitTransaction();
@@ -324,7 +455,6 @@ const getStudentGrades = async (estudianteId) => {
     });
 };
 
-// Listar evaluaciones realizadas sobre pautas del profesor
 const listProfessorReviews = async (profesorId) => {
     const evalRepo = AppDataSource.getRepository("EvaluacionEstudiante");
     return await evalRepo.find({
@@ -345,7 +475,6 @@ const deleteEvaluation = async (pautaId, profesorId) => {
         
         const pauta = await pautaRepo.findOne({
             where: { id: pautaId },
-            // No dependemos de una relación "evaluaciones" aquí; validamos con un conteo aparte
             relations: ["creador"],
         });
 
@@ -361,7 +490,6 @@ const deleteEvaluation = async (pautaId, profesorId) => {
             throw error;
         }
 
-        // Verificar si hay evaluaciones asociadas
         const evaluacionesCount = await evalRepo.count({
             where: { pauta: { id: pautaId } }
         });
@@ -373,11 +501,9 @@ const deleteEvaluation = async (pautaId, profesorId) => {
             throw error;
         }
 
-        // Eliminar primero los items de la pauta para evitar violación de FK
         const itemRepo = queryRunner.manager.getRepository("ItemPauta");
         await itemRepo.delete({ pauta: { id: pautaId } });
 
-        // Luego eliminar la pauta
         await pautaRepo.remove(pauta);
         await queryRunner.commitTransaction();
 
@@ -390,7 +516,6 @@ const deleteEvaluation = async (pautaId, profesorId) => {
     }
 };
 
-// Listar estudiantes (usuarios con rol "estudiante")
 const listStudents = async () => {
     const userRepo = AppDataSource.getRepository("User");
     return await userRepo.find({
@@ -402,6 +527,8 @@ const listStudents = async () => {
 export default {
     createEvaluation,
     listEvaluations,
+    listPautasPaginated,
+    listProfessorReviewsGrouped,
     updateEvaluation,
     getEvaluationById,    
     evaluateStudent,

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import evaluationService from "../services/evaluation.service";
 import { showAlert } from "../helpers/sweetAlert";
@@ -11,26 +11,42 @@ const ViewPautasSection = () => {
   const [editingPautaId, setEditingPautaId] = useState(null);
   const [viewMode, setViewMode] = useState("editar"); // "editar" o "revisar"
   const [searchPautaNombre, setSearchPautaNombre] = useState("");
+  const [page, setPage] = useState(1);
+  const [limit] = useState(3);
+  const [totalPages, setTotalPages] = useState(1);
   const [editFormData, setEditFormData] = useState({
     nombre_pauta: "",
     items: [],
   });
 
-  useEffect(() => {
-    fetchPautas();
-  }, []);
-
-  const fetchPautas = async () => {
+  const fetchPautas = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await evaluationService.getEvaluations(token);
-      setPautas(data);
+      const hasEvaluations = viewMode === "revisar";
+      const resp = await evaluationService.getPautasPaginated({
+        hasEvaluations,
+        search: searchPautaNombre,
+        page,
+        limit,
+        sortBy: "fecha_modificacion",
+        order: "desc",
+      }, token);
+      const payload = resp?.data || {};
+      setPautas(Array.isArray(payload.items) ? payload.items : []);
+      setTotalPages(Number(payload.totalPages || 1));
+      setPage(Number(payload.page || 1));
     } catch (error) {
       showAlert("error", "Error", error.message || "No se pudieron cargar las pautas");
     } finally {
       setLoading(false);
     }
-  };
+  }, [viewMode, searchPautaNombre, page, limit, token]);
+
+  useEffect(() => {
+    fetchPautas();
+  }, [fetchPautas]);
+
+  
 
   const toggleExpanded = (pautaId) => {
     setExpandedPautaId(expandedPautaId === pautaId ? null : pautaId);
@@ -110,14 +126,8 @@ const ViewPautasSection = () => {
     return <div className="empty-state">No hay pautas creadas. ¡Crea una nueva!</div>;
   }
 
-  const pautasSinEvaluaciones = pautas.filter((p) => !p.tieneEvaluaciones);
-  const pautasConEvaluaciones = pautas.filter((p) => p.tieneEvaluaciones);
-
-  const pautasParaMostrar = viewMode === "editar" ? pautasSinEvaluaciones : pautasConEvaluaciones;
-  
-  const pautasFiltradas = pautasParaMostrar.filter((pauta) =>
-    pauta.nombre_pauta.toLowerCase().includes(searchPautaNombre.toLowerCase())
-  );
+  // Backend already filters by hasEvaluations and search; show list directly
+  const pautasParaMostrar = pautas;
 
   return (
     <div className="view-pautas-section">
@@ -126,15 +136,15 @@ const ViewPautasSection = () => {
       <div className="pautas-view-tabs">
         <button
           className={`view-tab-btn ${viewMode === "editar" ? "active" : ""}`}
-          onClick={() => setViewMode("editar")}
+          onClick={() => { setPage(1); setViewMode("editar"); }}
         >
-          ✏️ Editar Pautas ({pautasSinEvaluaciones.length})
+          ✏️ Editar Pautas
         </button>
         <button
           className={`view-tab-btn ${viewMode === "revisar" ? "active" : ""}`}
-          onClick={() => setViewMode("revisar")}
+          onClick={() => { setPage(1); setViewMode("revisar"); }}
         >
-          📋 Revisar Pautas ({pautasConEvaluaciones.length})
+          📋 Revisar Pautas
         </button>
       </div>
 
@@ -154,11 +164,11 @@ const ViewPautasSection = () => {
             ? "No hay pautas sin evaluaciones. ¡Crea una nueva!"
             : "No hay pautas con evaluaciones aún."}
         </div>
-      ) : pautasFiltradas.length === 0 ? (
+      ) : pautasParaMostrar.length === 0 ? (
         <div className="empty-state">No hay pautas que coincidan con tu búsqueda.</div>
       ) : (
         <div className="pautas-list">
-          {pautasFiltradas.map((pauta) => (
+          {pautasParaMostrar.map((pauta) => (
             <div key={pauta.id} className="pauta-card">
               {editingPautaId === pauta.id ? (
                 // Formulario de edición
@@ -270,6 +280,25 @@ const ViewPautasSection = () => {
               )}
             </div>
           ))}
+          <div className="pagination">
+            <div className="pagination-right">
+              <button
+                className="page-btn"
+                disabled={page <= 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              >
+                ◀
+              </button>
+              <span className="page-info">Página {page} de {totalPages}</span>
+              <button
+                className="page-btn"
+                disabled={page >= totalPages}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              >
+                ▶
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

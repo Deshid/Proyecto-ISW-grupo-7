@@ -17,7 +17,9 @@ import {
     getEvaluationByIdController,
     getStudentGradesController,
     listEvaluationsController,
+    listPautasPaginatedController,
     listProfessorReviewsController,
+    listProfessorReviewsGroupedController,
     listStudentsController,
     updateEvaluationController,
     updateStudentEvaluationController,
@@ -42,6 +44,13 @@ router.post(
 );
 
 router.get(
+    "/pautas",
+    authenticateJwt,
+    authorize(["profesor"]),
+    listPautasPaginatedController
+);
+
+router.get(
     "/evaluations-list",
     authenticateJwt,
     authorize(["profesor"]),
@@ -53,6 +62,13 @@ router.get(
     authenticateJwt,
     authorize(["profesor"]),
     listProfessorReviewsController
+);
+
+router.get(
+    "/reviews/grouped",
+    authenticateJwt,
+    authorize(["profesor"]),
+    listProfessorReviewsGroupedController
 );
 
 router.get(

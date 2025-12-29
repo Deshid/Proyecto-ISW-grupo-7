@@ -17,6 +17,30 @@ export async function getEvaluations(token) {
     return res.json();
 }
 
+// New: paginated pautas
+export async function getPautasPaginated({ hasEvaluations, search, page = 1, limit = 10, sortBy = "fecha_modificacion", order = "desc" } = {}, token) {
+    const params = new URLSearchParams();
+    if (hasEvaluations !== undefined) params.set("hasEvaluations", hasEvaluations ? "true" : "false");
+    if (search) params.set("search", search);
+    params.set("page", String(page));
+    params.set("limit", String(limit));
+    params.set("sortBy", sortBy);
+    params.set("order", order);
+
+    const res = await fetch(`${API_URL}/api/evaluation/pautas?${params.toString()}` , {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+    });
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Error al obtener pautas paginadas");
+    }
+    return res.json();
+}
+
 export async function getPautaById(pautaId, token) {
     const res = await fetch(`${API_URL}/api/evaluation/${pautaId}`, {
         method: "GET",
@@ -122,6 +146,29 @@ export async function getProfessorReviews(token) {
     return res.json();
 }
 
+// New: grouped reviews with pagination
+export async function getProfessorReviewsGrouped({ searchPauta, searchStudent, page = 1, limit = 5, order = "desc" } = {}, token) {
+    const params = new URLSearchParams();
+    if (searchPauta) params.set("searchPauta", searchPauta);
+    if (searchStudent) params.set("searchStudent", searchStudent);
+    params.set("page", String(page));
+    params.set("limit", String(limit));
+    params.set("order", order);
+
+    const res = await fetch(`${API_URL}/api/evaluation/reviews/grouped?${params.toString()}` , {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+    });
+    if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al obtener evaluaciones agrupadas");
+    }
+    return res.json();
+}
+
 export async function getStudents(token) {
     const res = await fetch(`${API_URL}/api/evaluation/students`, {
         method: "GET",
@@ -174,12 +221,14 @@ export async function deleteEvaluation(pautaId, token) {
 
 export default {
     getEvaluations,
+    getPautasPaginated,
     getPautaById,
     createEvaluation,
     updateEvaluation,
     evaluateStudent,
     getStudentGrades,
     getProfessorReviews,
+    getProfessorReviewsGrouped,
     getStudents,
     updateStudentEvaluation,
     deleteEvaluation,

@@ -33,6 +33,37 @@ export const listEvaluationsController = async (req, res) => {
     }
 };
 
+    export const listPautasPaginatedController = async (req, res) => {
+        try {
+            const profesorId = req.user?.id;
+            const { hasEvaluations, search, page, limit, sortBy, order } = req.query;
+
+            const hasEvalsFlag = hasEvaluations === undefined
+                ? undefined
+                : hasEvaluations === "true" ? true : hasEvaluations === "false" ? false : undefined;
+
+            const result = await evaluationService.listPautasPaginated(profesorId, {
+                hasEvaluations: hasEvalsFlag,
+                search,
+                page: Number(page) || 1,
+                limit: Number(limit) || 10,
+                sortBy: sortBy || "fecha_modificacion",
+                order: (order || "DESC").toUpperCase() === "ASC" ? "ASC" : "DESC",
+            });
+
+            const data = {
+                items: result.data,
+                page: result.page,
+                limit: result.limit,
+                total: result.total,
+                totalPages: result.totalPages,
+            };
+            handleSuccess(res, 200, result.message, data);
+        } catch (error) {
+            handleErrorClient(res, 400, error.message);
+        }
+    };
+
 export const listProfessorReviewsController = async (req, res) => {
     try {
         const profesorId = req.user.id;
@@ -42,6 +73,32 @@ export const listProfessorReviewsController = async (req, res) => {
         handleErrorClient(res, 400, error.message);
     }
 };
+
+    export const listProfessorReviewsGroupedController = async (req, res) => {
+        try {
+            const profesorId = req.user.id;
+            const { searchPauta, searchStudent, page, limit, order } = req.query;
+
+            const result = await evaluationService.listProfessorReviewsGrouped(profesorId, {
+                searchPauta,
+                searchStudent,
+                page: Number(page) || 1,
+                limit: Number(limit) || 5,
+                order: (order || "DESC").toUpperCase() === "ASC" ? "ASC" : "DESC",
+            });
+
+            const data = {
+                groups: result.data,
+                page: result.page,
+                limit: result.limit,
+                totalGroups: result.totalGroups,
+                totalPages: result.totalPages,
+            };
+            handleSuccess(res, 200, result.message, data);
+        } catch (error) {
+            handleErrorClient(res, 400, error.message);
+        }
+    };
 
 export const listStudentsController = async (req, res) => {
     try {
@@ -158,7 +215,9 @@ export default {
     getEvaluationByIdController,
     getStudentGradesController,
     listEvaluationsController,
+    listPautasPaginatedController,
     listProfessorReviewsController,
+    listProfessorReviewsGroupedController,
     listStudentsController,
     updateEvaluationController,
     updateStudentEvaluationController,
