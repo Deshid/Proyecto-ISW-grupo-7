@@ -1,30 +1,9 @@
 "use strict";
 import { Router } from "express";
+import evaluationController from "../controllers/evaluation.controller.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import { authorize } from "../middlewares/authorization.middleware.js";
-import { validateRequest } from "../middlewares/evaluation.middleware.js";
-import {
-    createPautaValidation,
-    evaluateStudentValidation,
-    updatePautaValidation,
-    updateStudentEvaluationValidation,
-} from "../validations/evaluation.validation.js";
-
-import {
-    createEvaluationController,
-    deleteEvaluationController,
-    evaluateStudentController,
-    getEvaluationByIdController,
-    getStudentGradesController,
-    listEvaluationsController,
-    listPautasPaginatedController,
-    listProfessorReviewsController,
-    listProfessorReviewsGroupedController,
-    listStudentsController,
-    listAssignedStudentsController,
-    updateEvaluationController,
-    updateStudentEvaluationController,
-} from "../controllers/evaluation.controller.js";
+import { evaluateStudentController, getStudentGradesController } from "../controllers/evaluation.controller.js";
 
 const router = Router();
 
@@ -32,95 +11,40 @@ router.post(
     "/evaluations-create",
     authenticateJwt,
     authorize(["profesor"]),
-    validateRequest(createPautaValidation),
-    createEvaluationController
+    evaluationController.createEvaluation
 );
 
 router.post(
-    "/evaluate",
-    authenticateJwt,
+    "/evaluate", 
+    authenticateJwt, 
     authorize(["profesor"]),
-    validateRequest(evaluateStudentValidation),
-    evaluateStudentController
-);
-
-router.get(
-    "/pautas",
-    authenticateJwt,
-    authorize(["profesor"]),
-    listPautasPaginatedController
-);
+    evaluateStudentController);
 
 router.get(
     "/evaluations-list",
     authenticateJwt,
     authorize(["profesor"]),
-    listEvaluationsController
-);
-
-router.get(
-    "/reviews",
-    authenticateJwt,
-    authorize(["profesor"]),
-    listProfessorReviewsController
-);
-
-router.get(
-    "/reviews/grouped",
-    authenticateJwt,
-    authorize(["profesor"]),
-    listProfessorReviewsGroupedController
-);
-
-router.get(
-    "/students",
-    authenticateJwt,
-    authorize(["profesor"]),
-    listStudentsController
-);
-
-router.get(
-    "/assigned-students",
-    authenticateJwt,
-    authorize(["profesor"]),
-    listAssignedStudentsController
+    evaluationController.listEvaluations
 );
 
 router.get(
     "/grades/:studentId?",
     authenticateJwt,
     authorize(["profesor", "estudiante"]),
-    getStudentGradesController
-);
+    getStudentGradesController);
 
 router.put(
     "/:id",
     authenticateJwt,
     authorize(["profesor"]),
-    validateRequest(updatePautaValidation),
-    updateEvaluationController
-);
-
-router.put(
-    "/student-evaluation/:id",
-    authenticateJwt,
-    authorize(["profesor"]),
-    validateRequest(updateStudentEvaluationValidation),
-    updateStudentEvaluationController
+    evaluationController.updateEvaluation
 );
 
 router.get(
     "/:id",
     authenticateJwt,
     authorize(["profesor", "estudiante"]),
-    getEvaluationByIdController
-);
-
-router.delete(
-    "/:id",
-    authenticateJwt,
-    authorize(["profesor"]),
-    deleteEvaluationController
+    evaluationController.getEvaluationById
 );
 
 export default router;

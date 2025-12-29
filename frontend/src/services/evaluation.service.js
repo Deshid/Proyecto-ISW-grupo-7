@@ -1,62 +1,21 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
-// ==================== PAUTAS ====================
-
 export async function getEvaluations(token) {
     const res = await fetch(`${API_URL}/api/evaluation/evaluations-list`, {
         method: "GET",
         headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     });
     if (!res.ok) {
         const text = await res.text();
-        throw new Error(text || "Error al obtener pautas");
+        throw new Error(text || "Error al obtener evaluaciones");
     }
     return res.json();
 }
 
-// New: paginated pautas
-export async function getPautasPaginated({ hasEvaluations, search, page = 1, limit = 10, sortBy = "fecha_modificacion", order = "desc" } = {}, token) {
-    const params = new URLSearchParams();
-    if (hasEvaluations !== undefined) params.set("hasEvaluations", hasEvaluations ? "true" : "false");
-    if (search) params.set("search", search);
-    params.set("page", String(page));
-    params.set("limit", String(limit));
-    params.set("sortBy", sortBy);
-    params.set("order", order);
-
-    const res = await fetch(`${API_URL}/api/evaluation/pautas?${params.toString()}` , {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-    });
-    if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Error al obtener pautas paginadas");
-    }
-    return res.json();
-}
-
-export async function getPautaById(pautaId, token) {
-    const res = await fetch(`${API_URL}/api/evaluation/${pautaId}`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-    });
-    if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Error al obtener pauta");
-    }
-    return res.json();
-}
-
-    export async function createEvaluation(data, token) {
+export async function createEvaluation(data, token) {
     const res = await fetch(`${API_URL}/api/evaluation/evaluations-create`, {
         method: "POST",
         headers: {
@@ -66,13 +25,13 @@ export async function getPautaById(pautaId, token) {
         body: JSON.stringify(data),
     });
     if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Error al crear pauta");
+        const text = await res.text();
+        throw new Error(text || "Error al crear evaluación");
     }
     return res.json();
 }
 
-    export async function updateEvaluation(pautaId, data, token) {
+export async function updateEvaluation(pautaId, data, token) {
     const res = await fetch(`${API_URL}/api/evaluation/${pautaId}`, {
         method: "PUT",
         headers: {
@@ -80,171 +39,10 @@ export async function getPautaById(pautaId, token) {
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(data),
-    });
-    if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Error al actualizar pauta");
-    }
-    return res.json();
-}
-
-// ==================== EVALUACIONES DE ESTUDIANTES ====================
-
-/**
- * @param {Object} data - { pautaId, estudianteId, asiste, repeticion, puntajesItems }
- */
-export async function evaluateStudent(data, token) {
-    const res = await fetch(`${API_URL}/api/evaluation/evaluate`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(data),
-    });
-    if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Error al evaluar estudiante");
-    }
-    return res.json();
-}
-
-/**
- * @param {Number} studentId - ID del estudiante (opcional para profesores)
- */
-export async function getStudentGrades(studentId, token) {
-    const url = studentId 
-        ? `${API_URL}/api/evaluation/grades/${studentId}` 
-        : `${API_URL}/api/evaluation/grades`;
-    
-    const res = await fetch(url, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
     });
     if (!res.ok) {
         const text = await res.text();
-        throw new Error(text || "Error al obtener notas");
+        throw new Error(text || "Error al actualizar evaluación");
     }
     return res.json();
 }
-
-export async function getProfessorReviews(token) {
-    const res = await fetch(`${API_URL}/api/evaluation/reviews`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-    });
-    if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Error al obtener evaluaciones");
-    }
-    return res.json();
-}
-
-// New: grouped reviews with pagination
-export async function getProfessorReviewsGrouped({ searchPauta, searchStudent, page = 1, limit = 5, order = "desc" } = {}, token) {
-    const params = new URLSearchParams();
-    if (searchPauta) params.set("searchPauta", searchPauta);
-    if (searchStudent) params.set("searchStudent", searchStudent);
-    params.set("page", String(page));
-    params.set("limit", String(limit));
-    params.set("order", order);
-
-    const res = await fetch(`${API_URL}/api/evaluation/reviews/grouped?${params.toString()}` , {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-    });
-    if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Error al obtener evaluaciones agrupadas");
-    }
-    return res.json();
-}
-
-export async function getStudents(token) {
-    const res = await fetch(`${API_URL}/api/evaluation/students`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-    });
-    if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Error al obtener estudiantes");
-    }
-    return res.json();
-}
-
-export async function getAssignedStudents(token) {
-    const res = await fetch(`${API_URL}/api/evaluation/assigned-students`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-    });
-    if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Error al obtener estudiantes asignados");
-    }
-    return res.json();
-}
-
-/**
- * @param {Number} evaluacionId - ID de la evaluación
- * @param {Object} data - { puntajesItems }
- */
-export async function updateStudentEvaluation(evaluacionId, data, token) {
-    const res = await fetch(`${API_URL}/api/evaluation/student-evaluation/${evaluacionId}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(data),
-    });
-    if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Error al actualizar evaluación");
-    }
-    return res.json();
-}
-
-export async function deleteEvaluation(pautaId, token) {
-    const res = await fetch(`${API_URL}/api/evaluation/${pautaId}`, {
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-    });
-    if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Error al eliminar pauta");
-    }
-    return res.json();
-}
-
-export default {
-    getEvaluations,
-    getPautasPaginated,
-    getPautaById,
-    createEvaluation,
-    updateEvaluation,
-    evaluateStudent,
-    getStudentGrades,
-    getProfessorReviews,
-    getProfessorReviewsGrouped,
-    getStudents,
-    updateStudentEvaluation,
-    deleteEvaluation,
-};
