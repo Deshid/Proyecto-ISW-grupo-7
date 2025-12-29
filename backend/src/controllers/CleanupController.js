@@ -1,7 +1,7 @@
 "use strict";
 import { AppDataSource } from "../config/configDb.js";
-import UserSubjectSchema from "../entity/userSubject.entity.js";
-import SubjectSchema from "../entity/subject.entity.js";
+import UserSubjectSchema from "../entity/UserSubject.entity.js";
+import SubjectSchema from "../entity/Subject.entity.js";
 
 const UserSubjectRepository = AppDataSource.getRepository(UserSubjectSchema);
 const SubjectRepository = AppDataSource.getRepository(SubjectSchema);
@@ -20,7 +20,7 @@ export class CleanupController {
             
             // 2. Obtener todos los IDs de subjects que SÍ existen
             const existingSubjects = await SubjectRepository.find({ 
-                select: ["id"] 
+                select: ['id'] 
             });
             const existingSubjectIds = existingSubjects.map(s => s.id);
             
@@ -29,8 +29,8 @@ export class CleanupController {
             // 3. Buscar relaciones donde subjectId NO esté en la lista de existentes
             // TypeORM QueryBuilder usa los nombres de propiedades (subjectId), no de columnas
             const orphanRelations = await UserSubjectRepository
-                .createQueryBuilder("userSubject")
-                .where("userSubject.subjectId NOT IN (:...ids)", { 
+                .createQueryBuilder('userSubject')
+                .where('userSubject.subjectId NOT IN (:...ids)', { 
                     ids: existingSubjectIds.length > 0 ? existingSubjectIds : [0] 
                 })
                 .getMany();
@@ -78,14 +78,14 @@ export class CleanupController {
             }
             
             const existingSubjects = await SubjectRepository.find({ 
-                select: ["id"] 
+                select: ['id'] 
             });
             const existingSubjectIds = existingSubjects.map(s => s.id);
             
             const orphanRelations = await UserSubjectRepository
-                .createQueryBuilder("userSubject")
-                .select(["userSubject.id", "userSubject.userId", "userSubject.subjectId", "userSubject.assignedAt"])
-                .where("userSubject.subjectId NOT IN (:...ids)", { 
+                .createQueryBuilder('userSubject')
+                .select(['userSubject.id', 'userSubject.userId', 'userSubject.subjectId', 'userSubject.assignedAt'])
+                .where('userSubject.subjectId NOT IN (:...ids)', { 
                     ids: existingSubjectIds.length > 0 ? existingSubjectIds : [0] 
                 })
                 .getMany();
