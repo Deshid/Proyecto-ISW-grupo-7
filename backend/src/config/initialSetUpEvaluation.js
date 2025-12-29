@@ -93,133 +93,224 @@ export async function createDefaultStudentEvaluations() {
     const pautaRepo = AppDataSource.getRepository("Pauta");
 
     const pautas = await pautaRepo.find({ relations: ["items"] });
-    const estudiantes = await userRepo.find({ where: { rol: "estudiante" }, take: 3 });
+    const estudiantes = await userRepo.find({ where: { rol: "estudiante" }, take: 5 });
 
-    if (pautas.length === 0 || estudiantes.length < 3) {
+    if (pautas.length === 0 || estudiantes.length < 1) {
       console.warn("No hay suficientes pautas/estudiantes para seed de evaluaciones.");
       return;
     }
 
-    const p0 = pautas[0];
-    const p1 = pautas[1] ?? p0;
-    const p2 = pautas[2] ?? p1;
-
     const sumMax = (p) => p.items.reduce((acc, it) => acc + Number(it.puntaje_maximo), 0);
-    const max0 = sumMax(p0);
-    const max1 = sumMax(p1);
-    const max2 = sumMax(p2);
-
-    const escala0 = Number(p0.porcentaje_escala);
-    const escala1 = Number(p1.porcentaje_escala);
-    const escala2 = Number(p2.porcentaje_escala);
-
     const gradeFn = (s, m, e) => {
       try { return calculateGrade(s, m, e); } catch { return calcGradeSafe(s, m, e); }
     };
 
-    // 1) Ausente: asiste=false, puntaje=0, nota=1.0
-    const absentExists = await evalRepo.findOne({
-      where: { estudiante: { id: estudiantes[0].id }, pauta: { id: p0.id }, asiste: false }
-    });
-    if (!absentExists) {
-      const evalAbsent = evalRepo.create({
-        estudiante: { id: estudiantes[0].id },
-        pauta: { id: p0.id },
-        asiste: false,
-        repeticion: false,
-        puntaje_obtenido: 0,
-        nota: 1.0,
-      });
-      await evalRepo.save(evalAbsent);
+    // ========== ESTUDIANTE 1: asiste=true, repeticion=false (NORMAL) ==========
+    if (estudiantes[0]) {
+      const est1 = estudiantes[0];
+      
+      for (let i = 0; i < Math.min(pautas.length, 3); i++) {
+        let eval1 = await evalRepo.findOne({
+          where: { estudiante: { id: est1.id }, pauta: { id: pautas[i].id }, asiste: true, repeticion: false }
+        });
+        if (!eval1) {
+          const max = sumMax(pautas[i]);
+          const score = Math.round(max * (0.60 + i * 0.10));
+          const nota = gradeFn(score, max, Number(pautas[i].porcentaje_escala));
+          eval1 = evalRepo.create({
+            estudiante: { id: est1.id },
+            pauta: { id: pautas[i].id },
+            asiste: true,
+            repeticion: false,
+            puntaje_obtenido: score,
+            nota: nota,
+          });
+          const saved1 = await evalRepo.save(eval1);
+          const detalles1 = pautas[i].items.map((item) => {
+            const puntaje = Math.round(Number(item.puntaje_maximo) * (0.60 + i * 0.10));
+            return detalleRepo.create({
+              evaluacion: { id: saved1.id },
+              item: { id: item.id },
+              puntaje_obtenido: puntaje,
+              comentario: "Evaluación normal",
+            });
+          });
+          await detalleRepo.save(detalles1);
+        }
+      }
     }
 
-    // 2) Repetición: crear primera evaluación (asiste=true), luego segunda con repeticion=true
-    const prevEval = await evalRepo.findOne({
-      where: { estudiante: { id: estudiantes[1].id }, pauta: { id: p1.id } }
-    });
-    if (!prevEval) {
-      const score1 = Math.round(max1 * 0.40); // primera vez, bajo aprobación
-      const nota1 = gradeFn(score1, max1, escala1);
-      const firstAttempt = evalRepo.create({
-        estudiante: { id: estudiantes[1].id },
-        pauta: { id: p1.id },
-        asiste: true,
-        repeticion: false,
-        puntaje_obtenido: score1,
-        nota: nota1,
+    // ========== ESTUDIANTE 2: asiste=false (AUSENTE + REPETICIÓN) ==========
+    if (estudiantes[1]) {
+      const est2 = estudiantes[1];
+      const pautaAus = pautas[0];
+
+      // Primer intento: ausente (asiste=false, repeticion=false)
+      let evalAbsent = await evalRepo.findOne({
+        where: { estudiante: { id: est2.id }, pauta: { id: pautaAus.id }, asiste: false, repeticion: false }
       });
-      const savedFirst = await evalRepo.save(firstAttempt);
-      
-      // Crear detalles para primera evaluación
-      const detalles1 = p1.items.map((item, idx) => {
-        const puntaje = Math.round(Number(item.puntaje_maximo) * 0.40);
-        return detalleRepo.create({
-          evaluacion: { id: savedFirst.id },
-          item: { id: item.id },
-          puntaje_obtenido: puntaje,
-          comentario: `Intento inicial - item ${idx + 1}`,
+      if (!evalAbsent) {
+        evalAbsent = evalRepo.create({
+          estudiante: { id: est2.id },
+          pauta: { id: pautaAus.id },
+          asiste: false,
+          repeticion: false,
+          puntaje_obtenido: 0,
+          nota: 1.0,
         });
+        await evalRepo.save(evalAbsent);
+      }
+
+      // Segundo intento: repetición (asiste=false, repeticion=true)
+      let evalRepeat = await evalRepo.findOne({
+        where: { estudiante: { id: est2.id }, pauta: { id: pautaAus.id }, asiste: false, repeticion: true }
       });
-      await detalleRepo.save(detalles1);
-    }
-    // segunda oportunidad (repetición)
-    const repExists = await evalRepo.findOne({
-      where: { estudiante: { id: estudiantes[1].id }, pauta: { id: p1.id }, repeticion: true }
-    });
-    if (!repExists) {
-      const score2 = Math.round(max1 * 0.80); // mejora en repetición
-      const nota2 = gradeFn(score2, max1, escala1);
-      const secondAttempt = evalRepo.create({
-        estudiante: { id: estudiantes[1].id },
-        pauta: { id: p1.id },
-        asiste: true,
-        repeticion: true,
-        puntaje_obtenido: score2,
-        nota: nota2,
-      });
-      const savedSecond = await evalRepo.save(secondAttempt);
-      
-      // Crear detalles para repetición (mejorados)
-      const detalles2 = p1.items.map((item, idx) => {
-        const puntaje = Math.round(Number(item.puntaje_maximo) * 0.80);
-        return detalleRepo.create({
-          evaluacion: { id: savedSecond.id },
-          item: { id: item.id },
-          puntaje_obtenido: puntaje,
-          comentario: `Repetición - mejoró significativamente en item ${idx + 1}`,
+      if (!evalRepeat) {
+        const max = sumMax(pautaAus);
+        const score = Math.round(max * 0.70);
+        const nota = gradeFn(score, max, Number(pautaAus.porcentaje_escala));
+        evalRepeat = evalRepo.create({
+          estudiante: { id: est2.id },
+          pauta: { id: pautaAus.id },
+          asiste: false,
+          repeticion: true,
+          puntaje_obtenido: score,
+          nota: nota,
         });
-      });
-      await detalleRepo.save(detalles2);
+        const savedRepeat = await evalRepo.save(evalRepeat);
+        const detallesRepeat = pautaAus.items.map((item) => {
+          const puntaje = Math.round(Number(item.puntaje_maximo) * 0.70);
+          return detalleRepo.create({
+            evaluacion: { id: savedRepeat.id },
+            item: { id: item.id },
+            puntaje_obtenido: puntaje,
+            comentario: "Repetición por ausencia inicial",
+          });
+        });
+        await detalleRepo.save(detallesRepeat);
+      }
     }
 
-    // 3) Aprobado: asiste=true, porcentaje alto
-    const approvedExists = await evalRepo.findOne({
-      where: { estudiante: { id: estudiantes[2].id }, pauta: { id: p2.id }, repeticion: false, asiste: true }
-    });
-    if (!approvedExists) {
-      const score3 = Math.round(max2 * 0.75);
-      const nota3 = gradeFn(score3, max2, escala2);
-      const evalApproved = evalRepo.create({
-        estudiante: { id: estudiantes[2].id },
-        pauta: { id: p2.id },
-        asiste: true,
-        repeticion: false,
-        puntaje_obtenido: score3,
-        nota: nota3,
-      });
-      const savedApproved = await evalRepo.save(evalApproved);
+    // ========== ESTUDIANTE 3: asiste=true, repeticion=false (NORMAL) ==========
+    if (estudiantes[2]) {
+      const est3 = estudiantes[2];
       
-      // Crear detalles para aprobado
-      const detalles3 = p2.items.map((item, idx) => {
-        const puntaje = Math.round(Number(item.puntaje_maximo) * 0.75);
-        return detalleRepo.create({
-          evaluacion: { id: savedApproved.id },
-          item: { id: item.id },
-          puntaje_obtenido: puntaje,
-          comentario: `Buen desempeño en item ${idx + 1}`,
+      for (let i = 0; i < Math.min(pautas.length, 2); i++) {
+        let eval3 = await evalRepo.findOne({
+          where: { estudiante: { id: est3.id }, pauta: { id: pautas[i].id }, asiste: true, repeticion: false }
         });
+        if (!eval3) {
+          const max = sumMax(pautas[i]);
+          const score = Math.round(max * 0.75);
+          const nota = gradeFn(score, max, Number(pautas[i].porcentaje_escala));
+          eval3 = evalRepo.create({
+            estudiante: { id: est3.id },
+            pauta: { id: pautas[i].id },
+            asiste: true,
+            repeticion: false,
+            puntaje_obtenido: score,
+            nota: nota,
+          });
+          const saved3 = await evalRepo.save(eval3);
+          const detalles3 = pautas[i].items.map((item) => {
+            const puntaje = Math.round(Number(item.puntaje_maximo) * 0.75);
+            return detalleRepo.create({
+              evaluacion: { id: saved3.id },
+              item: { id: item.id },
+              puntaje_obtenido: puntaje,
+              comentario: "Buen desempeño",
+            });
+          });
+          await detalleRepo.save(detalles3);
+        }
+      }
+    }
+
+    // ========== ESTUDIANTE 4: asiste=true, repeticion=false (BAJO PUNTAJE) ==========
+    if (estudiantes[3]) {
+      const est4 = estudiantes[3];
+      
+      for (let i = 0; i < Math.min(pautas.length, 3); i++) {
+        let eval4 = await evalRepo.findOne({
+          where: { estudiante: { id: est4.id }, pauta: { id: pautas[i].id }, asiste: true, repeticion: false }
+        });
+        if (!eval4) {
+          const max = sumMax(pautas[i]);
+          const score = Math.round(max * 0.45);
+          const nota = gradeFn(score, max, Number(pautas[i].porcentaje_escala));
+          eval4 = evalRepo.create({
+            estudiante: { id: est4.id },
+            pauta: { id: pautas[i].id },
+            asiste: true,
+            repeticion: false,
+            puntaje_obtenido: score,
+            nota: nota,
+          });
+          const saved4 = await evalRepo.save(eval4);
+          const detalles4 = pautas[i].items.map((item) => {
+            const puntaje = Math.round(Number(item.puntaje_maximo) * 0.45);
+            return detalleRepo.create({
+              evaluacion: { id: saved4.id },
+              item: { id: item.id },
+              puntaje_obtenido: puntaje,
+              comentario: "Desempeño bajo",
+            });
+          });
+          await detalleRepo.save(detalles4);
+        }
+      }
+    }
+
+    // ========== ESTUDIANTE 5: MIX (AUSENTE + NORMAL) ==========
+    if (estudiantes[4]) {
+      const est5 = estudiantes[4];
+
+      // Una ausencia (asiste=false, repeticion=false)
+      let evalAus5 = await evalRepo.findOne({
+        where: { estudiante: { id: est5.id }, pauta: { id: pautas[0].id }, asiste: false, repeticion: false }
       });
-      await detalleRepo.save(detalles3);
+      if (!evalAus5) {
+        evalAus5 = evalRepo.create({
+          estudiante: { id: est5.id },
+          pauta: { id: pautas[0].id },
+          asiste: false,
+          repeticion: false,
+          puntaje_obtenido: 0,
+          nota: 1.0,
+        });
+        await evalRepo.save(evalAus5);
+      }
+
+      // Evaluaciones normales en otras pautas (asiste=true, repeticion=false)
+      for (let i = 1; i < Math.min(pautas.length, 3); i++) {
+        let eval5 = await evalRepo.findOne({
+          where: { estudiante: { id: est5.id }, pauta: { id: pautas[i].id }, asiste: true, repeticion: false }
+        });
+        if (!eval5) {
+          const max = sumMax(pautas[i]);
+          const score = Math.round(max * 0.80);
+          const nota = gradeFn(score, max, Number(pautas[i].porcentaje_escala));
+          eval5 = evalRepo.create({
+            estudiante: { id: est5.id },
+            pauta: { id: pautas[i].id },
+            asiste: true,
+            repeticion: false,
+            puntaje_obtenido: score,
+            nota: nota,
+          });
+          const saved5 = await evalRepo.save(eval5);
+          const detalles5 = pautas[i].items.map((item) => {
+            const puntaje = Math.round(Number(item.puntaje_maximo) * 0.80);
+            return detalleRepo.create({
+              evaluacion: { id: saved5.id },
+              item: { id: item.id },
+              puntaje_obtenido: puntaje,
+              comentario: "Excelente desempeño",
+            });
+          });
+          await detalleRepo.save(detalles5);
+        }
+      }
     }
 
     console.log("* => Evaluaciones de estudiantes por defecto creadas/actualizadas");

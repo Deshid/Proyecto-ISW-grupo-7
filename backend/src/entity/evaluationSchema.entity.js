@@ -32,6 +32,10 @@ const EvaluacionEstudianteSchema = new EntitySchema({
             type: "timestamp",
             default: () => "CURRENT_TIMESTAMP",
         },
+        fecha_edicion: {
+            type: "timestamp",
+            nullable: true,
+        },
     },
     relations: {
         estudiante: {
