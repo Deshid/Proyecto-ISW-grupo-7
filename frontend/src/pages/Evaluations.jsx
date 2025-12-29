@@ -1,5 +1,4 @@
 import { useState } from "react";
-//import { useAuth } from "../context/AuthContext";
 import CreatePautaSection from "../components/CreatePautaSection";
 import ViewPautasSection from "../components/ViewPautasSection";
 import ViewEvaluationsSection from "../components/ViewEvaluationsSection";
@@ -7,7 +6,6 @@ import EvaluateStudentSection from "../components/EvaluateStudentSection";
 import "@styles/evaluations.css";
 
 export default function Evaluations() {
-  //const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("create"); // Por defecto: crear pauta
 
   const renderContent = () => {
@@ -28,7 +26,11 @@ export default function Evaluations() {
   return (
     <div className="evaluations-container">
       <div className="evaluations-header">
-
+        <h1>
+          <span className="material-symbols-outlined">assignment</span>
+          Gestión de Evaluaciones
+        </h1>
+        <p>Crear pautas, evaluar estudiantes y revisar resultados</p>
       </div>
 
       <div className="evaluations-tabs">
@@ -36,25 +38,25 @@ export default function Evaluations() {
           className={`tab-button ${activeTab === "create" ? "active" : ""}`}
           onClick={() => setActiveTab("create")}
         >
-          ➕ Crear Pauta
+          <i className="material-symbols-outlined">note_add</i> Crear Pauta
         </button>
         <button
           className={`tab-button ${activeTab === "view" ? "active" : ""}`}
           onClick={() => setActiveTab("view")}
         >
-          📋 Ver Pautas
+          <i className="material-symbols-outlined">assignment</i> Ver Pautas
         </button>
         <button
           className={`tab-button ${activeTab === "view-evaluations" ? "active" : ""}`}
           onClick={() => setActiveTab("view-evaluations")}
         >
-          🧾 Ver Evaluaciones
+          <i className="material-symbols-outlined">assessment</i> Ver Evaluaciones
         </button>
         <button
           className={`tab-button ${activeTab === "evaluate" ? "active" : ""}`}
           onClick={() => setActiveTab("evaluate")}
         >
-          ✍️ Evaluar Estudiante
+          <i className="material-symbols-outlined">edit_note</i> Evaluar Estudiante
         </button>
       </div>
 

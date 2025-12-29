@@ -134,13 +134,13 @@ const ViewPautasSection = () => {
           className={`view-tab-btn ${viewMode === "editar" ? "active" : ""}`}
           onClick={() => { setPage(1); setViewMode("editar"); }}
         >
-          ✏️ Editar Pautas
+          <i className="material-symbols-outlined">edit</i> Editar Pautas
         </button>
         <button
           className={`view-tab-btn ${viewMode === "revisar" ? "active" : ""}`}
           onClick={() => { setPage(1); setViewMode("revisar"); }}
         >
-          📋 Revisar Pautas
+          <i className="material-symbols-outlined">checklist</i> Revisar Pautas
         </button>
       </div>
 
