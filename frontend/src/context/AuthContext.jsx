@@ -12,7 +12,7 @@ export function AuthProvider({ children }) {
     const token = sessionStorage.getItem('token') || '';
     const isAuthenticated = user ? true : false;
 
-useEffect(() => {
+    useEffect(() => {
     if (!isAuthenticated) {
         navigate('/auth');
     }
