@@ -14,7 +14,8 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
 
      const menuItems = [
         { path: '/home', label: 'Inicio', icon: 'home', roles: ['administrador', 'profesor', 'estudiante', 'usuario'] },
-        { path: '/users', label: 'Usuarios', icon: 'group', roles: ['administrador'] },
+        { path: '/usersa', label: 'Usuarios', icon: 'group', roles: ['administrador'] },
+        { path: '/usersp', label: 'Usuarios', icon: 'group', roles: ['profesor'] },
         { path: '/evaluations', label: 'Evaluaciones', icon: 'assignment', roles: ['profesor'] },
         { path: '/comisiones/programar', label: 'Comisiones', icon: 'event', roles: ['administrador', 'profesor'] },
         { path: '/solicitud', label: 'Solicitar Revisión/Recuperación', icon: 'note_add', roles: ['usuario', 'estudiante'] },

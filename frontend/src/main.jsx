@@ -3,7 +3,8 @@ import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom"
 import Evaluations from '@pages/Evaluations';
 import Login from '@pages/Login';
 import Home from '@pages/Home';
-import Users from '@pages/Users';
+import Users from '@pages/UsersAdmin';
+import UsersProfe from '@pages/UsersProfe';
 import Register from '@pages/Register';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
@@ -45,9 +46,17 @@ const router = createBrowserRouter([
         )
       },
       {
-        path: 'users',
+        path: 'usersa',
         element: (
         <ProtectedRoute allowedRoles={['administrador']}>
+          <Users />
+        </ProtectedRoute>
+        )
+      },
+      {
+        path: 'usersp',
+        element: (
+        <ProtectedRoute allowedRoles={['profesor']}>
           <Users />
         </ProtectedRoute>
         )
