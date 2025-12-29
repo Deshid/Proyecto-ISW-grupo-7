@@ -16,12 +16,12 @@ import {
     evaluateStudentController,
     getEvaluationByIdController,
     getStudentGradesController,
+    listAssignedStudentsController,
     listEvaluationsController,
     listPautasPaginatedController,
     listProfessorReviewsController,
     listProfessorReviewsGroupedController,
     listStudentsController,
-    listAssignedStudentsController,
     updateEvaluationController,
     updateStudentEvaluationController,
 } from "../controllers/evaluation.controller.js";

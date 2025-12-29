@@ -196,7 +196,8 @@ export async function getAssignedStudents(token) {
         const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData.message || "Error al obtener estudiantes asignados");
     }
-    return res.json();
+    const response = await res.json();
+    return response.data || response;
 }
 
 /**
@@ -245,6 +246,7 @@ export default {
     getProfessorReviews,
     getProfessorReviewsGrouped,
     getStudents,
+    getAssignedStudents,
     updateStudentEvaluation,
     deleteEvaluation,
 };
