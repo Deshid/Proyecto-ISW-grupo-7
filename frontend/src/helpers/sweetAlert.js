@@ -1,13 +1,5 @@
 import Swal from 'sweetalert2';
 
-export const showAlert = (icon, title, message) => {
-  Swal.fire({
-    icon,
-    title,
-    text: message,
-  });
-};
-
 export async function deleteDataAlert() {
   return Swal.fire({
     title: "¿Estás seguro?",
