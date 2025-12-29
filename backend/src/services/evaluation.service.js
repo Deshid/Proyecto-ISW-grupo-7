@@ -531,11 +531,15 @@ const listAssignedStudents = async (profesorId) => {
         relations: ["estudiantes"],
     });
 
-    if (!profesor) {
-        throw new Error("Profesor no encontrado");
+    // Si no existe el profesor o no tiene estudiantes vinculados, devolvemos todos los estudiantes
+    if (!profesor || !Array.isArray(profesor.estudiantes) || profesor.estudiantes.length === 0) {
+        return await userRepo.find({
+            where: { rol: "estudiante" },
+            select: ["id", "nombreCompleto", "email", "rut"],
+        });
     }
 
-    return profesor.estudiantes.map(estudiante => ({
+    return profesor.estudiantes.map((estudiante) => ({
         id: estudiante.id,
         nombreCompleto: estudiante.nombreCompleto,
         email: estudiante.email,
