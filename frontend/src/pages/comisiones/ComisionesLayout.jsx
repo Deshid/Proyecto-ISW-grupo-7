@@ -42,6 +42,13 @@ const ComisionesLayout = () => {
             <span className="material-symbols-outlined">school</span>
             Estudiantes
           </button>
+          <button
+            onClick={() => navigate('/comisiones/registros')}
+            className={`nav-btn ${isActive('/comisiones/registros') ? 'active' : ''}`}
+          >
+            <span className="material-symbols-outlined">assignment</span>
+            Registros
+          </button>
         </nav>
       </div>
 

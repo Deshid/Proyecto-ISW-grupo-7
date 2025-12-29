@@ -17,6 +17,8 @@ import ComisionesLayout from '@pages/comisiones/ComisionesLayout';
 import ProgramarEvaluacion from '@pages/comisiones/ProgramarEvaluacion';
 import Profesores from '@pages/comisiones/Profesores';
 import Estudiantes from '@pages/comisiones/Estudiantes';
+import Registros from '@pages/comisiones/Registros';
+import Asignacion from './pages/Asignacion';
 
 const router = createBrowserRouter([
   {
@@ -51,8 +53,15 @@ const router = createBrowserRouter([
           <Users />
         </ProtectedRoute>
         )
-    }
-    ,
+      },
+      {
+        path: 'asignacion',
+        element: (
+          <ProtectedRoute allowedRoles={['usuario', 'estudiante']}>
+            <Asignacion />
+          </ProtectedRoute>
+        )
+      },
     {
       path: '/comisiones',
       element: (
@@ -76,6 +85,10 @@ const router = createBrowserRouter([
         {
           path: 'estudiantes',
           element: <Estudiantes />
+        },
+        {
+          path: 'registros',
+          element: <Registros />
         }
       ]
     },

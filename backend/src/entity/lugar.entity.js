@@ -79,6 +79,22 @@ export const HorarioSchema = new EntitySchema({
             cascade: true,
             nullable: true,
         },
+        estudiantes: {
+            type: "many-to-many",
+            target: "User",
+            joinTable: {
+                name: "horario_estudiantes",
+                joinColumn: {
+                    name: "horario_id",
+                    referencedColumnName: "id_horario",
+                },
+                inverseJoinColumn: {
+                    name: "estudiante_id",
+                    referencedColumnName: "id",
+                },
+            },
+            cascade: true,
+        },
     },
 });
 

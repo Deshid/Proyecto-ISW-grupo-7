@@ -21,7 +21,7 @@ export default function Modal({ open, onClose, title, children, type, horario, p
       return (
         <>
           <p className="mb-20">
-            <strong>Horario actual:</strong> <span style={{color: '#92400e', padding: '4px 10px', borderRadius: '6px', fontWeight: '600', fontSize: '14px' }}>{horario.fecha} de {formatHora(horario.horaInicio)} a {formatHora(horario.horaFin)}</span>
+            <strong style={{color: '#57534e'}}>Horario actual:</strong> <span style={{color: '#92400e', padding: '4px 10px', borderRadius: '6px', fontWeight: '600', fontSize: '14px' }}>{horario.fecha} de {formatHora(horario.horaInicio)} a {formatHora(horario.horaFin)}</span>
           </p>
           <div className="modal-form-wrapper">
             <Form

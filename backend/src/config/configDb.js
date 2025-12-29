@@ -8,7 +8,8 @@ import PautaSchema from "../entity/pautaSchema.entity.js";
 import ItemPautaSchema from "../entity/itemPautaSchema.entity.js";
 import EvaluacionEstudianteSchema from "../entity/evaluationSchema.entity.js";
 import DetalleEvaluacionSchema from "../entity/DetalleEvaluacionSchema.entity.js";
-
+import SubjectSchema from "../entity/subject.entity.js";
+import UserSubjectSchema from "../entity/userSubject.entity.js";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -17,7 +18,10 @@ export const AppDataSource = new DataSource({
   username: `${DB_USERNAME}`,
   password: `${PASSWORD}`,
   database: `${DATABASE}`,
+
   entities: [
+    SubjectSchema,
+    UserSubjectSchema,
     UserSchema, 
     LugarSchema, 
     HorarioSchema, 

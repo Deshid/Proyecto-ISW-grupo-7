@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { logout } from '@services/auth.service.js';
 import '@styles/sidebar.css';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
     const navigate = useNavigate();
     const user = JSON.parse(sessionStorage.getItem('usuario')) || '';
     const userRole = user?.rol;
@@ -19,13 +19,17 @@ const Sidebar = () => {
         { path: '/comisiones/programar', label: 'Comisiones', icon: 'event', roles: ['administrador', 'profesor'] },
         { path: '/solicitud', label: 'Solicitar Revisión/Recuperación', icon: 'note_add', roles: ['usuario', 'estudiante'] },
         { path: '/solicitudes', label: 'Ver Solicitudes', icon: 'folder', roles: ['profesor'] },
+        { path: '/asignacion', label: 'Ver Comisión Asignada', icon: 'event', roles: ['usuario', 'estudiante'] },
     ];
 
     return (
-        <div className="sidebar">
+        <div className={`sidebar ${isOpen ? 'open' : ''}`}>
             <div className="sidebar-header">
                 <h3>Menú</h3>
                 {user?.nombreCompleto && <p>{user.nombreCompleto}</p>}
+                <button type="button" className="sidebar-close" aria-label="Cerrar menú" onClick={onClose}>
+                    <span className="material-symbols-outlined">close</span>
+                </button>
             </div>
 
             <nav className="sidebar-navegacion">

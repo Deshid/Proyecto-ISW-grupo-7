@@ -2,6 +2,11 @@ import { startCase } from 'lodash';
 import { format as formatRut } from 'rut.js';
 import { format as formatTempo } from "@formkit/tempo";
 
+export function formatFecha(fecha) {
+    if (!fecha) return '';
+    return formatTempo(fecha, "DD-MM-YYYY");
+}
+
 export function formatUserData(user) {
     return {
         ...user,
