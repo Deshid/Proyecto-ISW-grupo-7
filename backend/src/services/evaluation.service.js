@@ -524,6 +524,25 @@ const listStudents = async () => {
     });
 };
 
+const listAssignedStudents = async (profesorId) => {
+    const userRepo = AppDataSource.getRepository("User");
+    const profesor = await userRepo.findOne({
+        where: { id: profesorId, rol: "profesor" },
+        relations: ["estudiantes"],
+    });
+
+    if (!profesor) {
+        throw new Error("Profesor no encontrado");
+    }
+
+    return profesor.estudiantes.map(estudiante => ({
+        id: estudiante.id,
+        nombreCompleto: estudiante.nombreCompleto,
+        email: estudiante.email,
+        rut: estudiante.rut,
+    }));
+};
+
 export default {
     createEvaluation,
     listEvaluations,
@@ -536,5 +555,6 @@ export default {
     getStudentGrades,
     listProfessorReviews,
     listStudents,
+    listAssignedStudents,
     deleteEvaluation,
 };

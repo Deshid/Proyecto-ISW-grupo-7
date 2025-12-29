@@ -28,12 +28,12 @@ const EvaluateStudentSection = () => {
 
   const fetchStudents = useCallback(async () => {
     try {
-      const response = await evaluationService.getStudents(token);
+      const response = await evaluationService.getAssignedStudents(token);
 
       const studentsList = Array.isArray(response) ? response : response.data || [];
       setStudents(studentsList);
     } catch {
-      showAlert("error", "Error", "No se pudieron cargar los estudiantes");
+      showAlert("error", "Error", "No se pudieron cargar los estudiantes asignados");
     }
   }, [token]);
 

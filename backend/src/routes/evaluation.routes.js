@@ -21,6 +21,7 @@ import {
     listProfessorReviewsController,
     listProfessorReviewsGroupedController,
     listStudentsController,
+    listAssignedStudentsController,
     updateEvaluationController,
     updateStudentEvaluationController,
 } from "../controllers/evaluation.controller.js";
@@ -76,6 +77,13 @@ router.get(
     authenticateJwt,
     authorize(["profesor"]),
     listStudentsController
+);
+
+router.get(
+    "/assigned-students",
+    authenticateJwt,
+    authorize(["profesor"]),
+    listAssignedStudentsController
 );
 
 router.get(

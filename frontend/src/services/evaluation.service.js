@@ -184,6 +184,21 @@ export async function getStudents(token) {
     return res.json();
 }
 
+export async function getAssignedStudents(token) {
+    const res = await fetch(`${API_URL}/api/evaluation/assigned-students`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+    });
+    if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al obtener estudiantes asignados");
+    }
+    return res.json();
+}
+
 /**
  * @param {Number} evaluacionId - ID de la evaluación
  * @param {Object} data - { puntajesItems }

@@ -110,6 +110,17 @@ export const listStudentsController = async (req, res) => {
     }
 };
 
+export const listAssignedStudentsController = async (req, res) => {
+    try {
+        const profesorId = req.user.id;
+        const students = await evaluationService.listAssignedStudents(profesorId);
+        handleSuccess(res, 200, "Estudiantes asignados listados", students);
+    } catch (error) {
+        console.error("[listAssignedStudentsController] error:", error);
+        handleErrorClient(res, 400, error.message);
+    }
+};
+
 export const updateEvaluationController = async (req, res) => {
     try {
         const profesorId = req.user.id;
@@ -219,6 +230,7 @@ export default {
     listProfessorReviewsController,
     listProfessorReviewsGroupedController,
     listStudentsController,
+    listAssignedStudentsController,
     updateEvaluationController,
     updateStudentEvaluationController,
     deleteEvaluationController,
