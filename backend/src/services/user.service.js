@@ -41,6 +41,27 @@ export async function getUsersService() {
   }
 }
 
+export async function getStudentsService() {
+  try {
+    const userRepository = AppDataSource.getRepository(User);
+
+    const users = await userRepository.find();
+
+    if (!users || users.length === 0) return [null, "No hay usuarios"];
+
+    const students = users
+      .map(({ password, ...user }) => user)
+      .filter((u) => u.rol !== "profesor" && u.rol !== "administrador");
+
+    if (!students || students.length === 0) return [null, "No hay estudiantes"];
+
+    return [students, null];
+  } catch (error) {
+    console.error("Error al obtener a los estudiantes:", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+
 export async function updateUserService(query, body) {
   try {
     const { id, rut, email } = query;

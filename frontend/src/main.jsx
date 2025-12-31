@@ -4,12 +4,14 @@ import Evaluations from '@pages/Evaluations';
 import Login from '@pages/Login';
 import Home from '@pages/Home';
 import Users from '@pages/UsersAdmin';
-import UsersProfe from '@pages/UsersProfe';
+import Users2 from '@pages/UsersProfe';
 import Register from '@pages/Register';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
+import '@styles/home.css';
+import '@styles/home-sections.css';
 import SolicitudPage from "@pages/SolicitudPage";
 import SolicitudesProfesor from '@pages/SolicitudesProfesor';
 import ComisionesLayout from '@pages/comisiones/ComisionesLayout';
@@ -57,7 +59,7 @@ const router = createBrowserRouter([
         path: 'usersp',
         element: (
         <ProtectedRoute allowedRoles={['profesor']}>
-          <Users />
+          <Users2/>
         </ProtectedRoute>
         )
       },

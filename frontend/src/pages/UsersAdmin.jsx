@@ -703,12 +703,12 @@ if (usuariosParaAsignar.length === 0) {
     De otra forma, la tabla pasa a usar dos filas por instancia, lo cual tapa algunos botones
     de la página.
     */
-    { title: "Nombre", field: "nombreCompleto", width: 200, responsive: 0 },
+    { title: "Nombre", field: "nombreCompleto", width: 150, responsive: 0 },
     { title: "Correo electrónico", field: "email", width: 200, responsive: 3 },
-    { title: "Rut", field: "rut", width: 104, responsive: 2 },
-    { title: "Rol", field: "rol", width: 104, responsive: 2 },
-    { title: "Creado", field: "createdAt", width: 104, responsive: 2 },
-    { title: "Tema asignado", field: "assignedSubject",  width: 104, responsive: 2,
+    { title: "Rut", field: "rut", width: 100, responsive: 2 },
+    { title: "Rol", field: "rol", width: 100, responsive: 2 },
+    { title: "Creado", field: "createdAt", width: 100, responsive: 2 },
+    { title: "Tema asignado", field: "assignedSubject",  width: 100, responsive: 2,
         render: (rowData) => {
         if (rowData.subjectsCount === 0) {
           return <span style={{ color: '#666' }}>0 temas</span>;
@@ -729,7 +729,10 @@ if (usuariosParaAsignar.length === 0) {
     <div className='main-container'>    
       <div className='table-container'>       
         <div className='top-table page-header'>
-          <h1 className='title-table titulo'>Usuarios</h1>
+          <h1 className='titulo'>
+            <span className="material-symbols-outlined page-icon">group</span>
+            Usuarios
+          </h1>
           <div className='filter-actions'>
             <Search value={filterRut} onChange={handleRutFilterChange} placeholder={'Filtrar por rut'} />
             <select //dropdown para seleccionar tema

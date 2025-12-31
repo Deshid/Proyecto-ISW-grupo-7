@@ -1,6 +1,7 @@
 import '@styles/comisiones.css';
 import MiniHeader from '@components/MiniHeader';
 import { getEstudiantes, getProfesores } from '@services/comision.service.js';
+import axios from '@services/root.service.js';
 import { useEffect, useState } from 'react';
 
 const Estudiantes = () => {
@@ -9,17 +10,55 @@ const Estudiantes = () => {
   const [filtro, setFiltro] = useState('todos');
 
   useEffect(() => {
-    const fetchEstudiantes = async () => {
-      const data = await getEstudiantes();
-      setEstudiantes(data);
-    };
     const fetchProfesores = async () => {
       const data = await getProfesores();
       setProfesores(data);
     };
-    fetchEstudiantes();
+    const loadEstudiantes = async () => {
+      try {
+        const usuario = JSON.parse(sessionStorage.getItem('usuario')) || null;
+        if (filtro === 'todos' && usuario && usuario.rol === 'profesor') {
+          // Usar nuevo endpoint que devuelve solo estudiantes (accesible por profesor)
+          const resp = await axios.get('/user/students');
+          const users = resp?.data?.data || [];
+          const collator = new Intl.Collator('es', { sensitivity: 'base', numeric: true });
+          setEstudiantes(users.sort((a, b) => collator.compare(a.nombreCompleto || '', b.nombreCompleto || '')));
+        } else {
+          const data = await getEstudiantes();
+          setEstudiantes(data);
+        }
+      } catch (error) {
+        console.error('Error cargando estudiantes según filtro:', error);
+        setEstudiantes([]);
+      }
+    };
+
+    loadEstudiantes();
     fetchProfesores();
   }, []);
+
+  // Re-fetch cuando cambie el filtro (por ejemplo: profesor selecciona 'todos')
+  useEffect(() => {
+    const reload = async () => {
+      try {
+        const usuario = JSON.parse(sessionStorage.getItem('usuario')) || null;
+        if (filtro === 'todos' && usuario && usuario.rol === 'profesor') {
+          const resp = await axios.get('/user/students');
+          const users = resp?.data?.data || [];
+          const collator = new Intl.Collator('es', { sensitivity: 'base', numeric: true });
+          setEstudiantes(users.sort((a, b) => collator.compare(a.nombreCompleto || '', b.nombreCompleto || '')));
+        } else {
+          const data = await getEstudiantes();
+          setEstudiantes(data);
+        }
+      } catch (error) {
+        console.error('Error recargando estudiantes al cambiar filtro:', error);
+        setEstudiantes([]);
+      }
+    };
+
+    reload();
+  }, [filtro]);
 
   const getProfessorNameByEstudiante = (estudianteId) => {
     // Buscar en qué profesor está asignado el estudiante

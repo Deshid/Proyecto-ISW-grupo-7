@@ -1,7 +1,7 @@
 "use strict";
 import { AppDataSource } from "../config/configDb.js";
-import UserSubjectSchema from "../entity/userSubject.entity.js";
-import SubjectSchema from "../entity/subject.entity.js";
+import UserSubjectSchema from "../entity/UserSubject.entity.js";
+import SubjectSchema from "../entity/Subject.entity.js";
 
 const UserSubjectRepository = AppDataSource.getRepository(UserSubjectSchema);
 const SubjectRepository = AppDataSource.getRepository(SubjectSchema);

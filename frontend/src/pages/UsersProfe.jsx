@@ -38,16 +38,10 @@ const UsersProfe = () => {
         }
 
         setUserId(usuario.id);
-        // Cargar primero los estudiantes del profesor. No forzamos la
-        // carga de todos los subjects aquí porque ese endpoint puede
-        // requerir permisos de administrador en algunos entornos.
-        await fetchProfesorEstudiantes(usuario.id);
-
-        // Si el usuario es admin, sí cargamos la lista completa de subjects
-        // al inicio; en caso contrario, la cargaremos bajo demanda
-        // (por ejemplo al abrir el modal de subjects).
-        const isAdmin = usuario?.rol === 'admin' || usuario?.role === 'admin';
-        if (isAdmin) await loadAllSubjects();
+        await Promise.all([
+          fetchProfesorEstudiantes(usuario.id),
+          loadAllSubjects()
+        ]);
       } catch (error) {
         console.error('Error inicializando UsersProfe:', error);
       } finally {
@@ -151,8 +145,10 @@ const UsersProfe = () => {
     try {
       const token = sessionStorage.getItem('token');
       if (!token) return;
-      
-      const response = await fetch('http://localhost:3000/api/subject/subject-list', {
+      // Si hay un usuario (profesor) en sessionStorage, pedir solo sus subjects
+      const creatorIdQuery = usuario && usuario.id ? `?creatorId=${usuario.id}` : '';
+
+      const response = await fetch(`http://localhost:3000/api/subject/subject-list${creatorIdQuery}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -162,7 +158,15 @@ const UsersProfe = () => {
       if (response.ok) {
         const result = await response.json();
         if (result.success) {
-          setSubjectsList(result.data || []);
+          // Filtrar por creador en frontend como salvaguarda extra
+          const allSubjects = result.data || [];
+          let filtered = allSubjects;
+          if (usuario && usuario.rol === 'profesor' && usuario.id) {
+            filtered = allSubjects.filter(s => s.creatorId == usuario.id);
+            // además, descartar subjects sin creatorId
+            filtered = filtered.filter(s => s.creatorId != null && s.creatorId !== undefined);
+          }
+          setSubjectsList(filtered);
         }
       }
     } catch (error) {
@@ -638,12 +642,12 @@ const UsersProfe = () => {
   }, []);
 
   const columns = [
-    { title: "Nombre", field: "nombreCompleto", width: 200, responsive: 0 },
-    { title: "Correo electrónico", field: "email", width: 200, responsive: 3 },
-    { title: "Rut", field: "rut", width: 104, responsive: 2 },
-    { title: "Rol", field: "rol", width: 104, responsive: 2 },
-    { title: "Creado", field: "createdAt", width: 104, responsive: 2 },
-    { title: "Tema asignado", field: "assignedSubject", width: 104, responsive: 2,
+    { title: "Nombre", field: "nombreCompleto", width: 150, responsive: 0 },
+    { title: "Correo electrónico", field: "email", width:200, responsive: 3 },
+    { title: "Rut", field: "rut", width: 100, responsive: 2 },
+    { title: "Rol", field: "rol", width: 100, responsive: 2 },
+    { title: "Creado", field: "createdAt", width: 100, responsive: 2 },
+    { title: "Tema asignado", field: "assignedSubject", width: 100, responsive: 2,
       render: (rowData) => {
         if (rowData.subjectsCount === 0) {
           return <span style={{ color: '#666' }}>0 temas</span>;
@@ -755,6 +759,7 @@ const UsersProfe = () => {
           onClose={() => setIsSubjectModalOpen(false)}
           onSubmit={handleAddSubject}
           onDelete={handleDeleteSubject}
+          subjectsList={subjectsList}
         />
       </div>
     </div>
