@@ -26,6 +26,22 @@ export class SubjectService {
         }
     }
 
+    // Obtener materias con filtro opcional por creador
+    static async getAllSubjectsByCreator(creatorId) {
+        try {
+            if (creatorId === undefined || creatorId === null) {
+                const subjects = await SubjectRepository.find();
+                return { success: true, data: subjects, message: "Subjects retrieved successfully" };
+            }
+
+            const subjects = await SubjectRepository.find({ where: { creatorId: parseInt(creatorId) } });
+            return { success: true, data: subjects, message: "Subjects retrieved successfully" };
+        } catch (error) {
+            console.error("Error fetching subjects by creator:", error);
+            return { success: false, message: "Error fetching subjects", error: error.message };
+        }
+    }
+
     // Obtener una materia por ID
     static async getSubjectById(id) {
         try {
@@ -61,6 +77,7 @@ export class SubjectService {
             console.log("[DEBUG Service] Iniciando creación. Datos:", subjectData);
             
             const { nombre } = subjectData;
+            const { creatorId } = subjectData;
             
             if (!nombre || nombre.trim() === "") {
                 console.log("[DEBUG Service] Nombre inválido");
@@ -73,7 +90,8 @@ export class SubjectService {
             console.log("[DEBUG Service] Repositorio obtenido:", !!SubjectRepository);
             
             const newSubject = SubjectRepository.create({
-                nombre: nombre.trim()
+                nombre: nombre.trim(),
+                creatorId: creatorId ? parseInt(creatorId) : null
             });
             
             console.log("[DEBUG Service] Guardando en BD...");

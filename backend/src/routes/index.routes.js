@@ -7,6 +7,7 @@ import comisionRoutes from "./comision.routes.js";
 import solicitudRoutes from "./solicitud.routes.js";
 import subjectRoutes from "./subject.routes.js";
 import subjectAssignRoutes from "./subjectAssign.routes.js";
+import professorCreatedSubjectRoutes from "./professorCreatedSubject.routes.js";
 // Importa el controlador de limpieza (TEMPORAL)
 import cleanupRoutes from "./Cleanup.routes.js";
 
@@ -20,6 +21,7 @@ router
     .use("/", comisionRoutes)
     .use("/subject", subjectRoutes)
     .use("/subjectAssign", subjectAssignRoutes)
+    .use("/professor-created", professorCreatedSubjectRoutes)
     // Añade esto DESPUÉS de tus otras rutas (pero ANTES del 404):
     .use("/temp", cleanupRoutes);  // Ruta temporal - eliminar después
 router.use("/solicitud", solicitudRoutes);

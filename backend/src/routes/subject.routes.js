@@ -100,7 +100,8 @@ router.get("/:id", SubjectController.getSubjectById);
  *       500:
  *         description: Internal server error
  */
-router.post("/subject-create", SubjectController.createSubject);
+// Proteger la creación para capturar el usuario autenticado como creador
+router.post("/subject-create", authenticateJwt, SubjectController.createSubject);
 
 /**
  * @swagger

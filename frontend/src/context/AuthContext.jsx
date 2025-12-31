@@ -9,10 +9,11 @@ export const useAuth = () => useContext(AuthContext);
 export function AuthProvider({ children }) {
     const navigate = useNavigate();
     const user = JSON.parse(sessionStorage.getItem('usuario')) || '';
+    console.log(user);
     const token = sessionStorage.getItem('token') || '';
     const isAuthenticated = user ? true : false;
 
-useEffect(() => {
+    useEffect(() => {
     if (!isAuthenticated) {
         navigate('/auth');
     }
