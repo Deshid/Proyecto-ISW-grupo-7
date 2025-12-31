@@ -4,36 +4,45 @@ import Joi from "joi";
 // Validación para crear pauta
 export const createPautaValidation = Joi.object({
   nombre_pauta: Joi.string()
-    .min(3)
-    .max(255)
+    .min(10)
+    .max(50)
     .required()
     .trim()
+    .pattern(/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/)
     .messages({
-      "string.empty": "nombre_pauta es requerido",
-      "string.min": "nombre_pauta debe tener al menos 3 caracteres",
-      "string.max": "nombre_pauta no puede exceder 255 caracteres",
+      "any.required": "El nombre de la pauta es requerido",
+      "string.empty": "El nombre de la pauta no puede estar vacío",
+      "string.min": "El nombre debe tener al menos 10 caracteres",
+      "string.max": "El nombre de la pauta no puede exceder 50 caracteres",
+      "string.pattern.base": "El nombre debe contener letras",
     }),
   items: Joi.array()
-    .min(1)
+    .min(1)   
     .items(
       Joi.object({
         descripcion: Joi.string()
-          .min(1)
+          .min(10)
           .max(500)
           .required()
           .trim()
+          .pattern(/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/)
           .messages({
-            "string.empty": "descripcion no puede estar vacía",
+            "any.required": "La pregunta es requerida",
+            "string.empty": "La pregunta no puede estar vacía",
+            "string.min": "La pregunta debe tener al menos 10 caracteres",
+            "string.max": "La pregunta no puede exceder 500 caracteres",
+            "string.pattern.base": "La pregunta debe contener letras",
           }),
         puntaje_maximo: Joi.number()
           .integer()
           .min(1)
-          .max(1000)
+          .max(100)
           .required()
           .messages({
-            "number.base": "puntaje_maximo debe ser un número",
-            "number.min": "puntaje_maximo debe ser >= 1",
-            "number.max": "puntaje_maximo no puede exceder 1000",
+            "any.required": "El puntaje maximo es requerido",
+            "number.base": "El puntaje maximo debe ser un número",
+            "number.min": "El puntaje maximo debe ser mínimo 1",
+            "number.max": "El puntaje maximo no puede exceder 100",
           }),
       })
     )
@@ -46,45 +55,54 @@ export const createPautaValidation = Joi.object({
     .max(100)
     .optional()
     .messages({
-      "number.base": "porcentaje_escala debe ser un número",
-      "number.min": "porcentaje_escala no puede ser negativo",
-      "number.max": "porcentaje_escala no puede exceder 100",
+      "number.base": "El porcentaje de escala debe ser un número",
+      "number.min": "El porcentaje de escala no puede ser negativo",
+      "number.max": "El porcentaje de escala no puede exceder 100",
     }),
 });
 
 // Validación para actualizar pauta
 export const updatePautaValidation = Joi.object({
   nombre_pauta: Joi.string()
-    .min(3)
-    .max(255)
+    .min(10)
+    .max(50)
     .required()
     .trim()
+    .pattern(/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/)
     .messages({
-      "string.empty": "nombre_pauta es requerido",
-      "string.min": "nombre_pauta debe tener al menos 3 caracteres",
-      "string.max": "nombre_pauta no puede exceder 255 caracteres",
+    "any.required": "El nombre de la pauta es requerido",
+    "string.empty": "El nombre de la pauta no puede estar vacío",
+    "string.min": "El nombre de la pauta debe tener al menos 10 caracteres",
+    "string.max": "El nombre de la pauta no puede exceder 50 caracteres",
+    "string.pattern.base": "El nombre de la pauta debe contener letras",
     }),
   items: Joi.array()
     .min(1)
     .items(
       Joi.object({
         descripcion: Joi.string()
-          .min(1)
+          .min(10)
           .max(500)
           .required()
           .trim()
+          .pattern(/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/)
           .messages({
-            "string.empty": "descripcion no puede estar vacía",
+            "any.required": "La pregunta actualizada es requerida",
+            "string.empty": "La pregunta actualizada no puede estar vacía",
+            "string.min": "La pregunta actualizada debe tener al menos 10 caracteres",
+            "string.max": "La pregunta actualizada no puede exceder 500 caracteres",
+            "string.pattern.base": "La pregunta actualizada debe contener letras",
           }),
         puntaje_maximo: Joi.number()
           .integer()
           .min(1)
-          .max(1000)
+          .max(100)
           .required()
           .messages({
-            "number.base": "puntaje_maximo debe ser un número",
-            "number.min": "puntaje_maximo debe ser >= 1",
-            "number.max": "puntaje_maximo no puede exceder 1000",
+            "any.required": "El puntaje maximo es requerido",
+            "number.base": "El puntaje maximo debe ser un número",
+            "number.min": "El puntaje maximo debe ser mayor o igual a 1",
+            "number.max": "El puntaje maximo no puede exceder 100",
           }),
       })
     )
@@ -101,28 +119,32 @@ export const evaluateStudentValidation = Joi.object({
     .positive()
     .required()
     .messages({
-      "number.base": "pautaId debe ser un número",
-      "number.positive": "pautaId debe ser positivo",
+      "any.required": "Se debe elegir una pauta",
+      "number.base": "Debe seleccionar una pauta.",
+      "number.positive": "La pauta seleccionada no es válida",
     }),
   estudianteId: Joi.number()
     .integer()
     .positive()
     .required()
     .messages({
-      "number.base": "estudianteId debe ser un número",
-      "number.positive": "estudianteId debe ser positivo",
+      "any.required": "El estudiante es requerido",
+      "number.base": "Debe seleccionar un estudiante",
+      "number.positive": "El id del estudiante debe ser positivo",
     }),
   asiste: Joi.boolean()
     .default(true)
     .optional()
     .messages({
-      "boolean.base": "asiste debe ser verdadero o falso",
+      "any.required": "El campo asiste es requerido",
+      "boolean.base": "asiste debe ser Sí o No",
     }),
   repeticion: Joi.boolean()
     .default(false)
     .optional()
     .messages({
-      "boolean.base": "repeticion debe ser verdadero o falso",
+      "any.required": "El campo repeticion es requerido",
+      "boolean.base": "repeticion debe ser Sí o No",
     }),
   puntajesItems: Joi.when("asiste", {
     is: true,
@@ -135,28 +157,42 @@ export const evaluateStudentValidation = Joi.object({
             .positive()
             .required()
             .messages({
-              "number.base": "itemId debe ser un número",
-              "number.positive": "itemId debe ser positivo",
+              "any.required": "El id del item es requerido para cada puntaje",
+              "number.base": "El id del item debe ser un número",
+              "number.integer": "El id del item debe ser un número entero",
+              "number.positive": "El id del item debe ser un número positivo",
             }),
           puntaje: Joi.number()
             .min(0)
+            .max(1000)
             .required()
             .messages({
-              "number.base": "puntaje debe ser un número",
-              "number.min": "puntaje no puede ser negativo",
+              "any.required": "El puntaje es requerido para cada item",
+              "number.base": "El puntaje debe ser un número",
+              "number.min": "El puntaje no puede ser negativo",
+              "number.max": "El puntaje no puede exceder 1000",
+              "number.empty": "El puntaje no puede estar vacío",
             }),
           comentario: Joi.string()
             .max(1000)
             .allow("", null)
             .optional()
+            .trim()
+            .pattern(/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/)
             .messages({
-              "string.max": "comentario no puede exceder 1000 caracteres",
+              "string.max": "El comentario no puede exceder 1000 caracteres",
+              "string.pattern.base": "El comentario debe contener al menos una letra si se proporciona",
             }),
-        })
+        }).unknown(false)
       )
-      .required(),
+      .required()
+      .messages({
+        "array.min": "Debe incluir puntajes para al menos un item",
+      }),
     otherwise: Joi.forbidden(),
   }),
+}).unknown(false).messages({
+  "object.unknown": "No se permiten propiedades adicionales",
 });
 
 // Validación para actualizar evaluación de estudiante
@@ -170,27 +206,39 @@ export const updateStudentEvaluationValidation = Joi.object({
           .positive()
           .required()
           .messages({
-            "number.base": "itemId debe ser un número",
-            "number.positive": "itemId debe ser positivo",
+            "any.required": "El id del item es requerido para cada puntaje",
+            "number.base": "El id del item debe ser un número",
+            "number.integer": "El id del item debe ser un número entero",
+            "number.positive": "El id del item debe ser un número positivo",
           }),
         puntaje: Joi.number()
           .min(0)
+          .max(1000)
           .required()
           .messages({
-            "number.base": "puntaje debe ser un número",
-            "number.min": "puntaje no puede ser negativo",
+            "any.required": "El puntaje es requerido para cada item",
+            "number.base": "El puntaje debe ser un número",
+            "number.min": "El puntaje no puede ser negativo",
+            "number.max": "El puntaje no puede exceder 1000",
           }),
         comentario: Joi.string()
           .max(1000)
           .allow("", null)
           .optional()
+          .trim()
+          .pattern(/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/)
           .messages({
-            "string.max": "comentario no puede exceder 1000 caracteres",
+            "string.max": "El comentario no puede exceder 1000 caracteres",
+            "string.pattern.base": "El comentario debe contener al menos una letra si se proporciona",
           }),
-      })
+      }).unknown(false)
     )
     .required()
     .messages({
-      "array.min": "puntajesItems debe tener al menos un elemento",
+      "any.required": "puntajesItems es requerido",
+      "array.min": "Debe incluir puntajes para al menos un item",
     }),
-});
+}).unknown(false).messages({
+  "object.unknown": "No se permiten propiedades adicionales",
+})
+;

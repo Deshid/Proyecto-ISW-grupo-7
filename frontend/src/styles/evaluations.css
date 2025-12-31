@@ -1,4 +1,4 @@
-/* ========================================
+﻿/* ========================================
    EVALUATIONS.CSS - REDISEÑO
    ======================================== */
 
@@ -49,28 +49,38 @@
 
 /* Header con degradado */
 .evaluations-header {
-  background: linear-gradient(to right, var(--amber-800), var(--stone-800));
+  background: linear-gradient(90deg, var(--amber-800), var(--stone-800));
   color: #fff;
-  padding: 24px 32px;
-  border-radius: 0 0 24px 24px;
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
-  margin-bottom: 32px;
+  padding: 20px 24px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
 .evaluations-header h1 {
-  font-size: 32px;
-  font-weight: 700;
-  margin: 0 0 8px 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  font-size: 30px;
+  font-weight: 800;
+  font-family: inherit;
+  margin: 0;
+}
+
+.evaluations-header .material-symbols-outlined {
+  vertical-align: -6px;
+  margin-right: 8px;
+  font-size: 30px;
+  color: var(--amber-100);
 }
 
 .evaluations-header p {
-  font-size: 15px;
+  font-size: 14px;
   color: var(--amber-100);
-  margin: 0;
-  opacity: 0.95;
+  margin-top: 4px;
+  margin-bottom: 0;
 }
 
 /* Navegación con tabs estilo botones */
@@ -129,7 +139,7 @@
    ======================================== */
 
 .create-pauta-section {
-  background: var(--amber-100);
+  background: var(--amber-50);
   border-left: 4px solid var(--amber-800);
   border-radius: var(--radius-lg);
   padding: 24px;
@@ -147,7 +157,8 @@
 }
 
 .create-pauta-section h2::before {
-  content: "📝";
+  content: "note_add";
+  font-family: 'Material Symbols Outlined';
   background: var(--amber-800);
   color: #fff;
   width: 32px;
@@ -156,7 +167,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .create-pauta-section > p {
@@ -185,9 +196,9 @@
   font-size: 14px;
 }
 
-.form-group input,
-.form-group select,
-.form-group textarea {
+.evaluations-container .form-group input,
+.evaluations-container .form-group select,
+.evaluations-container .form-group textarea {
   width: 100%;
   padding: 12px 16px;
   border: 1px solid var(--stone-300);
@@ -197,16 +208,16 @@
   box-sizing: border-box;
 }
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
+.evaluations-container .form-group input:focus,
+.evaluations-container .form-group select:focus,
+.evaluations-container .form-group textarea:focus {
   outline: none;
-  border-color: var(--amber-800);
-  box-shadow: 0 0 0 3px rgba(146, 64, 14, 0.1);
+  border-color: var(--amber-800) !important;
+  box-shadow: 0 0 0 3px rgba(146, 64, 14, 0.1) !important;
 }
 
-.form-group input:disabled,
-.form-group select:disabled {
+.evaluations-container .form-group input:disabled,
+.evaluations-container .form-group select:disabled {
   background: var(--stone-100);
   cursor: not-allowed;
 }
@@ -219,9 +230,9 @@
 }
 
 /* Items section */
-.create-pauta-section .items-section,
-.evaluate-student-section .items-section {
-  background: var(--amber-100);
+.evaluations-container .create-pauta-section .items-section,
+.evaluations-container .evaluate-student-section .items-section {
+  background: var(--amber-50);
   border-left: 4px solid var(--amber-800);
   padding: 20px;
   border-radius: var(--radius-md);
@@ -243,6 +254,13 @@
   margin-bottom: 12px;
   align-items: end;
 }
+.pauta-edit-form .item-row {
+  grid-template-columns: 1fr 160px auto;
+  align-items: center;
+}
+.pauta-edit-form .item-row input {
+  width: 100%;
+}
 
 .item-row .form-group {
   margin-bottom: 0;
@@ -258,15 +276,17 @@
 }
 
 .btn-remove {
-  padding: 12px 16px;
+  padding: 10px 12px;
   background: var(--danger-700);
   color: #fff;
   border: none;
   border-radius: var(--radius-sm);
   font-weight: 600;
+  font-size: 13px;
   cursor: pointer;
   transition: all 0.2s ease;
   height: fit-content;
+  width: 100%;
 }
 
 .btn-remove:hover {
@@ -290,6 +310,14 @@
   gap: 6px;
   margin-top: 8px;
   box-shadow: 0 2px 8px rgba(0, 102, 204, 0.2);
+}
+.pauta-edit-form .btn-add-item {
+  padding: 10px 18px;
+}
+.pauta-edit-form .add-item-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
 }
 
 .create-pauta-section .btn-add-item:hover:not(:disabled),
@@ -333,7 +361,7 @@
    ======================================== */
 
 .view-pautas-section {
-  background: var(--amber-100);
+  background: var(--amber-50);
   border-left: 4px solid var(--amber-800);
   border-radius: var(--radius-lg);
   padding: 24px;
@@ -351,7 +379,8 @@
 }
 
 .view-pautas-section h2::before {
-  content: "📋";
+  content: "assignment";
+  font-family: 'Material Symbols Outlined';
   background: var(--amber-800);
   color: #fff;
   width: 32px;
@@ -360,7 +389,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .pautas-view-tabs {
@@ -397,7 +426,15 @@
   box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
 }
 
-.pauta-search-input {
+.pautas-search {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  margin: 16px 0 20px;
+  align-items: center;
+}
+
+.evaluations-container .pauta-search-input {
   width: 100%;
   padding: 12px 16px 12px 44px;
   border: 1px solid var(--stone-300);
@@ -408,10 +445,10 @@
   transition: all 0.2s ease;
 }
 
-.pauta-search-input:focus {
+.evaluations-container .pauta-search-input:focus {
   outline: none;
-  border-color: var(--amber-800);
-  box-shadow: 0 0 0 3px rgba(146, 64, 14, 0.1);
+  border-color: var(--amber-800) !important;
+  box-shadow: 0 0 0 3px rgba(146, 64, 14, 0.1) !important;
 }
 
 .pautas-list {
@@ -512,16 +549,18 @@
 
 .btn-edit,
 .btn-delete {
-  padding: 10px 20px;
+  padding: 9px 14px;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: 8px;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 4px;
+  min-width: 120px;
 }
 
 .btn-edit {
@@ -540,6 +579,9 @@
   background: var(--danger-700);
   color: #fff;
   box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+  padding: 6px 10px;
+  font-size: 12px;
+  min-width: 80px;
 }
 
 .btn-delete:hover {
@@ -560,14 +602,14 @@
   margin: 0 0 20px 0;
 }
 
-.edit-actions {
+.evaluations-container .pauta-edit-form .edit-actions {
   display: flex;
   gap: 12px;
   margin-top: 20px;
 }
 
-.btn-save,
-.btn-cancel {
+.evaluations-container .btn-save,
+.evaluations-container .btn-cancel {
   padding: 10px 24px;
   border: none;
   border-radius: var(--radius-sm);
@@ -577,24 +619,24 @@
   transition: all 0.2s ease;
 }
 
-.btn-save {
+.evaluations-container .btn-save {
   background: var(--amber-800);
   color: #fff;
   box-shadow: 0 2px 8px rgba(146, 64, 14, 0.2);
 }
 
-.btn-save:hover {
+.evaluations-container .btn-save:hover {
   background: var(--amber-700);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(146, 64, 14, 0.3);
 }
 
-.btn-cancel {
+.evaluations-container .btn-cancel {
   background: var(--stone-200);
   color: var(--stone-600);
 }
 
-.btn-cancel:hover {
+.evaluations-container .btn-cancel:hover {
   background: var(--stone-300);
 }
 
@@ -620,7 +662,7 @@
    ======================================== */
 
 .evaluations-list-section {
-  background: var(--amber-100);
+  background: var(--amber-50);
   border-left: 4px solid var(--amber-800);
   border-radius: var(--radius-lg);
   padding: 24px;
@@ -638,7 +680,8 @@
 }
 
 .evaluations-list-section h2::before {
-  content: "📊";
+  content: "assessment";
+  font-family: 'Material Symbols Outlined';
   background: var(--amber-800);
   color: #fff;
   width: 32px;
@@ -647,17 +690,44 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .evaluations-search {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr auto;
   gap: 16px;
   margin: 20px 0;
+  align-items: center;
 }
 
-.search-input {
+.evaluations-container .btn-search {
+  padding: 12px 18px;
+  background: var(--amber-800);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(146, 64, 14, 0.2);
+  transition: all 0.2s ease;
+  height: 100%;
+  min-width: 110px;
+}
+
+.evaluations-container .btn-search:hover {
+  background: var(--amber-700);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(146, 64, 14, 0.3);
+}
+
+.evaluations-container .btn-search:focus-visible {
+  outline: 2px solid var(--amber-800);
+  outline-offset: 2px;
+}
+
+.evaluations-container .search-input {
   padding: 12px 16px 12px 44px;
   border: 1px solid var(--stone-300);
   border-radius: 10px;
@@ -666,10 +736,10 @@
   transition: all 0.2s ease;
 }
 
-.search-input:focus {
+.evaluations-container .search-input:focus {
   outline: none;
-  border-color: var(--amber-800);
-  box-shadow: 0 0 0 3px rgba(146, 64, 14, 0.1);
+  border-color: var(--amber-800) !important;
+  box-shadow: 0 0 0 3px rgba(146, 64, 14, 0.1) !important;
 }
 
 .evaluations-accordion {
@@ -882,12 +952,13 @@
   padding: 24px 28px;
   border-bottom: 2px solid var(--amber-200);
   display: flex;
-  justify-content: space-between;
+
   align-items: center;
   background: linear-gradient(to bottom, var(--amber-100), #fff);
 }
 
 .modal-header h3 {
+  flex-grow: 1;
   font-size: 20px;
   font-weight: 700;
   color: var(--stone-800);
@@ -967,21 +1038,21 @@
   transform: translateY(-1px);
 }
 
-.detail-item {
+.evaluations-container .detail-item {
   padding: 16px;
   background: var(--stone-50);
-  border-left: 3px solid var(--amber-600);
+  border-left: 3px solid var(--amber-800);
   border-radius: var(--radius-sm);
   margin-bottom: 12px;
 }
 
-.detail-item p {
+.evaluations-container .detail-item p {
   margin: 6px 0;
   font-size: 14px;
   color: var(--stone-700);
 }
 
-.detail-item strong {
+.evaluations-container .detail-item strong {
   color: var(--stone-800);
   font-weight: 600;
 }
@@ -1022,13 +1093,13 @@
   box-shadow: 0 0 0 3px rgba(146, 64, 14, 0.1);
 }
 
-.edit-actions {
+.evaluations-container .edit-actions {
   margin-top: 20px;
   display: flex;
   gap: 12px;
 }
 
-.save-btn {
+.evaluations-container .save-btn {
   flex: 1;
   padding: 12px 24px;
   background: var(--amber-800);
@@ -1040,15 +1111,18 @@
   transition: all 0.2s ease;
 }
 
-.save-btn:hover:not(:disabled) {
-  background: var(--amber-700);
+.evaluations-container .save-btn:hover:not(:disabled) {
+  background: var(--amber-600);
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(146, 64, 14, 0.3);
 }
 
-.save-btn:disabled {
+.evaluations-container .save-btn:disabled {
   background: var(--stone-300);
   cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
 }
 
 .modal-footer {
@@ -1071,7 +1145,7 @@
    ======================================== */
 
 .evaluate-student-section {
-  background: var(--amber-100);
+  background: var(--amber-50);
   border-left: 4px solid var(--amber-800);
   border-radius: 16px;
   padding: 24px;
@@ -1089,7 +1163,8 @@
 }
 
 .evaluate-student-section h2::before {
-  content: "✍️";
+  content: "edit_note";
+  font-family: 'Material Symbols Outlined';
   background: var(--amber-800);
   color: #fff;
   width: 32px;
@@ -1098,7 +1173,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .evaluation-options {

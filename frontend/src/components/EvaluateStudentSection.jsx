@@ -1,124 +1,32 @@
-import { useState, useEffect, useCallback } from "react";
-import { useAuth } from "../context/AuthContext";
-import evaluationService from "../services/evaluation.service";
-import { showAlert } from "../helpers/sweetAlert";
+import { useEvaluateStudent } from "../hooks/validations/useEvaluateStudent";
 
 const EvaluateStudentSection = () => {
-  const { token } = useAuth();
-  const [pautas, setPautas] = useState([]);
-  const [students, setStudents] = useState([]);
-  const [selectedPautaId, setSelectedPautaId] = useState("");
-  const [selectedStudentId, setSelectedStudentId] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [puntajes, setPuntajes] = useState({});
-  const [comentarios, setComentarios] = useState({});
-  const [evaluationData, setEvaluationData] = useState({
-    asiste: true,
-    repeticion: false,
-  });
+  const {
+    pautas,
+    students,
+    selectedPautaId,
+    selectedStudentId,
+    loading,
+    puntajes,
+    comentarios,
+    evaluationData,
+    selectedPauta,
+    setSelectedPautaId,
+    setSelectedStudentId,
+    handlePuntajeChange,
+    handleComentarioChange,
+    handleAsistenteChange,
+    submitEvaluation,
+  } = useEvaluateStudent();
 
-  const fetchPautas = useCallback(async () => {
-    try {
-      const data = await evaluationService.getEvaluations(token);
-      setPautas(data);
-    } catch {
-      showAlert("error", "Error", "No se pudieron cargar las pautas");
-    }
-  }, [token]);
-
-  const fetchStudents = useCallback(async () => {
-    try {
-      const studentsList = await evaluationService.getAssignedStudents(token);
-      setStudents(Array.isArray(studentsList) ? studentsList : []);
-    } catch (error) {
-      console.error("[fetchStudents] error:", error);
-      showAlert("error", "Error", "No se pudieron cargar los estudiantes asignados");
-    }
-  }, [token]);
-
-  useEffect(() => {
-    fetchPautas();
-    fetchStudents();
-  }, [fetchPautas, fetchStudents]);
-
-  
-
-  const handlePuntajeChange = (itemId, value) => {
-    setPuntajes({ ...puntajes, [itemId]: value });
-  };
-
-  const handleComentarioChange = (itemId, value) => {
-    setComentarios({ ...comentarios, [itemId]: value });
-  };
-
-  const handleAsistenteChange = (value) => {
-    setEvaluationData({
-      ...evaluationData,
-      asiste: value === "true",
-      repeticion: value === "true" ? false : evaluationData.repeticion,
-    });
-  };
-
+  /**
+   * Maneja el envío del formulario
+   * Validación delegada al backend Joi
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!selectedPautaId || !selectedStudentId) {
-      showAlert("error", "Error", "Debes seleccionar pauta y estudiante");
-      return;
-    }
-
-    // Validar puntajes si asiste es true
-    if (evaluationData.asiste) {
-      const selectedPauta = pautas.find((p) => p.id == selectedPautaId);
-      if (
-        !selectedPauta ||
-        selectedPauta.items.some(
-          (item) => puntajes[item.id] === undefined || puntajes[item.id] === ""
-        )
-      ) {
-        showAlert("error", "Error", "Debes ingresar puntajes para todos los ítems");
-        return;
-      }
-    }
-
-    setLoading(true);
-    try {
-      const payload = {
-        pautaId: selectedPautaId,
-        estudianteId: selectedStudentId,
-        asiste: evaluationData.asiste,
-        repeticion: evaluationData.repeticion,
-      };
-
-      // Solo incluir puntajesItems si asiste es true
-      if (evaluationData.asiste) {
-        payload.puntajesItems = pautas
-          .find((p) => p.id == selectedPautaId)
-          .items.map((item) => ({
-            itemId: item.id,
-            puntaje: Number(puntajes[item.id] ?? 0),
-            comentario: comentarios[item.id] ?? null,
-          }));
-      }
-
-      await evaluationService.evaluateStudent(payload, token);
-
-      showAlert("success", "Éxito", "Evaluación registrada exitosamente");
-      setSelectedPautaId("");
-      setSelectedStudentId("");
-      setPuntajes({});
-      setEvaluationData({ asiste: true, repeticion: false });
-      setComentarios({});
-    } catch (error) {
-      showAlert("error", "Error", error.message || "No se pudo registrar la evaluación");
-    } finally {
-      setLoading(false);
-    }
+    await submitEvaluation();
   };
-
-  const selectedPauta = pautas.find((p) => p.id == selectedPautaId);
-
-  // Show all students directly in the dropdown (no search)
 
   return (
     <div className="evaluate-student-section">
@@ -130,9 +38,7 @@ const EvaluateStudentSection = () => {
             <select
               id="pauta"
               value={selectedPautaId}
-              onChange={(e) => {
-                setSelectedPautaId(e.target.value);
-              }}
+              onChange={(e) => setSelectedPautaId(e.target.value)}
               disabled={loading}
             >
               <option value="">-- Selecciona una pauta --</option>
@@ -149,9 +55,7 @@ const EvaluateStudentSection = () => {
             <select
               id="student"
               value={selectedStudentId}
-              onChange={(e) => {
-                setSelectedStudentId(e.target.value);
-              }}
+              onChange={(e) => setSelectedStudentId(e.target.value)}
               disabled={loading}
             >
               <option value="">-- Selecciona un estudiante --</option>

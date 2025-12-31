@@ -134,11 +134,12 @@ export async function updateSolicitudEstadoService(id, payload) {
 
     const saved = await solicitudRepository.save(solicitudFound);
 
-    // Si es recuperación aprobada, marcar repiticion=true en las evaluaciones
+    // Si es recuperación aprobada, marcar repeticion=true en las evaluaciones
     if (solicitudFound.tipo === "recuperacion" && payload.estado === "aprobada" && solicitudFound.notas && solicitudFound.notas.length > 0) {
       const evalRepo = AppDataSource.getRepository("EvaluacionEstudiante");
       for (const evalId of solicitudFound.notas) {
-        await evalRepo.update({ id: evalId }, { repiticion: true });
+        // Se modificó de "repiticon" a "repeticion" por inconsistencia entre entidades
+        await evalRepo.update({ id: evalId }, { repeticion: true });
       }
     }
 

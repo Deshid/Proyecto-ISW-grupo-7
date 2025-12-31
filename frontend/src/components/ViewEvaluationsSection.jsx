@@ -1,163 +1,68 @@
-import { useEffect, useState, useCallback } from "react";
-import { useAuth } from "../context/AuthContext";
-import evaluationService from "../services/evaluation.service";
-import { showAlert } from "../helpers/sweetAlert";
-//Comentario
-export default function ViewEvaluationsSection() {
-  const { token } = useAuth();
-  const [evaluations, setEvaluations] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [expandedPautas, setExpandedPautas] = useState({});
-  const [selectedEval, setSelectedEval] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editValues, setEditValues] = useState({});
-  const [editLoading, setEditLoading] = useState(false);
-  const [searchStudent, setSearchStudent] = useState("");
-  const [searchPauta, setSearchPauta] = useState("");
-  const [groups, setGroups] = useState([]);
-  const [page, setPage] = useState(1);
-  const [limit] = useState(3);
-  const [totalPages, setTotalPages] = useState(1);
+import { useEffect } from "react";
+import { useEvaluationsManagement } from "../hooks/validations/useEvaluationsManagement";
+import { formatDate } from "../helpers/dateFormatter";
 
-  const fetchEvaluations = useCallback(async () => {
-    setLoading(true);
-    try {
-      const resp = await evaluationService.getProfessorReviewsGrouped({
-        searchPauta,
-        searchStudent,
-        page,
-        limit,
-        order: "desc",
-      }, token);
-      const payload = resp?.data || {};
-      const g = Array.isArray(payload.groups) ? payload.groups : [];
-      setGroups(g);
-      // Flatten evaluations for modal routines if needed
-      setEvaluations(g.flatMap((gr) => gr.evals || []));
-      setTotalPages(Number(payload.totalPages || 1));
-      setPage(Number(payload.page || 1));
-    } catch (error) {
-      showAlert("error", "Error", error.message || "No se pudieron cargar las evaluaciones");
-    } finally {
-      setLoading(false);
-    }
-  }, [token, searchPauta, searchStudent, page, limit]);
+export default function ViewEvaluationsSection() {
+  const {
+    evaluations,
+    loading,
+    expandedPautas,
+    selectedEval,
+    isEditing,
+    editValues,
+    editLoading,
+    searchStudent,
+    searchPauta,
+    searchStudentInput,
+    searchPautaInput,
+    groups,
+    page,
+    totalPages,
+    hasChanges,
+    setSelectedEval,
+    setIsEditing,
+    setSearchStudentInput,
+    setSearchPautaInput,
+    setPage,
+    fetchEvaluations,
+    togglePauta,
+    handleEditChange,
+    handleSaveEdit,
+    applySearchFilters,
+  } = useEvaluationsManagement();
 
   useEffect(() => {
     fetchEvaluations();
   }, [fetchEvaluations]);
 
-  // Backend already groups; use groups state directly
-
-  
-
-  const togglePauta = (name) => {
-    setExpandedPautas((prev) => ({ ...prev, [name]: !prev[name] }));
-  };
-
-  const formatDate = (date) => new Date(date).toLocaleString();
-
-  useEffect(() => {
-    if (!selectedEval || !selectedEval.detalles) {
-      setEditValues({});
-      setIsEditing(false);
-      return;
-    }
-    const next = {};
-    selectedEval.detalles.forEach((det) => {
-      if (det.item?.id == null) return;
-      next[det.item.id] = {
-        puntaje: det.puntaje_obtenido,
-        comentario: det.comentario || "",
-      };
-    });
-    setEditValues(next);
-    setIsEditing(false);
-  }, [selectedEval]);
-
-  const handleEditChange = (itemId, field, value) => {
-    setEditValues((prev) => ({
-      ...prev,
-      [itemId]: {
-        ...prev[itemId],
-        [field]: value,
-      },
-    }));
-  };
-
-  const handleSaveEdit = async () => {
-    if (!selectedEval) return;
-    if (!selectedEval.detalles?.length) {
-      showAlert("error", "Error", "No hay detalles para editar");
-      return;
-    }
-
-    const puntajesItems = selectedEval.detalles.map((det) => {
-      const current = editValues[det.item?.id] || {};
-      return {
-        itemId: det.item?.id,
-        puntaje: Number(current.puntaje ?? det.puntaje_obtenido),
-        comentario: current.comentario ?? null,
-      };
-    });
-
-    setEditLoading(true);
-    try {
-      const resp = await evaluationService.updateStudentEvaluation(
-        selectedEval.id,
-        { puntajesItems },
-        token
-      );
-
-      // La respuesta tiene estructura: { status, message, data: { evaluacion: {...} } }
-      const updatedEval = resp?.data?.evaluacion || resp?.evaluacion || resp?.data || resp;
-      if (!updatedEval?.id) {
-        throw new Error(resp?.message || "Respuesta inesperada del servidor");
-      }
-
-      showAlert("success", "Éxito", resp?.message || "Evaluación actualizada");
-
-      // Si era una ausencia, ahora es asiste=true + repeticion=true
-      const wasAbsent = !selectedEval.asiste;
-      if (wasAbsent) {
-        updatedEval.asiste = true;
-        updatedEval.repeticion = true;
-      }
-
-      setEvaluations((prev) => prev.map((ev) => (ev.id === updatedEval.id ? updatedEval : ev)));
-      setSelectedEval(updatedEval);
-      setIsEditing(false);
-      
-      // Actualizar lista completa desde el servidor
-      await fetchEvaluations();
-    } catch (error) {
-      showAlert("error", "Error", error.message || "No se pudo actualizar la evaluación");
-    } finally {
-      setEditLoading(false);
-    }
-  };
-
   return (
     <div className="evaluations-list-section">
       <h2>Evaluaciones Realizadas</h2>
 
-      {!loading && evaluations.length > 0 && (
-        <div className="evaluations-search">
+      {!loading && (
+        <form
+          className="evaluations-search"
+          onSubmit={(e) => {
+            e.preventDefault();
+            applySearchFilters();
+          }}
+        >
           <input
             type="text"
             placeholder="Busca por estudiante..."
-            value={searchStudent}
-            onChange={(e) => setSearchStudent(e.target.value)}
+            value={searchStudentInput}
+            onChange={(e) => setSearchStudentInput(e.target.value)}
             className="search-input"
           />
           <input
             type="text"
             placeholder="Busca por pauta..."
-            value={searchPauta}
-            onChange={(e) => setSearchPauta(e.target.value)}
+            value={searchPautaInput}
+            onChange={(e) => setSearchPautaInput(e.target.value)}
             className="search-input"
           />
-        </div>
+          <button type="submit" className="btn-search">Buscar</button>
+        </form>
       )}
 
       {loading && <p>Cargando evaluaciones...</p>}
@@ -249,7 +154,7 @@ export default function ViewEvaluationsSection() {
             <div className="modal-details">
               <div className="modal-details-header">
                 <h4>Detalles</h4>
-                {selectedEval.detalles?.length > 0 && (
+                {selectedEval.detalles?.length > 0 && (selectedEval.asiste || selectedEval.repeticion) && (
                   <button
                     className="edit-toggle-btn"
                     onClick={() => setIsEditing((v) => !v)}
@@ -304,7 +209,7 @@ export default function ViewEvaluationsSection() {
                     <button
                       className="save-btn"
                       onClick={handleSaveEdit}
-                      disabled={editLoading}
+                      disabled={editLoading || !hasChanges}
                     >
                       {editLoading ? "Guardando..." : "Guardar cambios"}
                     </button>

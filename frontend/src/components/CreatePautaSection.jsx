@@ -1,66 +1,15 @@
-import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import evaluationService from "../services/evaluation.service";
-import { showAlert } from "../helpers/sweetAlert";
+import { useCreatePauta } from "../hooks/validations/useCreatePauta";
 
 const CreatePautaSection = () => {
-  const { token } = useAuth();
-  const [formData, setFormData] = useState({
-    nombre_pauta: "",
-    items: [{ descripcion: "", puntaje_maximo: "" }],
-  });
-  const [loading, setLoading] = useState(false);
-
-  const handleNombreChange = (e) => {
-    setFormData({ ...formData, nombre_pauta: e.target.value });
-  };
-
-  const handleItemChange = (index, field, value) => {
-    const newItems = [...formData.items];
-    newItems[index] = { ...newItems[index], [field]: value };
-    setFormData({ ...formData, items: newItems });
-  };
-
-  const addItem = () => {
-    setFormData({
-      ...formData,
-      items: [...formData.items, { descripcion: "", puntaje_maximo: "" }],
-    });
-  };
-
-  const removeItem = (index) => {
-    if (formData.items.length > 1) {
-      const newItems = formData.items.filter((_, i) => i !== index);
-      setFormData({ ...formData, items: newItems });
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.nombre_pauta.trim()) {
-      showAlert("error", "Error", "El nombre de la pauta es obligatorio");
-      return;
-    }
-
-    if (formData.items.some((item) => !item.descripcion.trim() || !item.puntaje_maximo)) {
-      showAlert("error", "Error", "Todos los ítems deben tener descripción y puntaje máximo");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await evaluationService.createEvaluation(formData, token);
-      showAlert("success", "Éxito", "Pauta creada exitosamente");
-      setFormData({
-        nombre_pauta: "",
-        items: [{ descripcion: "", puntaje_maximo: "" }],
-      });
-    } catch (error) {
-      showAlert("error", "Error", error.message || "No se pudo crear la pauta");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    formData,
+    loading,
+    handleNombreChange,
+    handleItemChange,
+    addItem,
+    removeItem,
+    handleSubmit,
+  } = useCreatePauta();
 
   return (
     <div className="create-pauta-section">

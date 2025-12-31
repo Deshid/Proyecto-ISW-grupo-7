@@ -90,7 +90,7 @@ const SolicitudPage = () => {
   const evaluacionesParaRevision = evaluaciones.filter(evaluacion => evaluacion.asiste);
 
   // Filtrar evaluaciones para recuperación (no asistió y no repetido)
-  const evaluacionesParaRecuperacion = evaluaciones.filter(evaluacion => !evaluacion.asiste && !evaluacion.repiticion);
+  const evaluacionesParaRecuperacion = evaluaciones.filter(evaluacion => !evaluacion.asiste && !evaluacion.repeticion);
 
   // Función para verificar si una evaluación ya está en alguna solicitud
   const isEvaluacionEnSolicitud = (evaluacionId) => {
