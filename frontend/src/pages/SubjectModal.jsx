@@ -1,9 +1,8 @@
 import { useState } from 'react'; // AÑADE ESTE IMPORT
-import Form from '@components/Form';
 import '@styles/form.css';
 import './SubjectModal.css'; // Crea este archivo para estilos
 
-const SubjectModal = ({ isOpen, onClose, onSubmit, onDelete }) => {
+const SubjectModal = ({ isOpen, onClose, onSubmit, onDelete, subjectsList = [] }) => {
   // Si no está abierto, no renderizar nada
   if (!isOpen) return null;
   
@@ -61,50 +60,77 @@ const SubjectModal = ({ isOpen, onClose, onSubmit, onDelete }) => {
     <div className="modal-content">
       <button className="close-button" onClick={onClose}>×</button>
       
-      {/* SECCIÓN CREAR TEMA (existente) */}
+      {/* SECCIÓN CREAR TEMA (sin caja) */}
       <h3>Crear Nuevo Tema</h3>
-      <Form
-  title="Crear Tema"
-  fields={[
-    { 
-      label: "Nombre",
-      type: "text",
-      name: "nombre",
-      placeholder: "Ingrese el nombre del tema",
-      fieldType: 'input',
-      required: true,
-      validate: {
-        minLength: (value) => value.length >= 3 || 'El nombre debe tener al menos 3 caracteres',
-        maxLength: (value) => value.length <= 50 || 'El nombre no debe exceder los 50 caracteres',
-      }
-    },
-  ]}
-  buttonText={isLoading ? "Creando..." : "Crear tema"}
-  onSubmit={handleSubmit}
-  disabled={isLoading}
-/>
-      
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          const nombre = (subjectName || '').trim();
+          if (nombre.length < 3) {
+            setMessage({ type: 'error', text: 'El nombre debe tener al menos 3 caracteres' });
+            return;
+          }
+          if (nombre.length > 50) {
+            setMessage({ type: 'error', text: 'El nombre no debe exceder los 50 caracteres' });
+            return;
+          }
+          await handleSubmit({ nombre });
+        }}
+        style={{ margin: 0, padding: 0 }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <label htmlFor="create-subject">Nombre</label>
+          <input
+            id="create-subject"
+            type="text"
+            name="nombre"
+            placeholder="Ingrese el nombre del tema"
+            value={subjectName}
+            onChange={(e) => setSubjectName(e.target.value)}
+            disabled={isLoading}
+            style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
+          />
+          <div>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={isLoading || (subjectName || '').trim().length < 3}
+            >
+              {isLoading ? 'Creando...' : 'Crear tema'}
+            </button>
+          </div>
+        </div>
+      </form>
+            
       {/* SEPARADOR */}
       <hr />
       
       {/* SECCIÓN BORRAR TEMA (nueva) */}
       <h3>Borrar Tema Existente</h3>
       <div>
-        <label htmlFor="delete-subject">Nombre del tema a borrar:</label>
-        <input
-          id="delete-subject"
-          type="text"
-          value={subjectToDelete}
-          onChange={(e) => setSubjectToDelete(e.target.value)}
-          placeholder="Ingresa el nombre exacto"
-          disabled={isLoading}
-        />
+        <label htmlFor="delete-subject">Selecciona el tema a borrar:</label>
+        {Array.isArray(subjectsList) && subjectsList.length > 0 ? (
+          <select
+            id="delete-subject"
+            value={subjectToDelete}
+            onChange={(e) => setSubjectToDelete(e.target.value)}
+            disabled={isLoading}
+            style={{ padding: '8px', marginTop: '6px', minWidth: '220px' }}
+          >
+            <option value="">-- Seleccionar tema --</option>
+            {subjectsList.map((s) => (
+              <option key={s.id} value={s.nombre}>{s.nombre}</option>
+            ))}
+          </select>
+        ) : (
+          <div style={{ color: '#666', marginTop: '6px' }}>No hay temas creados por ti aún.</div>
+        )}
       </div>
-      
+
       <button
         className="delete-button"
         onClick={handleDeleteClick}
-        disabled={isLoading || !subjectToDelete.trim()}
+        disabled={isLoading || !subjectToDelete}
       >
         {isLoading ? 'Procesando...' : 'Borrar Tema'}
       </button>

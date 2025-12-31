@@ -74,6 +74,10 @@
   margin-right: 8px;
   font-size: 30px;
   color: var(--amber-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .evaluations-header p {
@@ -81,6 +85,13 @@
   color: var(--amber-100);
   margin-top: 4px;
   margin-bottom: 0;
+}
+
+.evaluations-header .material-symbols-outlined {
+  vertical-align: -6px;
+  margin-right: 0;
+  font-size: 30px;
+  color: var(--amber-100);
 }
 
 /* Navegación con tabs estilo botones */

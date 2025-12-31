@@ -13,11 +13,11 @@ import UserSubjectSchema from "../entity/userSubject.entity.js";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
-  host: `${HOST}`,
+  host: "localhost",//`${HOST}`,
   port: 5432,
   username: `${DB_USERNAME}`,
   password: `${PASSWORD}`,
-  database: `${DATABASE}`,
+  database: "proyecto_isw_nuevo",//`${DATABASE}`,
 
   entities: [
     SubjectSchema,
