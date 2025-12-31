@@ -3,6 +3,7 @@ import {
   deleteUserService,
   getUserService,
   getUsersService,
+  getStudentsService,
   updateUserService,
 } from "../services/user.service.js";
 import {
@@ -48,6 +49,20 @@ export async function getUsers(req, res) {
       500,
       error.message,
     );
+  }
+}
+
+export async function getStudents(req, res) {
+  try {
+    const [students, errorStudents] = await getStudentsService();
+
+    if (errorStudents) return handleErrorClient(res, 404, errorStudents);
+
+    students.length === 0
+      ? handleSuccess(res, 204)
+      : handleSuccess(res, 200, "Estudiantes encontrados", students);
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
   }
 }
 

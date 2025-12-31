@@ -102,6 +102,17 @@ const Comisiones = () => {
                 type: 'time',
                 fieldType: 'input',
               },
+              {
+                name: 'modalidad',
+                label: 'Modalidad',
+                fieldType: 'select',
+                required: true,
+                options: [
+                  { label: 'Presencial', value: 'presencial' },
+                  { label: 'Online', value: 'online' },
+                  { label: 'Híbrida', value: 'híbrida' },
+                ],
+              },
             ]}
             onSubmit={async (formData) => {
               const payload = {
@@ -109,6 +120,7 @@ const Comisiones = () => {
                 fecha: formData.fecha,
                 horaInicio: formData.horaInicio,
                 horaFin: formData.horaFin,
+                modalidad: formData.modalidad,
               };
               const res = await createHorario(payload);
               if (res && res.status && res.status.toLowerCase() === 'success') {
@@ -162,6 +174,7 @@ const Comisiones = () => {
                 <th>Fecha</th>
                 <th>Hora Inicio</th>
                 <th>Hora Fin</th>
+                <th>Modalidad</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -171,6 +184,7 @@ const Comisiones = () => {
                   <td>{formatFecha(horario.fecha)}</td>
                   <td>{horario.horaInicio}</td>
                   <td>{horario.horaFin}</td>
+                  <td>{horario.modalidad || '-'}</td>
                   <td className="celda-acciones">
                     <button 
                       className="btn btn-outline-amber"
@@ -316,6 +330,7 @@ const Comisiones = () => {
             fecha: formData.fecha,
             horaInicio: formData.horaInicio,
             horaFin: formData.horaFin,
+            modalidad: formData.modalidad,
           };
           const res = await actualizarHorario(horarioEditando.id_horario, payload);
           if (res && res.status && res.status.toLowerCase() === 'success') {

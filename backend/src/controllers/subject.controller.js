@@ -10,7 +10,11 @@ export class SubjectController {
     // Obtener todas las materias
     static async getAllSubjects(req, res) {
         try {
-            const result = await SubjectService.getAllSubjects();
+            // Permite filtrar por creatorId pasando ?creatorId=123
+            const { creatorId } = req.query || {};
+            const result = creatorId
+                ? await SubjectService.getAllSubjectsByCreator(creatorId)
+                : await SubjectService.getAllSubjects();
             
             if (result.success) {
                 return res.status(200).json({
@@ -85,7 +89,9 @@ export class SubjectController {
                 });
             }
             
-            const result = await SubjectService.createSubject({ nombre });
+            // Si el usuario autenticado está disponible, registrar su id como creatorId
+            const creatorId = req.user && req.user.id ? req.user.id : undefined;
+            const result = await SubjectService.createSubject({ nombre, creatorId });
             
             if (result.success) {
                 return res.status(201).json({

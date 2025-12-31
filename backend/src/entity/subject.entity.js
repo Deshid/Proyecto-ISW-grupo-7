@@ -15,6 +15,11 @@ const SubjectSchema = new EntitySchema({
             length: 255,
             nullable: false,
         },
+        creatorId: {
+            type: "int",
+            nullable: true,
+            name: "creator_id"
+        },
     },
     indices: [
         {

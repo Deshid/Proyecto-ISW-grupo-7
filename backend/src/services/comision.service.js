@@ -439,6 +439,7 @@ export async function getHorariosPorEstudianteService(id_estudiante) {
             hora_inicio: horario.horaInicio,
             hora_fin: horario.horaFin,
             estado: horario.estado,
+            modalidad: horario.modalidad || "Sin especificar",
             profesor_asignado: {
                 id: profesor.id,
                 nombre: profesor.nombreCompleto

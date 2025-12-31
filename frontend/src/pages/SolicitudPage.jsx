@@ -90,7 +90,7 @@ const SolicitudPage = () => {
   const evaluacionesParaRevision = evaluaciones.filter(evaluacion => evaluacion.asiste);
 
   // Filtrar evaluaciones para recuperación (no asistió y no repetido)
-  const evaluacionesParaRecuperacion = evaluaciones.filter(evaluacion => !evaluacion.asiste && !evaluacion.repiticion);
+  const evaluacionesParaRecuperacion = evaluaciones.filter(evaluacion => !evaluacion.asiste && !evaluacion.repeticion);
 
   // Función para verificar si una evaluación ya está en alguna solicitud
   const isEvaluacionEnSolicitud = (evaluacionId) => {
@@ -147,7 +147,7 @@ const SolicitudPage = () => {
                   disabled={isEvaluacionEnSolicitud(evaluacion.id)}
                 />
                 <label htmlFor={`eval-${evaluacion.id}`}>
-                  {evaluacion.pauta?.nombre_pauta} - Nota: {evaluacion.nota}
+                  {evaluacion.pauta?.nombre_pauta} - Nota: {evaluacion.nota} - Asistió: {evaluacion.asiste ? 'Sí' : 'No'}
                   {isEvaluacionEnSolicitud(evaluacion.id) && ' (Ya tiene solicitud)'}
                 </label>
               </div>

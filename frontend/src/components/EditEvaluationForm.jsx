@@ -1,53 +1,21 @@
-import { useState } from "react";
+import { useEditPauta } from "../hooks/validations/useEditPauta";
 import "@styles/form.css";
 
 export default function EditEvaluationForm({ evaluation, onSave, onCancel }) {
-    const [nombrePauta, setNombrePauta] = useState(evaluation.nombre_pauta);
-    const [items, setItems] = useState(evaluation.items || []);
+    const {
+        nombrePauta,
+        items,
+        handleNombreChange,
+        handleAddItem,
+        handleRemoveItem,
+        handleItemChange,
+        getFormattedData,
+    } = useEditPauta(evaluation);
 
-    const handleAddItem = () => {
-        setItems([...items, { descripcion: "", puntaje_maximo: 1 }]);
-    };
-
-    const handleRemoveItem = (index) => {
-        setItems(items.filter((_, i) => i !== index));
-    };
-
-    const handleItemChange = (index, field, value) => {
-        const newItems = [...items];
-        newItems[index][field] = value;
-        setItems(newItems);
-    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        
-        if (!nombrePauta.trim()) {
-            alert("El nombre de la pauta es requerido");
-            return;
-        }
-        if (items.length === 0) {
-            alert("Debe haber al menos un item");
-            return;
-        }
-        for (const item of items) {
-            if (!item.descripcion.trim()) {
-                alert("Todos los items deben tener descripción");
-                return;
-            }
-            if (item.puntaje_maximo < 1) {
-                alert("Los puntajes deben ser al menos 1");
-                return;
-            }
-        }
-
-        onSave({
-            nombre_pauta: nombrePauta,
-            items: items.map(it => ({
-                descripcion: it.descripcion,
-                puntaje_maximo: Number(it.puntaje_maximo)
-            }))
-        });
+        onSave(getFormattedData());
     };
 
     return (
@@ -61,7 +29,7 @@ export default function EditEvaluationForm({ evaluation, onSave, onCancel }) {
                             id="nombre_pauta"
                             type="text"
                             value={nombrePauta}
-                            onChange={(e) => setNombrePauta(e.target.value)}
+                            onChange={handleNombreChange}
                             required
                         />
                     </div>
