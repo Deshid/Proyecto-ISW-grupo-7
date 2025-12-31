@@ -168,7 +168,6 @@ const listProfessorReviewsGrouped = async (profesorId, {
         groupMap.get(pid).evals.push(ev);
     }
 
-    // Sort groups by pauta's recent evaluation date or by name
     const groups = Array.from(groupMap.values()).sort((a, b) => a.pautaNombre.localeCompare(b.pautaNombre));
     const totalGroups = groups.length;
     const totalPages = Math.max(1, Math.ceil(totalGroups / Math.max(1, Number(limit))));
@@ -203,7 +202,6 @@ const updateEvaluation = async ({ profesorId, pautaId, nombre_pauta, items }) =>
         const pautaRepo = queryRunner.manager.getRepository("Pauta");
         const itemRepo = queryRunner.manager.getRepository("ItemPauta");
 
-        // Ya no necesitas validar ownership ni conteo de evaluaciones (lo hace el middleware)
         const pauta = await pautaRepo.findOne({
         where: { id: pautaId },
         relations: ["creador"],
@@ -295,9 +293,9 @@ const updateStudentEvaluation = async ({ profesorId, evaluacionId, puntajesItems
         const wasAbsent = !evaluacion.asiste;
         if (wasAbsent) {
             evaluacion.asiste = true;
-            evaluacion.repeticion = true;
+            evaluacion.repeticion = true;// Se modificó de "repiticon" a "repeticion" por inconsistencia entre entidades
         } else {
-            // Solo marcar fecha_edicion si ya asistía (es una edición real)
+
             evaluacion.fecha_edicion = new Date();
         }
 

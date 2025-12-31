@@ -1,129 +1,41 @@
-import { useState, useEffect, useCallback } from "react";
-import { useAuth } from "../context/AuthContext";
-import evaluationService from "../services/evaluation.service";
-import { showAlert } from "../helpers/sweetAlert";
+import { useEffect } from "react";
+import { usePautasManagement } from "../hooks/validations/usePautasManagement";
+import { formatDate } from "../helpers/dateFormatter";
 
 const ViewPautasSection = () => {
-  const { token } = useAuth();
-  const [pautas, setPautas] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [expandedPautaId, setExpandedPautaId] = useState(null);
-  const [editingPautaId, setEditingPautaId] = useState(null);
-  const [viewMode, setViewMode] = useState("editar"); // "editar" o "revisar"
-  const [searchPautaNombre, setSearchPautaNombre] = useState("");
-  const [page, setPage] = useState(1);
-  const [limit] = useState(3);
-  const [totalPages, setTotalPages] = useState(1);
-  const [editFormData, setEditFormData] = useState({
-    nombre_pauta: "",
-    items: [],
-  });
-
-  const fetchPautas = useCallback(async () => {
-    setLoading(true);
-    try {
-      const hasEvaluations = viewMode === "revisar";
-      const resp = await evaluationService.getPautasPaginated({
-        hasEvaluations,
-        search: searchPautaNombre,
-        page,
-        limit,
-        sortBy: "fecha_modificacion",
-        order: "desc",
-      }, token);
-      const payload = resp?.data || {};
-      setPautas(Array.isArray(payload.items) ? payload.items : []);
-      setTotalPages(Number(payload.totalPages || 1));
-      setPage(Number(payload.page || 1));
-    } catch (error) {
-      showAlert("error", "Error", error.message || "No se pudieron cargar las pautas");
-    } finally {
-      setLoading(false);
-    }
-  }, [viewMode, searchPautaNombre, page, limit, token]);
+  const {
+    pautas,
+    loading,
+    expandedPautaId,
+    editingPautaId,
+    viewMode,
+    searchPautaNombreInput,
+    page,
+    totalPages,
+    editFormData,
+    setViewMode,
+    setPage,
+    setSearchPautaNombreInput,
+    fetchPautas,
+    toggleExpanded,
+    handleEditClick,
+    handleCancelEdit,
+    handleEditFormChange,
+    handleEditItemChange,
+    addEditItem,
+    removeEditItem,
+    handleSaveEdit,
+    handleDeleteClick,
+    applyPautaSearch,
+  } = usePautasManagement();
 
   useEffect(() => {
     fetchPautas();
   }, [fetchPautas]);
 
-  
-
-  const toggleExpanded = (pautaId) => {
-    setExpandedPautaId(expandedPautaId === pautaId ? null : pautaId);
-  };
-
-  const handleEditClick = (pauta) => {
-    setEditingPautaId(pauta.id);
-    setEditFormData({
-      nombre_pauta: pauta.nombre_pauta,
-      items: pauta.items?.map((item) => ({ ...item })) || [],
-    });
-  };
-
-  const handleCancelEdit = () => {
-    setEditingPautaId(null);
-    setEditFormData({ nombre_pauta: "", items: [] });
-  };
-
-  const handleEditFormChange = (field, value) => {
-    setEditFormData({ ...editFormData, [field]: value });
-  };
-
-  const handleEditItemChange = (index, field, value) => {
-    const newItems = [...editFormData.items];
-    newItems[index] = { ...newItems[index], [field]: value };
-    setEditFormData({ ...editFormData, items: newItems });
-  };
-
-  const handleSaveEdit = async (pautaId) => {
-    if (!editFormData.nombre_pauta.trim()) {
-      showAlert("error", "Error", "El nombre de la pauta es obligatorio");
-      return;
-    }
-
-    if (editFormData.items.some((item) => !item.descripcion.trim() || !item.puntaje_maximo)) {
-      showAlert("error", "Error", "Todos los ítems deben tener descripción y puntaje máximo");
-      return;
-    }
-
-    try {
-      await evaluationService.updateEvaluation(pautaId, editFormData, token);
-      showAlert("success", "Éxito", "Pauta actualizada exitosamente");
-      setEditingPautaId(null);
-      fetchPautas();
-    } catch (error) {
-      showAlert("error", "Error", error.message || "No se pudo actualizar la pauta");
-    }
-  };
-
-  const handleDeleteClick = async (pautaId) => {
-    if (confirm("¿Estás seguro de que deseas eliminar esta pauta? Esta acción no se puede deshacer.")) {
-      try {
-        await evaluationService.deleteEvaluation(pautaId, token);
-        showAlert("success", "Éxito", "Pauta eliminada exitosamente");
-        fetchPautas();
-      } catch (error) {
-        showAlert("error", "Error", error.message || "No se pudo eliminar la pauta");
-      }
-    }
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return "Sin fecha";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("es-ES", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
   if (loading) {
     return <div className="loading">Cargando pautas...</div>;
   }
-
-  // Backend already filters by hasEvaluations and search; show list directly
-  const pautasParaMostrar = pautas;
 
   return (
     <div className="view-pautas-section">
@@ -132,29 +44,42 @@ const ViewPautasSection = () => {
       <div className="pautas-view-tabs">
         <button
           className={`view-tab-btn ${viewMode === "editar" ? "active" : ""}`}
-          onClick={() => { setPage(1); setViewMode("editar"); }}
+          onClick={() => {
+            setPage(1);
+            setViewMode("editar");
+          }}
         >
           <i className="material-symbols-outlined">edit</i> Editar Pautas
         </button>
         <button
           className={`view-tab-btn ${viewMode === "revisar" ? "active" : ""}`}
-          onClick={() => { setPage(1); setViewMode("revisar"); }}
+          onClick={() => {
+            setPage(1);
+            setViewMode("revisar");
+          }}
         >
           <i className="material-symbols-outlined">checklist</i> Revisar Pautas
         </button>
       </div>
 
-      {pautasParaMostrar.length > 0 && (
+      <form
+        className="pautas-search"
+        onSubmit={(e) => {
+          e.preventDefault();
+          applyPautaSearch();
+        }}
+      >
         <input
           type="text"
           placeholder="Busca una pauta..."
-          value={searchPautaNombre}
-          onChange={(e) => setSearchPautaNombre(e.target.value)}
+          value={searchPautaNombreInput}
+          onChange={(e) => setSearchPautaNombreInput(e.target.value)}
           className="pauta-search-input"
         />
-      )}
+        <button type="submit" className="btn-search">Buscar</button>
+      </form>
 
-      {pautasParaMostrar.length === 0 ? (
+      {pautas.length === 0 ? (
         <div className="empty-state">
           {viewMode === "editar"
             ? "No hay pautas sin evaluaciones. ¡Crea una nueva!"
@@ -162,7 +87,7 @@ const ViewPautasSection = () => {
         </div>
       ) : (
         <div className="pautas-list">
-          {pautasParaMostrar.map((pauta) => (
+          {pautas.map((pauta) => (
             <div key={pauta.id} className="pauta-card">
               {editingPautaId === pauta.id ? (
                 // Formulario de edición
@@ -197,8 +122,27 @@ const ViewPautasSection = () => {
                           placeholder="Puntaje máximo"
                           className="score-input"
                         />
+                        {editFormData.items.length > 1 && (
+                          <button
+                            type="button"
+                            className="btn-remove"
+                            onClick={() => removeEditItem(index)}
+                            aria-label="Eliminar ítem"
+                          >
+                            <span className="material-symbols-outlined">close</span>
+                          </button>
+                        )}
                       </div>
                     ))}
+                    <div className="add-item-row">
+                      <button
+                        type="button"
+                        className="btn-add-item"
+                        onClick={addEditItem}
+                      >
+                        + Agregar Ítem
+                      </button>
+                    </div>
                     
                   </div>
 
@@ -256,7 +200,8 @@ const ViewPautasSection = () => {
                             className="btn-edit"
                             onClick={() => handleEditClick(pauta)}
                           >
-                            ✏️ Editar
+                            <i className="material-symbols-outlined">edit</i>
+                            Editar
                           </button>
                         )}
                         {!pauta.tieneEvaluaciones && (
@@ -264,7 +209,8 @@ const ViewPautasSection = () => {
                             className="btn-delete"
                             onClick={() => handleDeleteClick(pauta.id)}
                           >
-                            🗑️ Eliminar
+                            <i className="material-symbols-outlined">delete</i>
+                            Eliminar
                           </button>
                         )}
                       </div>
